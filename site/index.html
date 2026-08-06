@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f7f9fc">
+  <title>OptiStacks · Optimization Knowledge Atlas</title>
+  <meta name="description" content="A visual knowledge directory and statement browser for convex analysis and nonlinear programming">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="styles.css?v=10">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+      chtml: { scale: 0.96 }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer src="app.js?v=11"></script>
+</head>
+<body>
+  <div class="paper-grain" aria-hidden="true"></div>
+  <header class="masthead">
+    <a class="brand" href="#" aria-label="OptiStacks home">
+      <span class="brand-mark">O<span>S</span></span>
+      <span><b>OptiStacks</b><small>Optimization knowledge atlas</small></span>
+    </a>
+    <div class="header-actions">
+      <div class="layout-controls" aria-label="Pane visibility">
+        <button id="toggle-library-pane" class="layout-button active" type="button" aria-pressed="true">Library</button>
+        <button id="toggle-directory-pane" class="layout-button active" type="button" aria-pressed="true">Directory</button>
+        <button id="toggle-detail-pane" class="layout-button active" type="button" aria-pressed="true">Detail</button>
+      </div>
+      <div class="build-status"><span></span><b id="total-statements">—</b> statements</div>
+      <button id="quality-queue-button" class="quality-queue-button" type="button">
+        Quality review <span id="quality-open-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside id="library-pane" class="rail" aria-label="Subject navigation">
+      <div class="rail-label">LIBRARY</div>
+      <nav id="domain-nav" class="domain-nav"></nav>
+      <div class="rail-rule"></div>
+      <div class="rail-label">CHAPTERS</div>
+      <nav id="chapter-nav" class="chapter-nav"></nav>
+      <footer class="rail-footer">
+        <span class="status-dot"></span>
+        <span><b>Current build</b><small id="build-date">Loading…</small></span>
+      </footer>
+    </aside>
+    <div id="library-resizer" class="pane-resizer" role="separator" aria-label="Resize library" aria-orientation="vertical"></div>
+
+    <main class="workspace">
+      <section id="directory-pane" class="browser-panel" aria-label="Directory browser">
+        <div class="panel-head">
+          <div>
+            <span class="eyebrow">DIRECTORY</span>
+            <h1 id="directory-title">Knowledge directory</h1>
+          </div>
+          <button id="collapse-button" class="icon-button" title="Collapse directory" aria-label="Collapse directory">
+            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
+          </button>
+        </div>
+        <div id="tree-view" class="tree-view" aria-live="polite">
+          <div class="loading-state"><span></span><p>Preparing knowledge tree…</p></div>
+        </div>
+      </section>
+
+      <div id="directory-resizer" class="pane-resizer" role="separator" aria-label="Resize directory" aria-orientation="vertical"></div>
+
+      <article id="detail-panel" class="detail-panel" aria-live="polite">
+        <div class="detail-placeholder">
+          <span class="big-mark">∇</span>
+          <p>Select a topic from the directory</p>
+        </div>
+      </article>
+    </main>
+    <div id="quality-resizer" class="pane-resizer" role="separator" aria-label="Resize quality review" aria-orientation="vertical"></div>
+
+    <aside id="quality-panel" class="quality-panel" aria-label="Quality review" aria-hidden="true">
+      <section id="quality-queue-view" class="quality-view">
+        <header>
+          <div><span class="eyebrow">QUALITY CONTROL</span><h2>Review queue</h2></div>
+          <button id="quality-panel-close" class="icon-button" type="button" aria-label="Close review queue">×</button>
+        </header>
+        <p class="quality-intro">Local review notes for statement content and directory structure. Export the queue to feed a later repair pass.</p>
+        <div class="quality-toolbar">
+          <button id="quality-export-button" class="secondary-button" type="button">Export JSON</button>
+          <button id="quality-show-all-button" class="text-button" type="button">Show all</button>
+        </div>
+        <div id="quality-issue-list" class="quality-issue-list"></div>
+      </section>
+
+      <section id="quality-form-view" class="quality-view" hidden>
+        <form id="quality-form">
+          <header>
+            <div><span class="eyebrow">QUALITY CHECK</span><h2>Report an issue</h2></div>
+            <button id="quality-form-close" class="icon-button" type="button" aria-label="Close issue form">×</button>
+          </header>
+          <p class="quality-intro">The original entry remains visible beside this form while you annotate it.</p>
+          <div id="quality-target" class="quality-target"></div>
+          <label class="form-field">
+            <span>Issue type</span>
+            <select id="quality-issue-type" required></select>
+          </label>
+          <label class="form-field">
+            <span>Severity</span>
+            <select id="quality-severity" required>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="low">Low</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span>Review note</span>
+            <textarea id="quality-note" rows="8" required placeholder="Describe what is wrong and, when possible, suggest a correction."></textarea>
+          </label>
+          <footer>
+            <button id="quality-cancel-button" class="text-button" type="button">Cancel</button>
+            <button class="primary-button" type="submit">Add to review queue</button>
+          </footer>
+        </form>
+      </section>
+    </aside>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
