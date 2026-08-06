@@ -1,7 +1,8 @@
 # OptiStacks Web
 
-Static knowledge atlas for Convex Analysis and Nonlinear Programming. This
-repository snapshot contains 6,794 topics and 12,645 statements.
+Static knowledge atlas for Convex Analysis, Nonlinear Programming, and
+Distributed Optimization. This repository snapshot contains 7,337 topics and
+13,521 statements.
 
 ## Run locally with Docker
 
@@ -44,6 +45,7 @@ The `site/` directory is self-contained and includes:
 - the browser interface;
 - the Convex Analysis directory and statements;
 - the Nonlinear Programming directory and statements;
+- the Distributed Optimization directory and statements;
 - the build manifest.
 
 The nginx image serves JSON with gzip enabled. The manifest is revalidated on

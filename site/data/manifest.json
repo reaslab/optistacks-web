@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-06T04:03:27Z",
+  "built_at": "2026-08-06T04:59:06.717412+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -478,10 +478,210 @@
           "direct_structural_witness_count": 6
         }
       ]
+    },
+    {
+      "id": "distributed_optimization",
+      "short_name": "Distributed Optimization",
+      "accent": "#6d5bd0",
+      "data_url": "data/distributed_optimization.json",
+      "generated_at": "2026-08-03T06:40:08.215594+00:00",
+      "validation_status": "PASS",
+      "publication_status": "structural_overlay_built_with_unverified_evidence_exposed",
+      "stats": {
+        "topics": 543,
+        "statements": 876,
+        "official_statements": 542,
+        "intermediate_statements": 334,
+        "chapters": 9,
+        "leaf_topics": 397,
+        "base_statements": 348,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 125,
+          "certificate": 41,
+          "complexity_bound": 39,
+          "condition": 73,
+          "counterexample": 36,
+          "definition": 336,
+          "duality": 6,
+          "failure_boundary": 75,
+          "principle": 4,
+          "property": 55,
+          "representation": 61,
+          "theorem": 25
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 542,
+        "added_intermediate_count": 334,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 3,
+        "duplicate_intermediate_count": 2029,
+        "duplicate_official_title_count": 1,
+        "duplicate_intermediate_title_count": 2029,
+        "sources": {
+          "builder_draft": 35,
+          "deferred_ledger": 13,
+          "v3_deferred_mass_generation": 41,
+          "v3_reviewed_mass_generation": 12,
+          "v5_definition_builder_candidate": 222,
+          "v60_resolved_intermediate": 5,
+          "v6_adaptive_current": 1,
+          "v6_adaptive_deferred": 5
+        },
+        "total_statement_count": 876
+      },
+      "chapters": [
+        {
+          "topic_id": "A07.C03.N2AAC78962CED",
+          "display_number": "7.3.1",
+          "title": "Distributed Optimization Problem Formulations",
+          "classification_axis": "formulation facet",
+          "subtree_topic_count": 41,
+          "subtree_leaf_count": 31,
+          "subtree_base_leaf_count": 17,
+          "subtree_enriched_leaf_count": 31,
+          "subtree_base_leaf_coverage": 0.5483870967741935,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 31,
+          "subtree_base_statement_count": 17,
+          "subtree_enrichment_statement_count": 14,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.NE8C81A23973E",
+          "display_number": "7.3.2",
+          "title": "Graph and Communication Foundations",
+          "classification_axis": "foundational object",
+          "subtree_topic_count": 67,
+          "subtree_leaf_count": 50,
+          "subtree_base_leaf_count": 29,
+          "subtree_enriched_leaf_count": 50,
+          "subtree_base_leaf_coverage": 0.58,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 50,
+          "subtree_base_statement_count": 29,
+          "subtree_enrichment_statement_count": 21,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.NF800EBDC2744",
+          "display_number": "7.3.3",
+          "title": "Distributed Optimization Algorithms",
+          "classification_axis": "algorithmic mechanism",
+          "subtree_topic_count": 82,
+          "subtree_leaf_count": 62,
+          "subtree_base_leaf_count": 51,
+          "subtree_enriched_leaf_count": 62,
+          "subtree_base_leaf_coverage": 0.8225806451612904,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 129,
+          "subtree_base_statement_count": 118,
+          "subtree_enrichment_statement_count": 11,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.NF9B3FBEBDB6E",
+          "display_number": "7.3.4",
+          "title": "Distributed Optimization Convergence Theory",
+          "classification_axis": "convergence-analysis component",
+          "subtree_topic_count": 51,
+          "subtree_leaf_count": 40,
+          "subtree_base_leaf_count": 27,
+          "subtree_enriched_leaf_count": 40,
+          "subtree_base_leaf_coverage": 0.675,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 46,
+          "subtree_base_statement_count": 33,
+          "subtree_enrichment_statement_count": 13,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.R05",
+          "display_number": "7.3.5",
+          "title": "Distributed Optimization Complexity and Lower Bounds",
+          "classification_axis": "complexity result",
+          "subtree_topic_count": 28,
+          "subtree_leaf_count": 21,
+          "subtree_base_leaf_count": 11,
+          "subtree_enriched_leaf_count": 21,
+          "subtree_base_leaf_coverage": 0.5238095238095238,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 21,
+          "subtree_base_statement_count": 11,
+          "subtree_enrichment_statement_count": 10,
+          "direct_structural_witness_count": 0
+        },
+        {
+          "topic_id": "A07.C03.N981E388C0079",
+          "display_number": "7.3.6",
+          "title": "Communication-Efficient and Asynchronous Distributed Optimization",
+          "classification_axis": "resource-constrained design area",
+          "subtree_topic_count": 97,
+          "subtree_leaf_count": 67,
+          "subtree_base_leaf_count": 40,
+          "subtree_enriched_leaf_count": 67,
+          "subtree_base_leaf_coverage": 0.5970149253731343,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 139,
+          "subtree_base_statement_count": 112,
+          "subtree_enrichment_statement_count": 27,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.SC03",
+          "display_number": "7.3.7",
+          "title": "Federated Optimization",
+          "classification_axis": "federated-optimization knowledge role",
+          "subtree_topic_count": 76,
+          "subtree_leaf_count": 52,
+          "subtree_base_leaf_count": 10,
+          "subtree_enriched_leaf_count": 52,
+          "subtree_base_leaf_coverage": 0.19230769230769232,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 52,
+          "subtree_base_statement_count": 10,
+          "subtree_enrichment_statement_count": 42,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.ND8779845F416",
+          "display_number": "7.3.8",
+          "title": "Distributed Optimization Robustness and Failure Modes",
+          "classification_axis": "risk source or threat domain",
+          "subtree_topic_count": 76,
+          "subtree_leaf_count": 56,
+          "subtree_base_leaf_count": 6,
+          "subtree_enriched_leaf_count": 56,
+          "subtree_base_leaf_coverage": 0.10714285714285714,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 57,
+          "subtree_base_statement_count": 7,
+          "subtree_enrichment_statement_count": 50,
+          "direct_structural_witness_count": 2
+        },
+        {
+          "topic_id": "A07.C03.R09",
+          "display_number": "7.3.9",
+          "title": "Distributed Optimization Evaluation Methodology",
+          "classification_axis": "evaluation component",
+          "subtree_topic_count": 24,
+          "subtree_leaf_count": 18,
+          "subtree_base_leaf_count": 11,
+          "subtree_enriched_leaf_count": 18,
+          "subtree_base_leaf_coverage": 0.6111111111111112,
+          "subtree_enriched_leaf_coverage": 1.0,
+          "subtree_statement_count": 18,
+          "subtree_base_statement_count": 11,
+          "subtree_enrichment_statement_count": 7,
+          "direct_structural_witness_count": 0
+        }
+      ]
     }
   ],
   "totals": {
-    "topics": 6794,
-    "statements": 12645
+    "topics": 7337,
+    "statements": 13521
   }
 }

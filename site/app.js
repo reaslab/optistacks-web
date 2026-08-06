@@ -442,7 +442,7 @@ function renderStatement(statement, index) {
 
 function renderPrerequisite(nodeId) {
   const prefix = String(nodeId).split(".")[0];
-  const domainByPrefix = { A02: "convex_analysis", A04: "nonlinear_programming" };
+  const domainByPrefix = { A02: "convex_analysis", A04: "nonlinear_programming", A07: "distributed_optimization" };
   const domainId = domainByPrefix[prefix];
   if (!domainId) return `<code>${esc(nodeId)}</code>`;
   const href = `#${domainId}/${encodeURIComponent(nodeId)}`;

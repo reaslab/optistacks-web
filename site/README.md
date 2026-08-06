@@ -1,6 +1,6 @@
 # OptiStacks Knowledge Atlas
 
-这是凸分析与非线性规划的静态可视化知识站点。它直接使用仓库内当前的
+这是凸分析、非线性规划与分布式优化的静态可视化知识站点。它直接使用仓库内当前的
 knowledge-classification tree，因此目录和 statement 不需要在前端重复维护。
 
 ## 构建数据
@@ -11,7 +11,7 @@ knowledge-classification tree，因此目录和 statement 不需要在前端重�
 python scripts/build_knowledge_site.py
 ```
 
-脚本会读取两套当前知识树并在 `site/data/` 生成网页数据，同时生成带统计信息的
+脚本会读取三套当前知识树并在 `site/data/` 生成网页数据，同时生成带统计信息的
 `site/data/manifest.json`。源 JSON 不会被修改。
 
 除正式知识分类树外，构建器还会收集当前主流程中能精确定位到目录节点的
@@ -35,7 +35,7 @@ python -m http.server 8000 -d site
 
 站点功能包括：
 
-- 凸分析 / 非线性规划双学科切换；
+- 凸分析 / 非线性规划 / 分布式优化三领域切换；
 - 完整的递归目录浏览与章节跳转；
 - 当前节点的直接父节点与直接子节点导航；
 - statement 的正文、公式、假设、结论、前置节点、notation 与中间阶段信息展示；
