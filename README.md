@@ -32,6 +32,11 @@ as `v1.0.0` additionally publish semantic-version image tags.
 The workflow uses the repository `GITHUB_TOKEN`; no registry password secret is
 required. The repository or organization must allow Actions to write packages.
 
+## GitHub Pages
+
+Pushes to `main` also deploy the contents of `site/` as the public OptiStacks
+Knowledge Atlas at <https://reaslab.github.io/optistacks-web/>.
+
 ## Static snapshot
 
 The `site/` directory is self-contained and includes:
@@ -63,5 +68,5 @@ gh auth login
 gh repo create reaslab/optistacks-web --public --source=. --remote=origin --push
 ```
 
-GitHub Actions builds and stores the image. Running the public website still
-requires a container host or a separate GitHub Pages deployment.
+GitHub Actions builds and stores the image and deploys the static snapshot to
+GitHub Pages. A separate container host is only needed for the container image.
