@@ -17,7 +17,7 @@
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script defer src="app.js?v=11"></script>
+  <script defer src="app.js?v=12"></script>
 </head>
 <body>
   <div class="paper-grain" aria-hidden="true"></div>
@@ -28,9 +28,9 @@
     </a>
     <div class="header-actions">
       <div class="layout-controls" aria-label="Pane visibility">
-        <button id="toggle-library-pane" class="layout-button active" type="button" aria-pressed="true">Library</button>
-        <button id="toggle-directory-pane" class="layout-button active" type="button" aria-pressed="true">Directory</button>
-        <button id="toggle-detail-pane" class="layout-button active" type="button" aria-pressed="true">Detail</button>
+        <button id="toggle-library-pane" class="layout-button active" type="button" aria-pressed="true">Domains</button>
+        <button id="toggle-directory-pane" class="layout-button active" type="button" aria-pressed="true">Outline</button>
+        <button id="toggle-detail-pane" class="layout-button active" type="button" aria-pressed="true">Content</button>
       </div>
       <div class="build-status"><span></span><b id="total-statements">—</b> statements</div>
       <button id="quality-queue-button" class="quality-queue-button" type="button">
@@ -41,7 +41,7 @@
 
   <div class="app-shell">
     <aside id="library-pane" class="rail" aria-label="Subject navigation">
-      <div class="rail-label">LIBRARY</div>
+      <div class="rail-label">DOMAINS</div>
       <nav id="domain-nav" class="domain-nav"></nav>
       <div class="rail-rule"></div>
       <div class="rail-label">CHAPTERS</div>
@@ -51,16 +51,16 @@
         <span><b>Current build</b><small id="build-date">Loading…</small></span>
       </footer>
     </aside>
-    <div id="library-resizer" class="pane-resizer" role="separator" aria-label="Resize library" aria-orientation="vertical"></div>
+    <div id="library-resizer" class="pane-resizer" role="separator" aria-label="Resize domains" aria-orientation="vertical"></div>
 
     <main class="workspace">
-      <section id="directory-pane" class="browser-panel" aria-label="Directory browser">
+      <section id="directory-pane" class="browser-panel" aria-label="Topic outline">
         <div class="panel-head">
           <div>
-            <span class="eyebrow">DIRECTORY</span>
-            <h1 id="directory-title">Knowledge directory</h1>
+            <span class="eyebrow">TOPIC OUTLINE</span>
+            <h1 id="directory-title">Knowledge outline</h1>
           </div>
-          <button id="collapse-button" class="icon-button" title="Collapse directory" aria-label="Collapse directory">
+          <button id="collapse-button" class="icon-button" title="Collapse outline" aria-label="Collapse outline">
             <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
           </button>
         </div>
@@ -69,12 +69,12 @@
         </div>
       </section>
 
-      <div id="directory-resizer" class="pane-resizer" role="separator" aria-label="Resize directory" aria-orientation="vertical"></div>
+      <div id="directory-resizer" class="pane-resizer" role="separator" aria-label="Resize outline" aria-orientation="vertical"></div>
 
       <article id="detail-panel" class="detail-panel" aria-live="polite">
         <div class="detail-placeholder">
           <span class="big-mark">∇</span>
-          <p>Select a topic from the directory</p>
+          <p>Select a topic from the outline</p>
         </div>
       </article>
     </main>
@@ -86,7 +86,7 @@
           <div><span class="eyebrow">QUALITY CONTROL</span><h2>Review queue</h2></div>
           <button id="quality-panel-close" class="icon-button" type="button" aria-label="Close review queue">×</button>
         </header>
-        <p class="quality-intro">Local review notes for statement content and directory structure. Export the queue to feed a later repair pass.</p>
+        <p class="quality-intro">Local review notes for statement content and topic hierarchy. Export the queue to feed a later repair pass.</p>
         <div class="quality-toolbar">
           <button id="quality-export-button" class="secondary-button" type="button">Export JSON</button>
           <button id="quality-show-all-button" class="text-button" type="button">Show all</button>

@@ -11,8 +11,8 @@ knowledge-classification tree，因此目录和 statement 不需要在前端重�
 python scripts/build_knowledge_site.py
 ```
 
-脚本会读取两套当前知识树并在 `web/data/` 生成网页数据，同时生成带统计信息的
-`web/data/manifest.json`。源 JSON 不会被修改。
+脚本会读取两套当前知识树并在 `site/data/` 生成网页数据，同时生成带统计信息的
+`site/data/manifest.json`。源 JSON 不会被修改。
 
 除正式知识分类树外，构建器还会收集当前主流程中能精确定位到目录节点的
 structured intermediate statements，包括 topic-complete builder/reviewer 结果、
@@ -28,7 +28,7 @@ deferred reason 和 review comment。同一目录节点内标题相同的记录�
 浏览器出于安全策略不能用 `file://` 直接读取 JSON，请启动一个静态服务器：
 
 ```bash
-python -m http.server 8000 -d web
+python -m http.server 8000 -d site
 ```
 
 然后访问 <http://localhost:8000>。
@@ -49,3 +49,8 @@ python -m http.server 8000 -d web
 `Quality review` 队列中回到原条目、标记 resolved，并导出为
 `optistacks-quality-review-YYYY-MM-DD.json`。导出包包含目标路径、内容快照、
 问题类型、严重度和审阅意见，可作为后续修订流程的输入。
+
+## 主题名称
+
+高可见度章节和一级 topic 的名称直接记录在 `site/data/*.json` 中，不使用前端
+显示别名。topic ID、父子层级、URL hash 和 statement 归属保持不变。

@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-06T02:50:11.705823+00:00",
+  "built_at": "2026-08-06T04:03:27Z",
   "domains": [
     {
       "id": "convex_analysis",
@@ -256,7 +256,7 @@
         {
           "topic_id": "A04.C01",
           "display_number": "4.1",
-          "title": "Line-Search Descent Globalization",
+          "title": "Line Search and Descent Globalization",
           "classification_axis": "",
           "subtree_topic_count": 196,
           "subtree_leaf_count": 145,
@@ -272,7 +272,7 @@
         {
           "topic_id": "A04.C02",
           "display_number": "4.2",
-          "title": "Trust-Region Model Adequacy",
+          "title": "Trust-Region Methods and Model Adequacy",
           "classification_axis": "",
           "subtree_topic_count": 253,
           "subtree_leaf_count": 172,
@@ -288,7 +288,7 @@
         {
           "topic_id": "A04.C03",
           "display_number": "4.3",
-          "title": "Newton Methods and Linear System Solves",
+          "title": "Newton Methods and Linear Solvers",
           "classification_axis": "",
           "subtree_topic_count": 289,
           "subtree_leaf_count": 212,
@@ -336,7 +336,7 @@
         {
           "topic_id": "A04.C06",
           "display_number": "4.6",
-          "title": "Constrained NLP Optimality-Active-Set Theory",
+          "title": "Optimality and Active-Set Theory for Constrained NLP",
           "classification_axis": "",
           "subtree_topic_count": 273,
           "subtree_leaf_count": 189,
@@ -448,7 +448,7 @@
         {
           "topic_id": "A04.C13",
           "display_number": "4.13",
-          "title": "Interior-Point Barrier Methodology",
+          "title": "Interior-Point and Barrier Methods",
           "classification_axis": "",
           "subtree_topic_count": 333,
           "subtree_leaf_count": 249,

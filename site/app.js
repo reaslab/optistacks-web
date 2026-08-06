@@ -16,19 +16,20 @@ const state = {
 
 const QUALITY_STORAGE_KEY = "optistacks-quality-review-v1";
 const LAYOUT_STORAGE_KEY = "optistacks-layout-v1";
+const PANE_LABELS = { library: "domains", directory: "outline", detail: "content" };
 const QUALITY_TYPES = {
   statement: [
     ["natural_language", "Natural-language wording"],
     ["mathematical_correctness", "Mathematical correctness"],
     ["missing_assumption", "Missing or incorrect assumption"],
     ["latex_rendering", "Formula or rendering problem"],
-    ["statement_placement", "Wrong directory placement"],
+    ["statement_placement", "Wrong topic placement"],
     ["duplicate_statement", "Duplicate statement"],
     ["evidence_source", "Evidence or source problem"],
     ["other", "Other statement issue"],
   ],
   topic: [
-    ["directory_split", "Directory split is inappropriate"],
+    ["directory_split", "Topic should be split differently"],
     ["directory_merge", "Topics should be merged"],
     ["hierarchy_placement", "Wrong parent or hierarchy"],
     ["topic_naming", "Topic naming problem"],
@@ -92,7 +93,7 @@ function bindEvents() {
     state.expanded.clear();
     if (state.data?.roots?.[0]) state.expanded.add(state.data.roots[0].topic_id);
     renderBrowser();
-    toast("Directory collapsed");
+    toast("Topic outline collapsed");
   });
   $("#toggle-library-pane").addEventListener("click", () => togglePane("library"));
   $("#toggle-directory-pane").addEventListener("click", () => togglePane("directory"));
@@ -157,7 +158,7 @@ function updateLayoutControls() {
     const button = $(`#toggle-${name}-pane`);
     button.classList.toggle("active", visible);
     button.setAttribute("aria-pressed", String(visible));
-    button.title = `${visible ? "Hide" : "Show"} ${name}`;
+    button.title = `${visible ? "Hide" : "Show"} ${PANE_LABELS[name]}`;
   });
 }
 
@@ -165,7 +166,7 @@ function setPaneHidden(name, hidden, persist = true) {
   if ((name === "directory" || name === "detail") && hidden) {
     const counterpart = name === "directory" ? "detail" : "directory";
     if (document.body.classList.contains(`${counterpart}-hidden`)) {
-      toast("Keep either Directory or Detail visible");
+      toast("Keep either Outline or Content visible");
       return;
     }
   }
@@ -219,7 +220,7 @@ function renderDomainNav() {
   $("#domain-nav").innerHTML = state.manifest.domains.map(domain => `
     <button class="domain-button ${domain.id === state.domainMeta?.id ? "active" : ""}" data-domain="${esc(domain.id)}" style="--domain-accent:${domain.accent}">
       <span class="domain-swatch"></span>
-      <span><b>${esc(domain.short_name)}</b><small>Knowledge domain</small></span>
+      <span><b>${esc(domain.short_name)}</b><small>Subject area</small></span>
       <em>${formatNumber(domain.stats.statements)}</em>
     </button>`).join("");
   document.querySelectorAll("[data-domain]").forEach(button => button.addEventListener("click", () => loadDomain(button.dataset.domain)));
@@ -348,14 +349,14 @@ function renderDetail(nodeId) {
       <div class="breadcrumbs">${path}</div>
       <h2>${esc(node.title)}</h2>
       <p class="topic-role">${esc(node.top_down_role || "This node organizes the knowledge topics below it.")}</p>
-      <div class="topic-actions"><button class="review-button" type="button" data-quality-target-type="topic" data-quality-target-id="${esc(node.topic_id)}">Report directory issue</button></div>
+      <div class="topic-actions"><button class="review-button" type="button" data-quality-target-type="topic" data-quality-target-id="${esc(node.topic_id)}">Report topic issue</button></div>
     </header>
     <div class="detail-body">
       ${relationships}
       <div class="section-heading"><h3>Knowledge statements</h3><span>${statements.length} / ${allStatements.length} records</span></div>
       ${statements.length ? `<div class="statement-list">${statements.map((statement, index) => renderStatement(statement, index)).join("")}</div>` : `
-        <div class="empty-statements"><b>${allStatements.length ? "No statements match this filter" : "Structural directory node"}</b><span>${allStatements.length ? "Choose another statement type above." : `Concrete knowledge is stored in ${formatNumber(node.descendant_statement_count)} descendant statements.`}</span></div>`}
-      ${witnesses.length ? `<section class="witness-section"><div class="section-heading"><h3>Textbook witnesses</h3><span>${witnesses.length} placement records</span></div><div class="source-list">${witnesses.map(renderWitness).join("")}</div></section>` : ""}
+        <div class="empty-statements"><b>${allStatements.length ? "No statements match this filter" : "Structural topic"}</b><span>${allStatements.length ? "Choose another statement type above." : `Concrete knowledge is stored in ${formatNumber(node.descendant_statement_count)} descendant statements.`}</span></div>`}
+      ${witnesses.length ? `<section class="witness-section"><div class="section-heading"><h3>Source references</h3><span>${witnesses.length} references</span></div><div class="source-list">${witnesses.map(renderWitness).join("")}</div></section>` : ""}
     </div>`;
   $("#detail-panel").scrollTop = 0;
   $("#detail-panel").querySelectorAll("[data-related-node]").forEach(button => {
