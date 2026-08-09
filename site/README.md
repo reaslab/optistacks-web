@@ -1,22 +1,21 @@
 # ReasAtlas
 
-这是凸分析、非线性规划与分布式优化的静态可视化知识站点。它直接使用仓库内当前的
-knowledge-classification tree，因此目录和 statement 不需要在前端重复维护。
+这是凸分析、变分分析、非线性规划、一阶优化方法与分布式优化的静态可视化知识站点。
+它直接使用当前知识目录与 statement layer，因此目录和 statement 不需要在前端重复维护。
 
 ## 构建数据
 
 在仓库根目录运行：
 
 ```bash
-python scripts/build_knowledge_site.py
+python scripts/import_source_domains.py --source /root/workspace/lcy/optistacks
+python scripts/build_lazy_shards.py
 ```
 
-脚本会读取三套当前知识树并在 `site/data/` 生成网页数据，同时生成带统计信息的
-`site/data/manifest.json`。源 JSON 不会被修改。
-
-更新完整数据后，再运行 `python scripts/build_lazy_shards.py`。它会把每个领域拆成
-轻量目录和按章节加载的 shard：首次访问只读取目录骨架，进入章节时才下载正文，
-已经访问的章节由内存与浏览器缓存复用。
+导入脚本会从原始材料读取完整 A03 Variational Analysis 和 A05 First-Order Methods，
+合并 v58 正式 statement、topic-complete 已接受结果和具有 payload 的 deferred 结果。
+分片脚本随后把每个领域拆成轻量目录与按章节加载的 shard：首次访问只读取目录骨架，
+进入章节时才下载正文，已经访问的章节由内存与浏览器缓存复用。
 
 除正式知识分类树外，构建器还会收集当前主流程中能精确定位到目录节点的
 structured intermediate statements，包括 topic-complete builder/reviewer 结果、
@@ -39,7 +38,7 @@ python -m http.server 8000 -d site
 
 站点功能包括：
 
-- 凸分析 / 非线性规划 / 分布式优化三领域切换；
+- 凸分析 / 变分分析 / 非线性规划 / 一阶优化方法 / 分布式优化五领域切换；
 - 完整的递归目录浏览与章节跳转；
 - 当前节点的直接父节点与直接子节点导航；
 - statement 的正文、公式、假设、结论、前置节点、notation 与中间阶段信息展示；

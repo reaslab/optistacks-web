@@ -261,6 +261,8 @@ async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
   renderDomainNav();
   $("#directory-title").textContent = meta.short_name;
   $("#tree-view").innerHTML = `<div class="loading-state"><span></span><p>Loading ${esc(meta.short_name)}…</p></div>`;
+  $("#chapter-nav").replaceChildren();
+  $("#chapter-nav").setAttribute("aria-busy", "true");
   try {
     let data = state.domainCache.get(meta.id);
     if (!data) {
@@ -302,6 +304,7 @@ function indexTree() {
 
 function renderChapterNav() {
   const chapters = state.data.roots[0]?.children || [];
+  $("#chapter-nav").removeAttribute("aria-busy");
   $("#chapter-nav").innerHTML = chapters.map(chapter => `
     <button class="chapter-button" type="button" data-chapter="${esc(chapter.topic_id)}" aria-controls="directory-pane">
       <span>${esc(chapter.display_number)}</span><b>${esc(chapter.title)}</b>
@@ -541,7 +544,13 @@ function renderStatement(statement, index) {
 
 function renderPrerequisite(nodeId) {
   const prefix = String(nodeId).split(".")[0];
-  const domainByPrefix = { A02: "convex_analysis", A04: "nonlinear_programming", A07: "distributed_optimization" };
+  const domainByPrefix = {
+    A02: "convex_analysis",
+    A03: "variational_analysis",
+    A04: "nonlinear_programming",
+    A05: "first_order_methods",
+    A07: "distributed_optimization",
+  };
   const domainId = domainByPrefix[prefix];
   if (!domainId) return `<code>${esc(nodeId)}</code>`;
   const href = `#${domainId}/${encodeURIComponent(nodeId)}`;
