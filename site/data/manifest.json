@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-09T03:43:37.835189+00:00",
+  "built_at": "2026-08-09T04:03:29.759454+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -206,6 +206,160 @@
         "routes": 2920,
         "catalog_bytes": 126494,
         "shard_bytes": 19742061
+      }
+    },
+    {
+      "id": "variational_analysis",
+      "short_name": "Variational Analysis",
+      "accent": "#a65f18",
+      "data_url": "data/variational_analysis.json",
+      "generated_at": "2026-07-21T06:42:34.067489+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 4736,
+        "statements": 4745,
+        "official_statements": 1367,
+        "intermediate_statements": 3378,
+        "chapters": 12,
+        "leaf_topics": 3437,
+        "base_statements": 1367,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 166,
+          "certificate": 117,
+          "complexity_bound": 45,
+          "condition": 398,
+          "counterexample": 460,
+          "definition": 882,
+          "duality": 93,
+          "failure_boundary": 482,
+          "principle": 91,
+          "property": 610,
+          "representation": 606,
+          "theorem": 795
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1367,
+        "added_intermediate_count": 3378,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 53,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 53,
+        "sources": {
+          "topic_complete_current": 1245,
+          "topic_complete_new_deferred": 66,
+          "topic_complete_seed_deferred": 2067
+        },
+        "total_statement_count": 4745
+      },
+      "chapters": [
+        {
+          "topic_id": "A03.SC01",
+          "display_number": "3.1",
+          "title": "Set Convergence",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 395,
+          "subtree_statement_count": 285
+        },
+        {
+          "topic_id": "A03.SC02",
+          "display_number": "3.2",
+          "title": "Variational Geometry",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 215,
+          "subtree_statement_count": 159
+        },
+        {
+          "topic_id": "A03.SC03",
+          "display_number": "3.3",
+          "title": "Variational Principles",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 290,
+          "subtree_statement_count": 213
+        },
+        {
+          "topic_id": "A03.SC04",
+          "display_number": "3.4",
+          "title": "Generalized Differentiation",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 419,
+          "subtree_statement_count": 594
+        },
+        {
+          "topic_id": "A03.SC05",
+          "display_number": "3.5",
+          "title": "Metric Regularity",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 397,
+          "subtree_statement_count": 572
+        },
+        {
+          "topic_id": "A03.SC06",
+          "display_number": "3.6",
+          "title": "Generalized Equations",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 297,
+          "subtree_statement_count": 402
+        },
+        {
+          "topic_id": "A03.SC07",
+          "display_number": "3.7",
+          "title": "Monotone Operators",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 500,
+          "subtree_statement_count": 472
+        },
+        {
+          "topic_id": "A03.SC08",
+          "display_number": "3.8",
+          "title": "Variational Inequalities",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 491,
+          "subtree_statement_count": 333
+        },
+        {
+          "topic_id": "A03.SC09",
+          "display_number": "3.9",
+          "title": "Second-Order Variational Analysis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 244,
+          "subtree_statement_count": 176
+        },
+        {
+          "topic_id": "A03.SC10",
+          "display_number": "3.10",
+          "title": "Integral Variational Analysis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 344,
+          "subtree_statement_count": 707
+        },
+        {
+          "topic_id": "A03.SC11",
+          "display_number": "3.11",
+          "title": "Variational Dynamics",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 524,
+          "subtree_statement_count": 393
+        },
+        {
+          "topic_id": "A03.SC12",
+          "display_number": "3.12",
+          "title": "Wasserstein Variational Geometry",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 619,
+          "subtree_statement_count": 439
+        }
+      ],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 12,
+        "routes": 4735,
+        "catalog_bytes": 214164,
+        "shard_bytes": 15324062
       }
     },
     {
@@ -494,6 +648,200 @@
       }
     },
     {
+      "id": "first_order_methods",
+      "short_name": "First-Order Methods",
+      "accent": "#b6406a",
+      "data_url": "data/first_order_methods.json",
+      "generated_at": "2026-07-21T06:42:37.642202+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 6810,
+        "statements": 6104,
+        "official_statements": 1696,
+        "intermediate_statements": 4408,
+        "chapters": 17,
+        "leaf_topics": 4903,
+        "base_statements": 1696,
+        "coverage": 1.0,
+        "max_depth": 6,
+        "content_kinds": {
+          "algorithm": 952,
+          "certificate": 304,
+          "complexity_bound": 501,
+          "condition": 677,
+          "counterexample": 311,
+          "definition": 1067,
+          "duality": 48,
+          "failure_boundary": 672,
+          "principle": 111,
+          "property": 640,
+          "representation": 597,
+          "theorem": 224
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1696,
+        "added_intermediate_count": 4408,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 14,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 14,
+        "sources": {
+          "topic_complete_current": 1129,
+          "topic_complete_new_deferred": 72,
+          "topic_complete_seed_deferred": 3207
+        },
+        "total_statement_count": 6104
+      },
+      "chapters": [
+        {
+          "topic_id": "A05.C01",
+          "display_number": "5.1",
+          "title": "Smooth Deterministic Gradient Algorithms",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 277,
+          "subtree_statement_count": 188
+        },
+        {
+          "topic_id": "A05.C02",
+          "display_number": "5.2",
+          "title": "Conditional-Gradient Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 278,
+          "subtree_statement_count": 478
+        },
+        {
+          "topic_id": "A05.C03",
+          "display_number": "5.3",
+          "title": "Nonsmooth Subgradient-Mirror-Bregman Algorithm Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 261,
+          "subtree_statement_count": 190
+        },
+        {
+          "topic_id": "A05.C04",
+          "display_number": "5.4",
+          "title": "Proximal-Composite Algorithm Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 314,
+          "subtree_statement_count": 238
+        },
+        {
+          "topic_id": "A05.C05",
+          "display_number": "5.5",
+          "title": "Foundational Operator-Splitting Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 530,
+          "subtree_statement_count": 388
+        },
+        {
+          "topic_id": "A05.C06",
+          "display_number": "5.6",
+          "title": "Primal-Dual ADMM Splitting Architectures",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 332,
+          "subtree_statement_count": 242
+        },
+        {
+          "topic_id": "A05.C07",
+          "display_number": "5.7",
+          "title": "Fixed-Point Acceleration",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 419,
+          "subtree_statement_count": 301
+        },
+        {
+          "topic_id": "A05.C08",
+          "display_number": "5.8",
+          "title": "Saddle-Point Variational Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 508,
+          "subtree_statement_count": 354
+        },
+        {
+          "topic_id": "A05.C09",
+          "display_number": "5.9",
+          "title": "Stochastic Approximation-SGD Method Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 374,
+          "subtree_statement_count": 277
+        },
+        {
+          "topic_id": "A05.C10",
+          "display_number": "5.10",
+          "title": "Finite-Sum Variance-Reduction Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 381,
+          "subtree_statement_count": 673
+        },
+        {
+          "topic_id": "A05.C11",
+          "display_number": "5.11",
+          "title": "Self-Tuning Stochastic Method Families",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 319,
+          "subtree_statement_count": 227
+        },
+        {
+          "topic_id": "A05.C12",
+          "display_number": "5.12",
+          "title": "Coordinate-Block Method Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 425,
+          "subtree_statement_count": 785
+        },
+        {
+          "topic_id": "A05.C13",
+          "display_number": "5.13",
+          "title": "Sketched Subspace First-Order Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 340,
+          "subtree_statement_count": 240
+        },
+        {
+          "topic_id": "A05.C14",
+          "display_number": "5.14",
+          "title": "Learning-Optimizer First-Order",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 506,
+          "subtree_statement_count": 368
+        },
+        {
+          "topic_id": "A05.C15",
+          "display_number": "5.15",
+          "title": "Oracle Access Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 484,
+          "subtree_statement_count": 350
+        },
+        {
+          "topic_id": "A05.C16",
+          "display_number": "5.16",
+          "title": "First-Order Complexity Bound Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 444,
+          "subtree_statement_count": 358
+        },
+        {
+          "topic_id": "A05.C17",
+          "display_number": "5.17",
+          "title": "Performance-Estimation Certificate Mechanisms",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 617,
+          "subtree_statement_count": 447
+        }
+      ],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 17,
+        "routes": 6809,
+        "catalog_bytes": 293862,
+        "shard_bytes": 21807021
+      }
+    },
+    {
       "id": "distributed_optimization",
       "short_name": "Distributed Optimization",
       "accent": "#6d5bd0",
@@ -702,8 +1050,8 @@
     }
   ],
   "totals": {
-    "topics": 7337,
-    "statements": 13521
+    "topics": 18883,
+    "statements": 24370
   },
   "loading": {
     "mode": "chapter_shards",

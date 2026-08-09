@@ -1,8 +1,8 @@
 # ReasAtlas
 
-Static knowledge atlas for Convex Analysis, Nonlinear Programming, and
-Distributed Optimization. This repository snapshot contains 7,337 topics and
-13,521 statements.
+Static knowledge atlas for Convex Analysis, Variational Analysis, Nonlinear
+Programming, First-Order Methods, and Distributed Optimization. This repository
+snapshot contains 18,883 topics and 24,370 statements.
 
 ## Run locally with Docker
 
@@ -44,7 +44,9 @@ The `site/` directory is self-contained and includes:
 
 - the browser interface;
 - the Convex Analysis directory and statements;
+- the Variational Analysis directory and statements;
 - the Nonlinear Programming directory and statements;
+- the First-Order Methods directory and statements;
 - the Distributed Optimization directory and statements;
 - the build manifest.
 
@@ -53,11 +55,13 @@ every load. A lightweight domain catalogue is loaded first; chapter payloads
 are fetched only when visited and then reused from memory and the versioned
 browser/CDN cache.
 
-To refresh this snapshot from the source knowledge workspace, run there:
+To refresh A03/A05 from the source knowledge workspace and rebuild the lazy
+chapter payloads, run in this repository:
 
 ```bash
-python scripts/build_knowledge_site.py \
-  --output standalone/optistacks-web/site
+python scripts/import_source_domains.py \
+  --source /root/workspace/lcy/optistacks
+python scripts/build_lazy_shards.py
 ```
 
 Then review and commit the changed files in this standalone repository.
