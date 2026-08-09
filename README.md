@@ -1,4 +1,4 @@
-# OptiStacks Web
+# ReasAtlas
 
 Static knowledge atlas for Convex Analysis, Nonlinear Programming, and
 Distributed Optimization. This repository snapshot contains 7,337 topics and
@@ -35,8 +35,8 @@ required. The repository or organization must allow Actions to write packages.
 
 ## GitHub Pages
 
-Pushes to `main` also deploy the contents of `site/` as the public OptiStacks
-Knowledge Atlas at <https://reaslab.github.io/optistacks-web/>.
+Pushes to `main` also deploy the contents of `site/` as the public ReasAtlas at
+<https://reaslab.github.io/optistacks-web/>.
 
 ## Static snapshot
 
@@ -49,9 +49,11 @@ The `site/` directory is self-contained and includes:
 - the build manifest.
 
 The nginx image serves JSON with gzip enabled. The manifest is revalidated on
-every load, while versioned domain payloads can be cached by the browser.
+every load. A lightweight domain catalogue is loaded first; chapter payloads
+are fetched only when visited and then reused from memory and the versioned
+browser/CDN cache.
 
-To refresh this snapshot from the source OptiStacks workspace, run there:
+To refresh this snapshot from the source knowledge workspace, run there:
 
 ```bash
 python scripts/build_knowledge_site.py \

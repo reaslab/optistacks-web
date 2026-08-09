@@ -8,6 +8,11 @@ const state = {
   selected: null,
   expanded: new Set(),
   domainCache: new Map(),
+  payloadCache: new Map(),
+  payloadRequests: new Map(),
+  loadingNodes: new Set(),
+  domainLoadToken: 0,
+  navigationToken: 0,
   qualityIssues: [],
   qualityTarget: null,
   qualityShowAll: false,
@@ -102,7 +107,7 @@ function bindEvents() {
   window.addEventListener("hashchange", async () => {
     const route = parseRoute();
     if (route.domain && route.domain !== state.domainMeta?.id) await loadDomain(route.domain, route.node, false);
-    else if (route.node && state.byId.has(route.node)) selectNode(route.node, false);
+    else if (route.node) await navigateToNode(route.node, false, true);
   });
   $("#quality-queue-button").addEventListener("click", openQualityDrawer);
   $("#quality-panel-close").addEventListener("click", closeQualityDrawer);
@@ -216,6 +221,26 @@ function parseRoute() {
   return { domain, node: node.join("/") || null };
 }
 
+function versionedDataUrl(path) {
+  const url = new URL(path, location.href);
+  url.searchParams.set("v", state.manifest.built_at);
+  return url;
+}
+
+async function fetchPayload(path) {
+  const key = versionedDataUrl(path).href;
+  if (state.payloadCache.has(key)) return state.payloadCache.get(key);
+  if (state.payloadRequests.has(key)) return state.payloadRequests.get(key);
+  const request = fetch(key, { cache: "force-cache" }).then(async response => {
+    if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+    const payload = await response.json();
+    state.payloadCache.set(key, payload);
+    return payload;
+  }).finally(() => state.payloadRequests.delete(key));
+  state.payloadRequests.set(key, request);
+  return request;
+}
+
 function renderDomainNav() {
   $("#domain-nav").innerHTML = state.manifest.domains.map(domain => `
     <button class="domain-button ${domain.id === state.domainMeta?.id ? "active" : ""}" data-domain="${esc(domain.id)}" style="--domain-accent:${domain.accent}">
@@ -227,6 +252,8 @@ function renderDomainNav() {
 }
 
 async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
+  const loadToken = ++state.domainLoadToken;
+  const navigationToken = ++state.navigationToken;
   const meta = state.manifest.domains.find(item => item.id === domainId) || state.manifest.domains[0];
   state.domainMeta = meta;
   document.documentElement.style.setProperty("--accent", meta.accent);
@@ -237,23 +264,24 @@ async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
   try {
     let data = state.domainCache.get(meta.id);
     if (!data) {
-      const dataUrl = new URL(meta.data_url, location.href);
-      dataUrl.searchParams.set("v", state.manifest.built_at);
-      const response = await fetch(dataUrl);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      data = await response.json();
+      data = await fetchPayload(meta.data_url);
       state.domainCache.set(meta.id, data);
     }
+    if (loadToken !== state.domainLoadToken || navigationToken !== state.navigationToken) return;
     state.data = data;
     indexTree();
     state.expanded.clear();
     const root = data.roots[0];
     state.expanded.add(root.topic_id);
-    const target = requestedNode && state.byId.has(requestedNode) ? requestedNode : root.topic_id;
-    selectNode(target, updateRoute);
     renderChapterNav();
     renderBrowser();
+    if (requestedNode) await ensureRouteLoaded(requestedNode);
+    if (loadToken !== state.domainLoadToken || navigationToken !== state.navigationToken) return;
+    const target = requestedNode && state.byId.has(requestedNode) ? requestedNode : root.topic_id;
+    selectNode(target, updateRoute);
+    if (requestedNode) focusTreeNode(target);
   } catch (error) {
+    if (loadToken !== state.domainLoadToken || navigationToken !== state.navigationToken) return;
     $("#tree-view").innerHTML = `<div class="empty-statements"><b>Could not load ${esc(meta.short_name)}</b><span>${esc(error.message)}</span></div>`;
   }
 }
@@ -275,11 +303,11 @@ function indexTree() {
 function renderChapterNav() {
   const chapters = state.data.roots[0]?.children || [];
   $("#chapter-nav").innerHTML = chapters.map(chapter => `
-    <button class="chapter-button" data-chapter="${esc(chapter.topic_id)}">
+    <button class="chapter-button" type="button" data-chapter="${esc(chapter.topic_id)}" aria-controls="directory-pane">
       <span>${esc(chapter.display_number)}</span><b>${esc(chapter.title)}</b>
     </button>`).join("");
-  document.querySelectorAll("[data-chapter]").forEach(button => button.addEventListener("click", () => {
-    revealPath(button.dataset.chapter); selectNode(button.dataset.chapter);
+  document.querySelectorAll("[data-chapter]").forEach(button => button.addEventListener("click", async () => {
+    await navigateToNode(button.dataset.chapter, true, true);
   }));
 }
 
@@ -294,11 +322,12 @@ function renderTree() {
 }
 
 function renderTreeNode(node) {
-  const hasChildren = (node.children || []).length > 0;
+  const hasChildren = (node.children || []).length > 0 || Boolean(node.shard_url);
   const open = state.expanded.has(node.topic_id);
+  const loading = state.loadingNodes.has(node.topic_id);
   return `<li class="tree-node" data-node-shell="${esc(node.topic_id)}">
-    <div class="tree-row ${state.selected === node.topic_id ? "selected" : ""}" data-select-node="${esc(node.topic_id)}">
-      <button class="tree-toggle ${hasChildren ? (open ? "open" : "") : "leaf"}" data-toggle-node="${esc(node.topic_id)}" aria-label="${open ? "Collapse" : "Expand"}"></button>
+    <div class="tree-row ${state.selected === node.topic_id ? "selected" : ""}" data-select-node="${esc(node.topic_id)}" ${loading ? 'aria-busy="true"' : ""}>
+      <button class="tree-toggle ${loading ? "loading" : hasChildren ? (open ? "open" : "") : "leaf"}" data-toggle-node="${esc(node.topic_id)}" aria-label="${loading ? "Loading" : open ? "Collapse" : "Expand"}" ${loading ? "disabled" : ""}></button>
       <span class="tree-label"><small>${esc(node.display_number)}</small><b title="${esc(node.title)}">${esc(node.title)}</b></span>
       ${node.descendant_statement_count ? `<span class="tree-count">${formatNumber(node.descendant_statement_count)}</span>` : ""}
     </div>
@@ -307,16 +336,84 @@ function renderTreeNode(node) {
 }
 
 function bindTreeEvents(root) {
-  root.querySelectorAll("[data-toggle-node]").forEach(button => button.addEventListener("click", event => {
+  root.querySelectorAll("[data-toggle-node]").forEach(button => button.addEventListener("click", async event => {
     event.stopPropagation();
     const id = button.dataset.toggleNode;
-    state.expanded.has(id) ? state.expanded.delete(id) : state.expanded.add(id);
-    renderTree();
+    if (state.expanded.has(id)) {
+      state.expanded.delete(id);
+      renderTree();
+      return;
+    }
+    try {
+      await ensureRouteLoaded(id);
+      state.expanded.add(id);
+      renderTree();
+    } catch (error) {
+      toast(`Could not load topic: ${error.message}`);
+    }
   }));
-  root.querySelectorAll("[data-select-node]").forEach(row => row.addEventListener("click", event => {
+  root.querySelectorAll("[data-select-node]").forEach(row => row.addEventListener("click", async event => {
     if (event.target.closest("[data-toggle-node]")) return;
-    selectNode(row.dataset.selectNode);
+    await navigateToNode(row.dataset.selectNode);
   }));
+}
+
+async function ensureChapterLoaded(chapterId) {
+  const entry = state.byId.get(chapterId);
+  const chapter = entry?.node;
+  if (!chapter?.shard_url || chapter.lazy_loaded) return;
+  const domainData = state.data;
+  const shardUrl = chapter.shard_url;
+  state.loadingNodes.add(chapterId);
+  if (state.data === domainData) renderTree();
+  try {
+    const payload = await fetchPayload(shardUrl);
+    if (payload.chapter_id !== chapterId || payload.root?.topic_id !== chapterId) {
+      throw new Error(`Unexpected chapter payload for ${chapterId}`);
+    }
+    Object.assign(chapter, payload.root, {
+      shard_url: shardUrl,
+      lazy_content: false,
+      lazy_loaded: true,
+    });
+    if (state.data === domainData) indexTree();
+  } finally {
+    state.loadingNodes.delete(chapterId);
+  }
+}
+
+async function ensureRouteLoaded(nodeId) {
+  const direct = state.byId.get(nodeId)?.node;
+  if (direct?.shard_url && !direct.lazy_loaded) {
+    await ensureChapterLoaded(nodeId);
+    return;
+  }
+  if (direct) return;
+  const chapterId = state.data?.node_routes?.[nodeId];
+  if (chapterId) await ensureChapterLoaded(chapterId);
+}
+
+async function navigateToNode(nodeId, updateRoute = true, focusTree = false) {
+  const navigationToken = ++state.navigationToken;
+  try {
+    await ensureRouteLoaded(nodeId);
+    if (navigationToken !== state.navigationToken) return;
+    if (!state.byId.has(nodeId)) return;
+    selectNode(nodeId, updateRoute);
+    if (focusTree) focusTreeNode(nodeId);
+  } catch (error) {
+    toast(`Could not load topic: ${error.message}`);
+  }
+}
+
+function focusTreeNode(nodeId) {
+  requestAnimationFrame(() => {
+    const shell = [...document.querySelectorAll("[data-node-shell]")].find(item => item.dataset.nodeShell === nodeId);
+    if (!shell) return;
+    shell.scrollIntoView({ behavior: "smooth", block: "center" });
+    shell.classList.add("nav-target");
+    setTimeout(() => shell.classList.remove("nav-target"), 1150);
+  });
 }
 
 function revealPath(nodeId) {
@@ -333,6 +430,10 @@ function selectNode(nodeId, updateRoute = true) {
   renderTree();
   const chapter = state.byId.get(nodeId).path[1]?.topic_id;
   document.querySelectorAll("[data-chapter]").forEach(button => button.classList.toggle("active", button.dataset.chapter === chapter));
+  document.querySelectorAll("[data-chapter]").forEach(button => {
+    if (button.dataset.chapter === chapter) button.setAttribute("aria-current", "true");
+    else button.removeAttribute("aria-current");
+  });
 }
 
 function renderDetail(nodeId) {
@@ -360,7 +461,7 @@ function renderDetail(nodeId) {
     </div>`;
   $("#detail-panel").scrollTop = 0;
   $("#detail-panel").querySelectorAll("[data-related-node]").forEach(button => {
-    button.addEventListener("click", () => selectNode(button.dataset.relatedNode));
+    button.addEventListener("click", () => navigateToNode(button.dataset.relatedNode, true, true));
   });
   $("#detail-panel").querySelectorAll("[data-prerequisite-node]").forEach(link => {
     link.addEventListener("click", event => {
@@ -368,9 +469,7 @@ function renderDetail(nodeId) {
       const nodeId = link.dataset.prerequisiteNode;
       const domainId = link.dataset.prerequisiteDomain;
       if (domainId === state.domainMeta.id) {
-        revealPath(nodeId);
-        selectNode(nodeId);
-        renderBrowser();
+        navigateToNode(nodeId, true, true);
       } else {
         loadDomain(domainId, nodeId);
       }
@@ -640,7 +739,7 @@ async function navigateToQualityTarget(issueId) {
   if (!issue) return;
   closeQualityDrawer();
   if (issue.domain_id !== state.domainMeta.id) await loadDomain(issue.domain_id, issue.topic_id);
-  else selectNode(issue.topic_id);
+  else await navigateToNode(issue.topic_id, true, true);
   renderBrowser();
   if (issue.target_type === "statement") {
     setTimeout(() => document.getElementById(`stmt-${issue.target_id}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
@@ -663,7 +762,7 @@ function exportQualityIssues() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `optistacks-quality-review-${new Date().toISOString().slice(0, 10)}.json`;
+  link.download = `reasatlas-quality-review-${new Date().toISOString().slice(0, 10)}.json`;
   link.click();
   URL.revokeObjectURL(url);
   toast("Quality review JSON exported");

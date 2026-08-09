@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-06T04:59:06.717412+00:00",
+  "built_at": "2026-08-09T03:43:37.835189+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -199,7 +199,14 @@
           "subtree_enrichment_statement_count": 67,
           "direct_structural_witness_count": 5
         }
-      ]
+      ],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 9,
+        "routes": 2920,
+        "catalog_bytes": 126494,
+        "shard_bytes": 19742061
+      }
     },
     {
       "id": "nonlinear_programming",
@@ -477,7 +484,14 @@
           "subtree_enrichment_statement_count": 15,
           "direct_structural_witness_count": 6
         }
-      ]
+      ],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 14,
+        "routes": 3872,
+        "catalog_bytes": 170335,
+        "shard_bytes": 25038004
+      }
     },
     {
       "id": "distributed_optimization",
@@ -677,11 +691,22 @@
           "subtree_enrichment_statement_count": 7,
           "direct_structural_witness_count": 0
         }
-      ]
+      ],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 9,
+        "routes": 542,
+        "catalog_bytes": 39354,
+        "shard_bytes": 2851601
+      }
     }
   ],
   "totals": {
     "topics": 7337,
     "statements": 13521
+  },
+  "loading": {
+    "mode": "chapter_shards",
+    "cache_strategy": "versioned_url_memory_and_http_cache"
   }
 }

@@ -1,4 +1,4 @@
-# OptiStacks Knowledge Atlas
+# ReasAtlas
 
 这是凸分析、非线性规划与分布式优化的静态可视化知识站点。它直接使用仓库内当前的
 knowledge-classification tree，因此目录和 statement 不需要在前端重复维护。
@@ -13,6 +13,10 @@ python scripts/build_knowledge_site.py
 
 脚本会读取三套当前知识树并在 `site/data/` 生成网页数据，同时生成带统计信息的
 `site/data/manifest.json`。源 JSON 不会被修改。
+
+更新完整数据后，再运行 `python scripts/build_lazy_shards.py`。它会把每个领域拆成
+轻量目录和按章节加载的 shard：首次访问只读取目录骨架，进入章节时才下载正文，
+已经访问的章节由内存与浏览器缓存复用。
 
 除正式知识分类树外，构建器还会收集当前主流程中能精确定位到目录节点的
 structured intermediate statements，包括 topic-complete builder/reviewer 结果、
@@ -47,7 +51,7 @@ python -m http.server 8000 -d site
 合并、命名和父子层级；statement 问题可以标记自然语言、数学正确性、假设、
 公式渲染、放置和证据问题。记录保存在浏览器 `localStorage` 中，可以在
 `Quality review` 队列中回到原条目、标记 resolved，并导出为
-`optistacks-quality-review-YYYY-MM-DD.json`。导出包包含目标路径、内容快照、
+`reasatlas-quality-review-YYYY-MM-DD.json`。导出包包含目标路径、内容快照、
 问题类型、严重度和审阅意见，可作为后续修订流程的输入。
 
 ## 主题名称

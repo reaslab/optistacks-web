@@ -1,4 +1,4 @@
-name: Deploy OptiStacks to GitHub Pages
+name: Deploy ReasAtlas to GitHub Pages
 
 on:
   push:
@@ -29,11 +29,11 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
 
-      - name: Upload OptiStacks site
+      - name: Upload ReasAtlas site
         uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
-      - name: Deploy OptiStacks site
+      - name: Deploy ReasAtlas site
         id: deployment
         uses: actions/deploy-pages@v5
