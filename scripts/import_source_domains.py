@@ -38,6 +38,13 @@ DOMAIN_ORDER = (
     "distributed_optimization",
 )
 
+CAMPAIGN_RELATIVE_PATH = Path("0809_optimize/formal_runs/20260809_full_library_v2")
+CAMPAIGN_STAGE_PRIORITY = {
+    "0809_campaign_build": 1,
+    "0809_campaign_reviewed": 2,
+    "0809_campaign_published": 3,
+}
+
 
 def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -60,6 +67,22 @@ def walk(node: dict[str, Any]) -> Iterator[dict[str, Any]]:
     yield node
     for child in node.get("children", []):
         yield from walk(child)
+
+
+def statement_has_body(record: dict[str, Any]) -> bool:
+    return bool(
+        (record.get("statement_title") or record.get("title"))
+        and (record.get("statement_latex") or record.get("statement_plain"))
+    )
+
+
+def validation_passes(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        return read_json(path).get("status") == "PASS"
+    except (OSError, ValueError, TypeError):
+        return False
 
 
 def normalize_text(value: Any) -> str:
@@ -95,6 +118,18 @@ def restore_full_domain(site: Path, data_url: str) -> dict[str, Any]:
     data.pop("loading", None)
     data.pop("node_routes", None)
     return data
+
+
+def strip_campaign_statements(tree: dict[str, Any]) -> None:
+    for root in tree.get("roots", []):
+        for node in walk(root):
+            node["knowledge_statements"] = [
+                statement
+                for statement in node.get("knowledge_statements", [])
+                if not str((statement.get("intermediate_metadata") or {}).get("stage") or "").startswith(
+                    "0809_campaign_"
+                )
+            ]
 
 
 def source_witnesses(raw_refs: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -264,6 +299,366 @@ def collect_statements(
     return records_by_topic, report, str(run_manifest.get("created_at") or "")
 
 
+def read_validated_phase(campaign: Path, phase: str) -> dict[str, dict[str, Any]]:
+    records: dict[str, dict[str, Any]] = {}
+    shard_dir = campaign / phase / "by_shard"
+    validation_dir = campaign / phase / "validation"
+    for shard_path in sorted(shard_dir.glob("*.json")):
+        validation_path = validation_dir / shard_path.name
+        if not validation_passes(validation_path):
+            continue
+        payload_bytes = shard_path.read_bytes()
+        try:
+            payload = json.loads(payload_bytes)
+        except (ValueError, TypeError):
+            continue
+        if payload.get("shard_id") != shard_path.stem:
+            continue
+        for item in payload.get("items", []):
+            source_item_id = str(item.get("source_item_id") or "")
+            if source_item_id:
+                records[source_item_id] = item
+    return records
+
+
+def campaign_source_evidence(campaign: Path) -> dict[str, dict[str, Any]]:
+    ledger_path = campaign / "plan/source_item_ledger.json"
+    if not ledger_path.exists():
+        return {}
+    ledger = read_json(ledger_path)
+    evidence = {}
+    for item in ledger.get("source_items", []):
+        source_item_id = str(item.get("source_item_id") or "")
+        if not source_item_id:
+            continue
+        evidence[source_item_id] = {
+            "source_item_id": source_item_id,
+            "source_path": item.get("source_path"),
+            "source_file_sha256": item.get("source_file_sha256"),
+            "content_sha256": item.get("content_sha256"),
+            "locator": item.get("locator"),
+            "source_environment": item.get("source_environment"),
+        }
+    return evidence
+
+
+def campaign_placement_hints(item: dict[str, Any]) -> list[tuple[str, str]]:
+    hints: list[tuple[str, str]] = []
+
+    def extend(method: str, values: Any) -> None:
+        if isinstance(values, str):
+            values = [values]
+        if not isinstance(values, list):
+            return
+        for value in values:
+            value = str(value or "").strip()
+            if value:
+                hints.append((method, value))
+
+    extend("campaign_existing_node", item.get("source_node_id"))
+    extend("campaign_existing_node", item.get("existing_node_id"))
+    directory = item.get("directory_assessment") or {}
+    extend("campaign_preferred_home", directory.get("preferred_home_node_id"))
+    new_node = item.get("new_node_candidate") or {}
+    extend("campaign_parent_fallback", new_node.get("parent_candidate_ids"))
+    if not hints:
+        affected = directory.get("affected_existing_node_ids") or []
+        if len(affected) == 1:
+            extend("campaign_single_affected_node", affected)
+    return hints
+
+
+def prepare_campaign_record(
+    item: dict[str, Any],
+    candidate: dict[str, Any],
+    campaign_name: str,
+    stage: str,
+    evidence: dict[str, Any],
+) -> dict[str, Any]:
+    record = deepcopy(candidate)
+    source_item_id = str(item.get("source_item_id") or record.get("source_item_id") or "")
+    record["source_item_id"] = source_item_id
+    record["statement_id"] = "stmt_0809_" + sha256(source_item_id.encode()).hexdigest()[:20]
+    record["source_evidence"] = deepcopy(evidence)
+    if evidence:
+        record["source_refs"] = [
+            {
+                "source": campaign_name,
+                "source_title": Path(str(evidence.get("source_path") or campaign_name)).stem,
+                **evidence,
+            }
+        ]
+    record["review_confidence"] = item.get("review_confidence")
+    record["review_flags"] = item.get("review_flags") or []
+    return {
+        "source_item_id": source_item_id,
+        "campaign": campaign_name,
+        "stage": stage,
+        "record": record,
+        "placement_hints": campaign_placement_hints({**item, **record}),
+        "context": {
+            "campaign": campaign_name,
+            "source_item_id": source_item_id,
+            "review_decision": item.get("review_decision"),
+            "primary_disposition": item.get("primary_disposition"),
+            "directory_assessment": item.get("directory_assessment") or {},
+        },
+    }
+
+
+def collect_campaign_candidates(source: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    campaign_root = source / CAMPAIGN_RELATIVE_PATH
+    selected: dict[str, dict[str, Any]] = {}
+    report: dict[str, Any] = {
+        "campaign_root": str(CAMPAIGN_RELATIVE_PATH),
+        "campaigns_scanned": 0,
+        "validated_build_items": 0,
+        "validated_review_items": 0,
+        "published_items": 0,
+        "candidates_with_body": 0,
+    }
+
+    def select(entry: dict[str, Any]) -> None:
+        if not entry["source_item_id"] or not statement_has_body(entry["record"]):
+            return
+        current = selected.get(entry["source_item_id"])
+        if current is None or CAMPAIGN_STAGE_PRIORITY[entry["stage"]] > CAMPAIGN_STAGE_PRIORITY[current["stage"]]:
+            selected[entry["source_item_id"]] = entry
+
+    if not campaign_root.exists():
+        report["status"] = "campaign_not_found"
+        return [], report
+
+    for campaign in sorted(path for path in campaign_root.iterdir() if path.is_dir()):
+        ledger_evidence = campaign_source_evidence(campaign)
+        if not ledger_evidence and not (campaign / "build").exists():
+            continue
+        report["campaigns_scanned"] += 1
+
+        build_items = read_validated_phase(campaign, "build")
+        review_items = read_validated_phase(campaign, "review")
+        report["validated_build_items"] += len(build_items)
+        report["validated_review_items"] += len(review_items)
+
+        for source_item_id, item in build_items.items():
+            candidate = item.get("statement_candidate") or {}
+            select(
+                prepare_campaign_record(
+                    item,
+                    candidate,
+                    campaign.name,
+                    "0809_campaign_build",
+                    ledger_evidence.get(source_item_id, {}),
+                )
+            )
+
+        for source_item_id, item in review_items.items():
+            candidate = item.get("statement_candidate") or {}
+            select(
+                prepare_campaign_record(
+                    item,
+                    candidate,
+                    campaign.name,
+                    "0809_campaign_reviewed",
+                    ledger_evidence.get(source_item_id, {}),
+                )
+            )
+
+        overlay_path = campaign / "publish/reviewed_textbook_coverage_overlay.json"
+        if overlay_path.exists():
+            overlay = read_json(overlay_path)
+            for record in overlay.get("existing_node_statement_candidates", []):
+                source_item_id = str(record.get("source_item_id") or "")
+                report["published_items"] += 1
+                select(
+                    prepare_campaign_record(
+                        record,
+                        record,
+                        campaign.name,
+                        "0809_campaign_published",
+                        record.get("source_evidence") or ledger_evidence.get(source_item_id, {}),
+                    )
+                )
+            for wrapper in overlay.get("new_node_candidates", []):
+                source_item_id = str(wrapper.get("source_item_id") or "")
+                report["published_items"] += 1
+                select(
+                    prepare_campaign_record(
+                        wrapper,
+                        wrapper.get("statement_candidate") or {},
+                        campaign.name,
+                        "0809_campaign_published",
+                        wrapper.get("source_evidence") or ledger_evidence.get(source_item_id, {}),
+                    )
+                )
+
+    candidates = [selected[key] for key in sorted(selected)]
+    report["candidates_with_body"] = len(candidates)
+    report["stage_counts"] = dict(sorted(Counter(item["stage"] for item in candidates).items()))
+    report["status"] = "snapshot_collected"
+    return candidates, report
+
+
+def update_tree_counts(node: dict[str, Any]) -> tuple[int, int, int, int]:
+    statements = node["knowledge_statements"]
+    direct_base = sum(item.get("layer_role") == "base_statement_layer" for item in statements)
+    direct_intermediate = len(statements) - direct_base
+    subtree_statements = len(statements)
+    subtree_base = direct_base
+    subtree_intermediate = direct_intermediate
+    subtree_topics = 1
+    for child in node["children"]:
+        child_statements, child_base, child_intermediate, child_topics = update_tree_counts(child)
+        subtree_statements += child_statements
+        subtree_base += child_base
+        subtree_intermediate += child_intermediate
+        subtree_topics += child_topics
+    node["direct_statement_count"] = len(statements)
+    node["direct_base_statement_count"] = direct_base
+    node["direct_enrichment_statement_count"] = direct_intermediate
+    node["descendant_statement_count"] = subtree_statements
+    node["descendant_base_statement_count"] = subtree_base
+    node["descendant_enrichment_statement_count"] = subtree_intermediate
+    node["direct_content_kind_counts"] = dict(
+        sorted(Counter(item.get("content_kind", "unknown") for item in statements).items())
+    )
+    node["subtree_topic_count"] = subtree_topics
+    return subtree_statements, subtree_base, subtree_intermediate, subtree_topics
+
+
+def update_tree_statement_totals(node: dict[str, Any]) -> int:
+    direct_count = len(node["knowledge_statements"])
+    descendant_count = direct_count + sum(
+        update_tree_statement_totals(child) for child in node["children"]
+    )
+    node["direct_statement_count"] = direct_count
+    node["descendant_statement_count"] = descendant_count
+    node["direct_content_kind_counts"] = dict(
+        sorted(
+            Counter(
+                statement.get("content_kind", "unknown")
+                for statement in node["knowledge_statements"]
+            ).items()
+        )
+    )
+    return descendant_count
+
+
+def refresh_domain_metadata(tree: dict[str, Any], domain: dict[str, Any]) -> None:
+    for root in tree["roots"]:
+        update_tree_statement_totals(root)
+    nodes = [node for root in tree["roots"] for node in walk(root)]
+    statements = [item for node in nodes for item in node["knowledge_statements"]]
+    leaves = [node for node in nodes if not node["children"]]
+    base_count = sum(item.get("layer_role") == "base_statement_layer" for item in statements)
+    domain["stats"].update(
+        {
+            "topics": len(nodes),
+            "statements": len(statements),
+            "official_statements": base_count,
+            "intermediate_statements": len(statements) - base_count,
+            "leaf_topics": len(leaves),
+            "base_statements": base_count,
+            "coverage": sum(bool(node["knowledge_statements"]) for node in leaves) / len(leaves) if leaves else 0.0,
+            "max_depth": max((node["depth"] for node in nodes), default=0),
+            "content_kinds": dict(
+                sorted(Counter(item.get("content_kind", "unknown") for item in statements).items())
+            ),
+        }
+    )
+    root = tree["roots"][0]
+    domain["chapters"] = [
+        {
+            "topic_id": chapter["topic_id"],
+            "display_number": chapter["display_number"],
+            "title": chapter["title"],
+            "classification_axis": chapter["classification_axis"],
+            "subtree_topic_count": sum(1 for _ in walk(chapter)),
+            "subtree_statement_count": chapter["descendant_statement_count"],
+        }
+        for chapter in root["children"]
+    ]
+
+
+def merge_campaign_candidates(
+    source: Path,
+    trees: dict[str, dict[str, Any]],
+    domains: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    candidates, report = collect_campaign_candidates(source)
+    topic_index: dict[str, tuple[str, dict[str, Any]]] = {}
+    title_index: dict[str, set[str]] = {}
+    for domain_id, tree in trees.items():
+        for root in tree["roots"]:
+            for node in walk(root):
+                topic_id = node["topic_id"]
+                topic_index[topic_id] = (domain_id, node)
+                title_index[topic_id] = {
+                    normalize_text(item.get("statement_title") or item.get("title"))
+                    for item in node["knowledge_statements"]
+                    if item.get("statement_title") or item.get("title")
+                }
+
+    report["added_by_domain"] = Counter()
+    report["added_by_stage"] = Counter()
+    report["placement_methods"] = Counter()
+    report["duplicate_title_count"] = 0
+    report["unmapped_count"] = 0
+
+    for entry in candidates:
+        placement: tuple[str, str, str] | None = None
+        for method, original_hint in entry["placement_hints"]:
+            topic_id = original_hint
+            while topic_id not in topic_index and "." in topic_id:
+                topic_id = topic_id.rsplit(".", 1)[0]
+            if topic_id in topic_index:
+                placement = (topic_id, method if topic_id == original_hint else f"{method}_ancestor", original_hint)
+                break
+        if placement is None:
+            report["unmapped_count"] += 1
+            continue
+
+        topic_id, mapping_method, original_hint = placement
+        domain_id, node = topic_index[topic_id]
+        record = entry["record"]
+        title_key = normalize_text(record.get("statement_title") or record.get("title"))
+        if title_key and title_key in title_index[topic_id]:
+            report["duplicate_title_count"] += 1
+            continue
+
+        normalized = normalize_statement(
+            record,
+            topic_id,
+            "intermediate_result",
+            entry["stage"],
+            str(CAMPAIGN_RELATIVE_PATH / entry["campaign"]),
+            {
+                **entry["context"],
+                "placement_hint": original_hint,
+                "placement_method": mapping_method,
+            },
+        )
+        normalized["mapping_method"] = mapping_method
+        normalized["original_topic_id"] = original_hint
+        normalized["mapped_topic_ids"] = [topic_id]
+        node["knowledge_statements"].append(normalized)
+        if title_key:
+            title_index[topic_id].add(title_key)
+        report["added_by_domain"][domain_id] += 1
+        report["added_by_stage"][entry["stage"]] += 1
+        report["placement_methods"][mapping_method] += 1
+
+    for domain_id, tree in trees.items():
+        refresh_domain_metadata(tree, domains[domain_id])
+        domains[domain_id]["campaign_snapshot_statement_count"] = report["added_by_domain"][domain_id]
+
+    for key in ("added_by_domain", "added_by_stage", "placement_methods"):
+        report[key] = dict(sorted(report[key].items()))
+    report["added_statement_count"] = sum(report["added_by_domain"].values())
+    report["captured_at"] = datetime.now(timezone.utc).isoformat()
+    return report
+
+
 def convert_part(
     source: Path,
     raw_part: dict[str, Any],
@@ -300,33 +695,7 @@ def convert_part(
     root_number = re.sub(r"\D", "", config["part_id"]).lstrip("0") or "0"
     root = convert(raw_part, config["part_id"], root_number, 0)
 
-    def update_counts(node: dict[str, Any]) -> tuple[int, int, int, int]:
-        statements = node["knowledge_statements"]
-        direct_base = sum(item.get("layer_role") == "base_statement_layer" for item in statements)
-        direct_intermediate = len(statements) - direct_base
-        subtree_statements = len(statements)
-        subtree_base = direct_base
-        subtree_intermediate = direct_intermediate
-        subtree_topics = 1
-        for child in node["children"]:
-            child_statements, child_base, child_intermediate, child_topics = update_counts(child)
-            subtree_statements += child_statements
-            subtree_base += child_base
-            subtree_intermediate += child_intermediate
-            subtree_topics += child_topics
-        node["direct_statement_count"] = len(statements)
-        node["direct_base_statement_count"] = direct_base
-        node["direct_enrichment_statement_count"] = direct_intermediate
-        node["descendant_statement_count"] = subtree_statements
-        node["descendant_base_statement_count"] = subtree_base
-        node["descendant_enrichment_statement_count"] = subtree_intermediate
-        node["direct_content_kind_counts"] = dict(
-            sorted(Counter(item.get("content_kind", "unknown") for item in statements).items())
-        )
-        node["subtree_topic_count"] = subtree_topics
-        return subtree_statements, subtree_base, subtree_intermediate, subtree_topics
-
-    update_counts(root)
+    update_tree_counts(root)
     nodes = list(walk(root))
     statements = [item for node in nodes for item in node["knowledge_statements"]]
     leaves = [node for node in nodes if not node["children"]]
@@ -392,14 +761,17 @@ def main() -> None:
     manifest = read_json(manifest_path)
 
     existing_domains: dict[str, dict[str, Any]] = {}
+    trees: dict[str, dict[str, Any]] = {}
     for domain in manifest["domains"]:
         if domain["id"] in {item["id"] for item in NEW_DOMAINS}:
             continue
         full_data = restore_full_domain(site, domain["data_url"])
-        write_json(site / domain["data_url"], full_data)
+        strip_campaign_statements(full_data)
         preserved = deepcopy(domain)
         preserved.pop("loading", None)
+        preserved.pop("campaign_snapshot_statement_count", None)
         existing_domains[domain["id"]] = preserved
+        trees[domain["id"]] = full_data
 
     package = source / "outputs/packages/optistacks_tree_graph_corrected_v27.zip"
     with zipfile.ZipFile(package) as archive:
@@ -409,16 +781,25 @@ def main() -> None:
     imported_domains: dict[str, dict[str, Any]] = {}
     for config in NEW_DOMAINS:
         tree, domain = convert_part(source, parts[config["part_id"]], config)
-        write_json(site / domain["data_url"], tree)
         imported_domains[domain["id"]] = domain
+        trees[domain["id"]] = tree
         print(
             f"{domain['short_name']}: {domain['stats']['topics']:,} topics, "
             f"{domain['stats']['statements']:,} statements"
         )
 
     domains = {**existing_domains, **imported_domains}
+    campaign_report = merge_campaign_candidates(source, trees, domains)
+    for domain_id, tree in trees.items():
+        write_json(site / domains[domain_id]["data_url"], tree)
+    print(
+        f"0809 campaign snapshot: {campaign_report['added_statement_count']:,} statements added, "
+        f"{campaign_report['unmapped_count']:,} candidates unmapped"
+    )
+
     manifest["domains"] = [domains[domain_id] for domain_id in DOMAIN_ORDER]
     manifest["built_at"] = datetime.now(timezone.utc).isoformat()
+    manifest["source_campaign_snapshot"] = campaign_report
     manifest["totals"] = {
         "topics": sum(item["stats"]["topics"] for item in manifest["domains"]),
         "statements": sum(item["stats"]["statements"] for item in manifest["domains"]),

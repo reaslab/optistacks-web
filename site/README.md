@@ -14,6 +14,10 @@ python scripts/build_lazy_shards.py
 
 导入脚本会从原始材料读取完整 A03 Variational Analysis 和 A05 First-Order Methods，
 合并 v58 正式 statement、topic-complete 已接受结果和具有 payload 的 deferred 结果。
+它还会读取 `0809_optimize/formal_runs/20260809_full_library_v2`：正式 publish overlay
+优先，其次使用机械校验通过的 review shard，再使用尚未 review 的 PASS build shard。
+新目录候选的 statement 会挂到其现有父节点，并保留原始 placement 和 review 状态；
+没有正文或无法对应当前五个领域目录的记录不会被强行归类。
 分片脚本随后把每个领域拆成轻量目录与按章节加载的 shard：首次访问只读取目录骨架，
 进入章节时才下载正文，已经访问的章节由内存与浏览器缓存复用。
 
