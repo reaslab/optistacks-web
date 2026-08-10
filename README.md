@@ -66,6 +66,20 @@ python scripts/build_lazy_shards.py
 
 Then review and commit the changed files in this standalone repository.
 
+## Directory-name polishing workflow
+
+Export every domain label and topic-directory name into stable-ID JSON batches
+that can be edited with Web GPT:
+
+```bash
+python3 scripts/manage_directory_names.py export --zip
+```
+
+The generated `directory_names_workbook/README.md` contains the upload prompt,
+validation, dry-run apply, write-back, and restoration commands. The importer
+changes only `new_title` mappings, synchronizes repeated catalogue/shard/manifest
+copies, and rejects edits to IDs or hierarchy fields.
+
 ## Publishing the repository
 
 After authenticating GitHub CLI with an account that can create repositories

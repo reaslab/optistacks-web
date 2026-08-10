@@ -1,3 +1,5 @@
 .DS_Store
 *.log
 __pycache__/
+/directory_names_workbook*/
+/directory_names_workbook*.zip

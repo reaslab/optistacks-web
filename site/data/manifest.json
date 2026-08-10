@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-10T02:21:50.777765+00:00",
+  "built_at": "2026-08-10T03:41:12.887121+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -557,7 +557,7 @@
         {
           "topic_id": "A05.C05",
           "display_number": "5.5",
-          "title": "Foundational Operator-Splitting Taxonomy",
+          "title": "Foundations of Operator Splitting",
           "classification_axis": "chapter",
           "subtree_topic_count": 530,
           "subtree_statement_count": 396
@@ -637,7 +637,7 @@
         {
           "topic_id": "A05.C15",
           "display_number": "5.15",
-          "title": "Oracle Access Taxonomy",
+          "title": "Oracle Access Models",
           "classification_axis": "chapter",
           "subtree_topic_count": 484,
           "subtree_statement_count": 402
@@ -645,7 +645,7 @@
         {
           "topic_id": "A05.C16",
           "display_number": "5.16",
-          "title": "First-Order Complexity Bound Taxonomy",
+          "title": "First-Order Complexity Bounds",
           "classification_axis": "chapter",
           "subtree_topic_count": 444,
           "subtree_statement_count": 395
