@@ -2,7 +2,7 @@
 
 Static knowledge atlas for Convex Analysis, Variational Analysis, Nonlinear
 Programming, First-Order Methods, and Distributed Optimization. This repository
-snapshot contains 18,883 topics and 24,370 statements.
+snapshot contains 18,883 topics and 26,912 statements.
 
 ## Run locally with Docker
 
@@ -55,8 +55,8 @@ every load. A lightweight domain catalogue is loaded first; chapter payloads
 are fetched only when visited and then reused from memory and the versioned
 browser/CDN cache.
 
-To refresh A03/A05 from the source knowledge workspace and rebuild the lazy
-chapter payloads, run in this repository:
+To refresh A03/A05 and the validated `0809_optimize` campaign snapshot from the
+source knowledge workspace, then rebuild the lazy chapter payloads, run:
 
 ```bash
 python scripts/import_source_domains.py \
