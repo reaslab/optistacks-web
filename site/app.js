@@ -15,7 +15,7 @@ const state = {
   navigationToken: 0,
   qualityIssues: [],
   qualityTarget: null,
-  qualityShowAll: false,
+  historyFilter: "all",
   layoutBeforeAnnotation: null,
 };
 
@@ -69,15 +69,21 @@ function toast(message) {
   toast.timer = setTimeout(() => element.classList.remove("show"), 1800);
 }
 
+async function fetchManifest() {
+  if (state.manifest) return state.manifest;
+  const response = await fetch("data/manifest.json", { cache: "no-store" });
+  if (!response.ok) throw new Error(`manifest: HTTP ${response.status}`);
+  state.manifest = await response.json();
+  return state.manifest;
+}
+
 async function bootstrap() {
   try {
-    const response = await fetch("data/manifest.json", { cache: "no-store" });
-    if (!response.ok) throw new Error(`manifest: HTTP ${response.status}`);
-    state.manifest = await response.json();
+    await fetchManifest();
     loadQualityIssues();
     loadLayout();
     $("#total-statements").textContent = formatNumber(state.manifest.totals.statements);
-    $("#build-date").textContent = new Date(state.manifest.built_at).toLocaleString("en-US", { dateStyle: "medium" });
+    $("#domain-count").textContent = formatNumber(state.manifest.domains.length);
     renderDomainNav();
     bindEvents();
     const route = parseRoute();
@@ -112,10 +118,10 @@ function bindEvents() {
   $("#quality-queue-button").addEventListener("click", openQualityDrawer);
   $("#quality-panel-close").addEventListener("click", closeQualityDrawer);
   $("#quality-export-button").addEventListener("click", exportQualityIssues);
-  $("#quality-show-all-button").addEventListener("click", () => {
-    state.qualityShowAll = !state.qualityShowAll;
+  document.querySelectorAll("[data-history-filter]").forEach(button => button.addEventListener("click", () => {
+    state.historyFilter = button.dataset.historyFilter;
     renderQualityQueue();
-  });
+  }));
   $("#quality-form-close").addEventListener("click", closeQualityDialog);
   $("#quality-cancel-button").addEventListener("click", closeQualityDialog);
   $("#quality-form").addEventListener("submit", submitQualityIssue);
@@ -245,10 +251,11 @@ function renderDomainNav() {
   $("#domain-nav").innerHTML = state.manifest.domains.map(domain => `
     <button class="domain-button ${domain.id === state.domainMeta?.id ? "active" : ""}" data-domain="${esc(domain.id)}" style="--domain-accent:${domain.accent}">
       <span class="domain-swatch"></span>
-      <span><b>${esc(domain.short_name)}</b><small>Subject area</small></span>
+      <span><b>${esc(domain.short_name)}</b><small>${formatNumber(domain.stats.topics)} topics · ${formatNumber(domain.stats.chapters)} chapters</small></span>
       <em>${formatNumber(domain.stats.statements)}</em>
     </button>`).join("");
   document.querySelectorAll("[data-domain]").forEach(button => button.addEventListener("click", () => loadDomain(button.dataset.domain)));
+  requestAnimationFrame(() => $("#domain-nav .active")?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" }));
 }
 
 async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
@@ -261,8 +268,6 @@ async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
   renderDomainNav();
   $("#directory-title").textContent = meta.short_name;
   $("#tree-view").innerHTML = `<div class="loading-state"><span></span><p>Loading ${esc(meta.short_name)}…</p></div>`;
-  $("#chapter-nav").replaceChildren();
-  $("#chapter-nav").setAttribute("aria-busy", "true");
   try {
     let data = state.domainCache.get(meta.id);
     if (!data) {
@@ -275,7 +280,6 @@ async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
     state.expanded.clear();
     const root = data.roots[0];
     state.expanded.add(root.topic_id);
-    renderChapterNav();
     renderBrowser();
     if (requestedNode) await ensureRouteLoaded(requestedNode);
     if (loadToken !== state.domainLoadToken || navigationToken !== state.navigationToken) return;
@@ -300,18 +304,6 @@ function indexTree() {
     (node.children || []).forEach(child => walk(child, node, entry.path));
   };
   state.data.roots.forEach(root => walk(root));
-}
-
-function renderChapterNav() {
-  const chapters = state.data.roots[0]?.children || [];
-  $("#chapter-nav").removeAttribute("aria-busy");
-  $("#chapter-nav").innerHTML = chapters.map(chapter => `
-    <button class="chapter-button" type="button" data-chapter="${esc(chapter.topic_id)}" aria-controls="directory-pane">
-      <span>${esc(chapter.display_number)}</span><b>${esc(chapter.title)}</b>
-    </button>`).join("");
-  document.querySelectorAll("[data-chapter]").forEach(button => button.addEventListener("click", async () => {
-    await navigateToNode(button.dataset.chapter, true, true);
-  }));
 }
 
 function renderBrowser() {
@@ -431,12 +423,6 @@ function selectNode(nodeId, updateRoute = true) {
   if (updateRoute) history.pushState(null, "", `#${state.domainMeta.id}/${encodeURIComponent(nodeId)}`);
   renderDetail(nodeId);
   renderTree();
-  const chapter = state.byId.get(nodeId).path[1]?.topic_id;
-  document.querySelectorAll("[data-chapter]").forEach(button => button.classList.toggle("active", button.dataset.chapter === chapter));
-  document.querySelectorAll("[data-chapter]").forEach(button => {
-    if (button.dataset.chapter === chapter) button.setAttribute("aria-current", "true");
-    else button.removeAttribute("aria-current");
-  });
 }
 
 function renderDetail(nodeId) {
@@ -585,8 +571,13 @@ function saveQualityIssues() {
 }
 
 function updateQualityCount() {
-  const openCount = state.qualityIssues.filter(issue => issue.status !== "resolved").length;
-  $("#quality-open-count").textContent = formatNumber(openCount);
+  const issues = state.qualityIssues;
+  const openCount = issues.filter(issue => issue.status !== "resolved").length;
+  const resolvedCount = issues.length - openCount;
+  $("#quality-open-count").textContent = formatNumber(issues.length);
+  $("#history-total-count").textContent = formatNumber(issues.length);
+  $("#history-open-count").textContent = formatNumber(openCount);
+  $("#history-resolved-count").textContent = formatNumber(resolvedCount);
 }
 
 function openQualityDialog(targetType, targetId) {
@@ -666,7 +657,7 @@ function submitQualityIssue(event) {
   });
   saveQualityIssues();
   closeQualityDialog();
-  toast("Issue added to quality review");
+  toast("Correction submitted and added to your history");
 }
 
 function openQualityDrawer() {
@@ -712,26 +703,43 @@ function restoreLayoutAfterAnnotation() {
 }
 
 function renderQualityQueue() {
-  const issues = state.qualityShowAll
-    ? state.qualityIssues
-    : state.qualityIssues.filter(issue => issue.status !== "resolved");
-  $("#quality-show-all-button").textContent = state.qualityShowAll ? "Show open only" : "Show all";
+  const allIssues = state.qualityIssues;
+  const issues = allIssues.filter(issue => {
+    if (state.historyFilter === "open") return issue.status !== "resolved";
+    if (state.historyFilter === "resolved") return issue.status === "resolved";
+    return true;
+  });
+  updateQualityCount();
+  document.querySelectorAll("[data-history-filter]").forEach(button => {
+    const active = button.dataset.historyFilter === state.historyFilter;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  const filterLabels = { all: "All submissions", open: "Open submissions", resolved: "Resolved submissions" };
+  $("#history-result-label").textContent = `${filterLabels[state.historyFilter]} · ${formatNumber(issues.length)}`;
   $("#quality-issue-list").innerHTML = issues.length ? issues.map(issue => `
     <article class="quality-issue-card ${issue.status === "resolved" ? "resolved" : ""}">
-      <div class="quality-issue-top"><span class="severity-badge">${esc(issue.severity)}</span><span class="quality-issue-kind">${esc(titleCase(issue.issue_type))}</span></div>
+      <div class="quality-issue-top"><span class="severity-badge">${esc(issue.severity)} priority</span><span class="submission-status ${issue.status === "resolved" ? "resolved" : "open"}">${issue.status === "resolved" ? "Resolved" : "Open"}</span></div>
       <h3>${esc(issue.target_title)}</h3>
+      <div class="quality-issue-meta"><span>${esc(titleCase(issue.issue_type))}</span><time datetime="${esc(issue.created_at)}">${esc(formatSubmissionDate(issue.created_at))}</time></div>
       <p>${esc(issue.note)}</p>
       <div class="quality-card-actions">
         <button type="button" data-quality-goto="${esc(issue.issue_id)}">Open target</button>
-        <button type="button" data-quality-toggle="${esc(issue.issue_id)}">${issue.status === "resolved" ? "Reopen" : "Resolve"}</button>
+        <button type="button" data-quality-toggle="${esc(issue.issue_id)}">${issue.status === "resolved" ? "Mark open" : "Mark resolved"}</button>
       </div>
-    </article>`).join("") : `<div class="quality-empty">No open quality issues.<br>Use the review buttons on a topic or statement to start a review queue.</div>`;
+    </article>`).join("") : `<div class="quality-empty"><b>No ${state.historyFilter === "all" ? "" : `${esc(state.historyFilter)} `}submissions yet.</b><br>Use “Report topic issue” or “Report statement issue” while exploring the atlas.</div>`;
   $("#quality-issue-list").querySelectorAll("[data-quality-goto]").forEach(button => {
     button.addEventListener("click", () => navigateToQualityTarget(button.dataset.qualityGoto));
   });
   $("#quality-issue-list").querySelectorAll("[data-quality-toggle]").forEach(button => {
     button.addEventListener("click", () => toggleQualityIssue(button.dataset.qualityToggle));
   });
+}
+
+function formatSubmissionDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  return date.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 function toggleQualityIssue(issueId) {
@@ -756,16 +764,17 @@ async function navigateToQualityTarget(issueId) {
 }
 
 function exportQualityIssues() {
+  const issues = state.qualityIssues;
   const packet = {
     schema_version: "optistacks-quality-review-packet-v1",
     exported_at: new Date().toISOString(),
     summary: {
-      total: state.qualityIssues.length,
-      open: state.qualityIssues.filter(issue => issue.status !== "resolved").length,
-      resolved: state.qualityIssues.filter(issue => issue.status === "resolved").length,
+      total: issues.length,
+      open: issues.filter(issue => issue.status !== "resolved").length,
+      resolved: issues.filter(issue => issue.status === "resolved").length,
     },
     site_build: state.manifest?.built_at,
-    issues: state.qualityIssues,
+    issues,
   };
   const blob = new Blob([JSON.stringify(packet, null, 2) + "\n"], { type: "application/json" });
   const url = URL.createObjectURL(blob);

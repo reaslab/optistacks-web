@@ -43,7 +43,7 @@ python -m http.server 8000 -d site
 站点功能包括：
 
 - 凸分析 / 变分分析 / 非线性规划 / 一阶优化方法 / 分布式优化五领域切换；
-- 完整的递归目录浏览与章节跳转；
+- 可滚动的领域导航与完整递归目录浏览；
 - 当前节点的直接父节点与直接子节点导航；
 - statement 的正文、公式、假设、结论、前置节点、notation 与中间阶段信息展示；
 - URL hash 深链接与移动端布局。
@@ -52,8 +52,9 @@ python -m http.server 8000 -d site
 
 目录节点和 statement 卡片都提供独立的质量问题入口。目录问题可以标记拆分、
 合并、命名和父子层级；statement 问题可以标记自然语言、数学正确性、假设、
-公式渲染、放置和证据问题。记录保存在浏览器 `localStorage` 中，可以在
-`Quality review` 队列中回到原条目、标记 resolved，并导出为
+公式渲染、放置和证据问题。记录保存在浏览器 `localStorage` 中。用户可以在
+`My submissions` 中查看当前设备上的全部、open 或 resolved 记录，回到原条目、
+更新状态，并导出为
 `reasatlas-quality-review-YYYY-MM-DD.json`。导出包包含目标路径、内容快照、
 问题类型、严重度和审阅意见，可作为后续修订流程的输入。
 

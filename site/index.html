@@ -7,8 +7,17 @@
   <meta name="theme-color" content="#f7f9fc">
   <title>ReasAtlas</title>
   <meta name="description" content="A visual knowledge directory and statement browser for convex analysis, variational analysis, nonlinear programming, first-order methods, and distributed optimization">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ReasAtlas">
+  <meta property="og:description" content="Structured optimization knowledge, from domain to statement.">
+  <meta property="og:url" content="https://stacks.reaslab.io/">
+  <meta property="og:image" content="https://stacks.reaslab.io/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ReasAtlas">
+  <meta name="twitter:description" content="Structured optimization knowledge, from domain to statement.">
+  <meta name="twitter:image" content="https://stacks.reaslab.io/og.png">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=11">
+  <link rel="stylesheet" href="styles.css?v=13">
   <script>
     window.MathJax = {
       tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
@@ -17,113 +26,125 @@
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script defer src="app.js?v=17"></script>
+  <script defer src="app.js?v=19"></script>
 </head>
 <body>
   <div class="paper-grain" aria-hidden="true"></div>
-  <header class="masthead">
-    <a class="brand" href="#" aria-label="ReasAtlas home">
-      <b>ReasAtlas</b>
-    </a>
-    <div class="header-actions">
-      <div class="layout-controls" aria-label="Pane visibility">
-        <button id="toggle-library-pane" class="layout-button active" type="button" aria-pressed="true">Domains</button>
-        <button id="toggle-directory-pane" class="layout-button active" type="button" aria-pressed="true">Outline</button>
-        <button id="toggle-detail-pane" class="layout-button active" type="button" aria-pressed="true">Content</button>
+  <div id="site-frame" class="site-frame">
+    <header class="masthead">
+      <a class="brand" href="#" aria-label="ReasAtlas home">
+        <span class="brand-mark">R</span>
+        <span><b>ReasAtlas</b><small>Research knowledge workspace</small></span>
+      </a>
+      <div class="header-actions">
+        <div class="layout-controls" aria-label="Pane visibility">
+          <button id="toggle-library-pane" class="layout-button active" type="button" aria-pressed="true">Domains</button>
+          <button id="toggle-directory-pane" class="layout-button active" type="button" aria-pressed="true">Outline</button>
+          <button id="toggle-detail-pane" class="layout-button active" type="button" aria-pressed="true">Content</button>
+        </div>
+        <div class="build-status"><span></span><b id="total-statements">—</b> statements</div>
+        <button id="quality-queue-button" class="quality-queue-button" type="button" aria-pressed="false">
+          My submissions <span id="quality-open-count">0</span>
+        </button>
       </div>
-      <div class="build-status"><span></span><b id="total-statements">—</b> statements</div>
-      <button id="quality-queue-button" class="quality-queue-button" type="button">
-        Quality review <span id="quality-open-count">0</span>
-      </button>
-    </div>
-  </header>
+    </header>
 
-  <div class="app-shell">
-    <aside id="library-pane" class="rail" aria-label="Subject navigation">
-      <div class="rail-label">DOMAINS</div>
-      <nav id="domain-nav" class="domain-nav"></nav>
-      <div class="rail-rule"></div>
-      <div class="rail-label">CHAPTERS</div>
-      <nav id="chapter-nav" class="chapter-nav"></nav>
-      <footer class="rail-footer">
-        <span class="status-dot"></span>
-        <span><b>Current build</b><small id="build-date">Loading…</small></span>
-      </footer>
-    </aside>
-    <div id="library-resizer" class="pane-resizer" role="separator" aria-label="Resize domains" aria-orientation="vertical"></div>
+    <div class="app-shell">
+      <aside id="library-pane" class="rail" aria-label="Subject navigation">
+        <div class="rail-heading">
+          <span><small>EXPLORE</small><b>Subject domains</b></span>
+          <em id="domain-count">—</em>
+        </div>
+        <div class="domain-scroll">
+          <nav id="domain-nav" class="domain-nav"></nav>
+        </div>
+        <div class="rail-scroll-hint"><span aria-hidden="true">&#8595;</span> Scroll to explore</div>
+      </aside>
+      <div id="library-resizer" class="pane-resizer" role="separator" aria-label="Resize domains" aria-orientation="vertical"></div>
 
-    <main class="workspace">
-      <section id="directory-pane" class="browser-panel" aria-label="Topic outline">
-        <div class="panel-head">
-          <div>
-            <span class="eyebrow">TOPIC OUTLINE</span>
-            <h1 id="directory-title">Knowledge outline</h1>
+      <main class="workspace">
+        <section id="directory-pane" class="browser-panel" aria-label="Topic outline">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow">TOPIC OUTLINE</span>
+              <h1 id="directory-title">Knowledge outline</h1>
+            </div>
+            <button id="collapse-button" class="icon-button" title="Collapse outline" aria-label="Collapse outline">
+              <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
+            </button>
           </div>
-          <button id="collapse-button" class="icon-button" title="Collapse outline" aria-label="Collapse outline">
-            <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
-          </button>
-        </div>
-        <div id="tree-view" class="tree-view" aria-live="polite">
-          <div class="loading-state"><span></span><p>Preparing knowledge tree…</p></div>
-        </div>
-      </section>
+          <div id="tree-view" class="tree-view" aria-live="polite">
+            <div class="loading-state"><span></span><p>Preparing knowledge tree…</p></div>
+          </div>
+        </section>
 
-      <div id="directory-resizer" class="pane-resizer" role="separator" aria-label="Resize outline" aria-orientation="vertical"></div>
+        <div id="directory-resizer" class="pane-resizer" role="separator" aria-label="Resize outline" aria-orientation="vertical"></div>
 
-      <article id="detail-panel" class="detail-panel" aria-live="polite">
-        <div class="detail-placeholder">
-          <span class="big-mark">∇</span>
-          <p>Select a topic from the outline</p>
-        </div>
-      </article>
-    </main>
-    <div id="quality-resizer" class="pane-resizer" role="separator" aria-label="Resize quality review" aria-orientation="vertical"></div>
+        <article id="detail-panel" class="detail-panel" aria-live="polite">
+          <div class="detail-placeholder">
+            <span class="big-mark">∇</span>
+            <p>Select a topic from the outline</p>
+          </div>
+        </article>
+      </main>
+      <div id="quality-resizer" class="pane-resizer" role="separator" aria-label="Resize submission history" aria-orientation="vertical"></div>
 
-    <aside id="quality-panel" class="quality-panel" aria-label="Quality review" aria-hidden="true">
-      <section id="quality-queue-view" class="quality-view">
-        <header>
-          <div><span class="eyebrow">QUALITY CONTROL</span><h2>Review queue</h2></div>
-          <button id="quality-panel-close" class="icon-button" type="button" aria-label="Close review queue">×</button>
-        </header>
-        <p class="quality-intro">Local review notes for statement content and topic hierarchy. Export the queue to feed a later repair pass.</p>
-        <div class="quality-toolbar">
-          <button id="quality-export-button" class="secondary-button" type="button">Export JSON</button>
-          <button id="quality-show-all-button" class="text-button" type="button">Show all</button>
-        </div>
-        <div id="quality-issue-list" class="quality-issue-list"></div>
-      </section>
-
-      <section id="quality-form-view" class="quality-view" hidden>
-        <form id="quality-form">
+      <aside id="quality-panel" class="quality-panel" aria-label="My submission history" aria-hidden="true">
+        <section id="quality-queue-view" class="quality-view">
           <header>
-            <div><span class="eyebrow">QUALITY CHECK</span><h2>Report an issue</h2></div>
-            <button id="quality-form-close" class="icon-button" type="button" aria-label="Close issue form">×</button>
+            <div><span class="eyebrow">MY ACTIVITY</span><h2>Submission history</h2></div>
+            <button id="quality-panel-close" class="icon-button" type="button" aria-label="Close submission history">×</button>
           </header>
-          <p class="quality-intro">The original entry remains visible beside this form while you annotate it.</p>
-          <div id="quality-target" class="quality-target"></div>
-          <label class="form-field">
-            <span>Issue type</span>
-            <select id="quality-issue-type" required></select>
-          </label>
-          <label class="form-field">
-            <span>Severity</span>
-            <select id="quality-severity" required>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="low">Low</option>
-            </select>
-          </label>
-          <label class="form-field">
-            <span>Review note</span>
-            <textarea id="quality-note" rows="8" required placeholder="Describe what is wrong and, when possible, suggest a correction."></textarea>
-          </label>
-          <footer>
-            <button id="quality-cancel-button" class="text-button" type="button">Cancel</button>
-            <button class="primary-button" type="submit">Add to review queue</button>
-          </footer>
-        </form>
-      </section>
-    </aside>
+          <p class="quality-intro">Review every correction you have submitted from this device, return to its source, or export a portable record.</p>
+          <div class="history-summary" aria-label="Submission totals">
+            <span><b id="history-total-count">0</b><small>Total</small></span>
+            <span><b id="history-open-count">0</b><small>Open</small></span>
+            <span><b id="history-resolved-count">0</b><small>Resolved</small></span>
+          </div>
+          <div class="history-filter" role="group" aria-label="Filter submission history">
+            <button class="active" type="button" data-history-filter="all" aria-pressed="true">All</button>
+            <button type="button" data-history-filter="open" aria-pressed="false">Open</button>
+            <button type="button" data-history-filter="resolved" aria-pressed="false">Resolved</button>
+          </div>
+          <div class="quality-toolbar">
+            <span id="history-result-label">All submissions</span>
+            <button id="quality-export-button" class="secondary-button" type="button">Export JSON</button>
+          </div>
+          <div id="quality-issue-list" class="quality-issue-list"></div>
+        </section>
+
+        <section id="quality-form-view" class="quality-view" hidden>
+          <form id="quality-form">
+            <header>
+              <div><span class="eyebrow">CONTRIBUTE</span><h2>Submit a correction</h2></div>
+              <button id="quality-form-close" class="icon-button" type="button" aria-label="Close correction form">×</button>
+            </header>
+            <p class="quality-intro">The original entry stays visible while you describe a mathematical, structural, or presentation issue.</p>
+            <div id="quality-target" class="quality-target"></div>
+            <label class="form-field">
+              <span>Issue type</span>
+              <select id="quality-issue-type" required></select>
+            </label>
+            <label class="form-field">
+              <span>Priority</span>
+              <select id="quality-severity" required>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="low">Low</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span>Review note</span>
+              <textarea id="quality-note" rows="8" required placeholder="Describe what is wrong and, when possible, suggest a correction."></textarea>
+            </label>
+            <footer>
+              <button id="quality-cancel-button" class="text-button" type="button">Cancel</button>
+              <button class="primary-button" type="submit">Submit correction</button>
+            </footer>
+          </form>
+        </section>
+      </aside>
+    </div>
   </div>
 
   <div id="toast" class="toast" role="status"></div>
