@@ -3,6 +3,10 @@
 ReasAtlas is a public, static browser for structured knowledge in optimization
 and analysis. The live site is <https://stacks.reaslab.io/>.
 
+The current snapshot contains all 15 Parts from A02 through A16 plus the prior
+Distributed Optimization compatibility domain: 76,120 topic entries and
+89,327 statements, delivered through 206 lazy chapter shards.
+
 ## Run locally
 
 With Docker:
@@ -37,3 +41,15 @@ browser's `localStorage`.
 
 Before handing off, run `node --check site/app.js` and preview the site locally.
 Pushing reviewed files to `main` triggers the configured deployment workflows.
+
+## Data refresh
+
+The checked-in snapshot covers OptiStacks Parts A02–A16. It combines the last
+complete full-depth directory, all prior ReasAtlas statements, current
+topic-complete layers, and mechanically validated records from both textbook
+campaign roots. Rebuild it with:
+
+```bash
+python scripts/import_source_domains.py --source /root/workspace/lcy/optistacks
+python scripts/build_lazy_shards.py
+```

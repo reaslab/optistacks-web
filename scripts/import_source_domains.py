@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Import full A03/A05 directory and statement layers from the OptiStacks source."""
+"""Import complete A02-A16 directories and all available statement layers."""
 
 from __future__ import annotations
 
@@ -15,7 +15,13 @@ from pathlib import Path
 from typing import Any, Iterator
 
 
-NEW_DOMAINS = (
+PART_DOMAINS = (
+    {
+        "id": "convex_analysis",
+        "part_id": "A02",
+        "short_name": "Convex Analysis",
+        "accent": "#315b7d",
+    },
     {
         "id": "variational_analysis",
         "part_id": "A03",
@@ -23,22 +29,92 @@ NEW_DOMAINS = (
         "accent": "#a65f18",
     },
     {
+        "id": "nonlinear_programming",
+        "part_id": "A04",
+        "short_name": "Nonlinear Programming",
+        "accent": "#316a5c",
+    },
+    {
         "id": "first_order_methods",
         "part_id": "A05",
         "short_name": "First-Order Methods",
         "accent": "#b6406a",
     },
+    {
+        "id": "nonsmooth_optimization",
+        "part_id": "A06",
+        "short_name": "Nonsmooth Optimization",
+        "accent": "#72558a",
+    },
+    {
+        "id": "specialized_continuous_methods",
+        "part_id": "A07",
+        "short_name": "Specialized Continuous and Large-Scale Methods",
+        "accent": "#3f7589",
+    },
+    {
+        "id": "convex_programming",
+        "part_id": "A08",
+        "short_name": "Convex Programming",
+        "accent": "#8a643b",
+    },
+    {
+        "id": "linear_programming",
+        "part_id": "A09",
+        "short_name": "Linear Programming",
+        "accent": "#4f6f46",
+    },
+    {
+        "id": "conic_optimization",
+        "part_id": "A10",
+        "short_name": "Conic Optimization",
+        "accent": "#855a73",
+    },
+    {
+        "id": "quadratic_optimization",
+        "part_id": "A11",
+        "short_name": "Quadratic Optimization",
+        "accent": "#536d91",
+    },
+    {
+        "id": "integer_mixed_integer_optimization",
+        "part_id": "A12",
+        "short_name": "Integer and Mixed-Integer Optimization",
+        "accent": "#84623d",
+    },
+    {
+        "id": "combinatorial_optimization",
+        "part_id": "A13",
+        "short_name": "Combinatorial Optimization",
+        "accent": "#3e7565",
+    },
+    {
+        "id": "constraint_logic_optimization",
+        "part_id": "A14",
+        "short_name": "Constraint and Logic-Based Optimization",
+        "accent": "#765e87",
+    },
+    {
+        "id": "global_optimization",
+        "part_id": "A15",
+        "short_name": "Global Optimization",
+        "accent": "#9a5948",
+    },
+    {
+        "id": "optimization_under_uncertainty",
+        "part_id": "A16",
+        "short_name": "Optimization under Uncertainty",
+        "accent": "#497286",
+    },
 )
 
-DOMAIN_ORDER = (
-    "convex_analysis",
-    "variational_analysis",
-    "nonlinear_programming",
-    "first_order_methods",
-    "distributed_optimization",
-)
+LEGACY_DOMAIN_ID = "distributed_optimization"
+DOMAIN_ORDER = tuple(config["id"] for config in PART_DOMAINS) + (LEGACY_DOMAIN_ID,)
 
-CAMPAIGN_RELATIVE_PATH = Path("0809_optimize/formal_runs/20260809_full_library_v2")
+CAMPAIGN_RELATIVE_PATHS = (
+    Path("0809_optimize/formal_runs/20260809_full_library_v2"),
+    Path("0809_optimize/formal_runs/20260812_full_library_200_supplemental25_v1"),
+)
 CAMPAIGN_STAGE_PRIORITY = {
     "0809_campaign_build": 1,
     "0809_campaign_reviewed": 2,
@@ -130,6 +206,93 @@ def strip_campaign_statements(tree: dict[str, Any]) -> None:
                     "0809_campaign_"
                 )
             ]
+
+
+def collect_preserved_nodes(
+    site: Path,
+    manifest: dict[str, Any],
+    *,
+    excluded_domain_ids: set[str] | None = None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    excluded_domain_ids = excluded_domain_ids or set()
+    preserved: dict[str, dict[str, Any]] = {}
+    report: dict[str, Any] = {
+        "domains": 0,
+        "topics": 0,
+        "statements": 0,
+        "duplicate_topic_occurrences": 0,
+    }
+    for domain in manifest.get("domains", []):
+        if domain["id"] in excluded_domain_ids:
+            continue
+        tree = restore_full_domain(site, domain["data_url"])
+        report["domains"] += 1
+        for root in tree.get("roots", []):
+            for node in walk(root):
+                topic_id = node["topic_id"]
+                statements = deepcopy(node.get("knowledge_statements", []))
+                if topic_id not in preserved:
+                    preserved[topic_id] = {
+                        "title": node.get("title"),
+                        "statements": statements,
+                    }
+                else:
+                    report["duplicate_topic_occurrences"] += 1
+                    preserved[topic_id]["statements"].extend(statements)
+                report["statements"] += len(statements)
+    report["topics"] = len(preserved)
+    return preserved, report
+
+
+def merge_preserved_statements(
+    tree: dict[str, Any], preserved_nodes: dict[str, dict[str, Any]]
+) -> dict[str, int]:
+    report = {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0,
+    }
+    statement_ids = {
+        str(statement.get("id") or statement.get("statement_id"))
+        for root in tree["roots"]
+        for node in walk(root)
+        for statement in node.get("knowledge_statements", [])
+        if statement.get("id") or statement.get("statement_id")
+    }
+    for root in tree["roots"]:
+        for node in walk(root):
+            old = preserved_nodes.get(node["topic_id"])
+            if not old:
+                continue
+            report["matched_topics"] += 1
+            if old.get("title"):
+                node["title"] = old["title"]
+            titles = {
+                normalize_text(statement.get("statement_title") or statement.get("title"))
+                for statement in node["knowledge_statements"]
+                if statement.get("statement_title") or statement.get("title")
+            }
+            for statement in old["statements"]:
+                title_key = normalize_text(statement.get("statement_title") or statement.get("title"))
+                if title_key and title_key in titles:
+                    report["duplicate_titles"] += 1
+                    continue
+                statement = deepcopy(statement)
+                statement_id = str(statement.get("id") or statement.get("statement_id") or "")
+                if statement_id and statement_id in statement_ids:
+                    report["duplicate_ids"] += 1
+                    statement["id"] = "stmt_preserved_" + sha256(
+                        repr(statement_fingerprint(statement, node["topic_id"])).encode()
+                    ).hexdigest()[:20]
+                    statement_id = statement["id"]
+                if statement_id:
+                    statement_ids.add(statement_id)
+                node["knowledge_statements"].append(statement)
+                if title_key:
+                    titles.add(title_key)
+                report["added_statements"] += 1
+    return report
 
 
 def source_witnesses(raw_refs: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -371,6 +534,7 @@ def campaign_placement_hints(item: dict[str, Any]) -> list[tuple[str, str]]:
 def prepare_campaign_record(
     item: dict[str, Any],
     candidate: dict[str, Any],
+    campaign_root: Path,
     campaign_name: str,
     stage: str,
     evidence: dict[str, Any],
@@ -392,6 +556,7 @@ def prepare_campaign_record(
     record["review_flags"] = item.get("review_flags") or []
     return {
         "source_item_id": source_item_id,
+        "campaign_root": campaign_root,
         "campaign": campaign_name,
         "stage": stage,
         "record": record,
@@ -407,10 +572,9 @@ def prepare_campaign_record(
 
 
 def collect_campaign_candidates(source: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    campaign_root = source / CAMPAIGN_RELATIVE_PATH
     selected: dict[str, dict[str, Any]] = {}
     report: dict[str, Any] = {
-        "campaign_root": str(CAMPAIGN_RELATIVE_PATH),
+        "campaign_roots": [str(path) for path in CAMPAIGN_RELATIVE_PATHS],
         "campaigns_scanned": 0,
         "validated_build_items": 0,
         "validated_review_items": 0,
@@ -425,72 +589,79 @@ def collect_campaign_candidates(source: Path) -> tuple[list[dict[str, Any]], dic
         if current is None or CAMPAIGN_STAGE_PRIORITY[entry["stage"]] > CAMPAIGN_STAGE_PRIORITY[current["stage"]]:
             selected[entry["source_item_id"]] = entry
 
-    if not campaign_root.exists():
+    available_roots = [path for path in CAMPAIGN_RELATIVE_PATHS if (source / path).exists()]
+    if not available_roots:
         report["status"] = "campaign_not_found"
         return [], report
 
-    for campaign in sorted(path for path in campaign_root.iterdir() if path.is_dir()):
-        ledger_evidence = campaign_source_evidence(campaign)
-        if not ledger_evidence and not (campaign / "build").exists():
-            continue
-        report["campaigns_scanned"] += 1
+    for relative_root in available_roots:
+        campaign_root = source / relative_root
+        for campaign in sorted(path for path in campaign_root.iterdir() if path.is_dir()):
+            ledger_evidence = campaign_source_evidence(campaign)
+            if not ledger_evidence and not (campaign / "build").exists():
+                continue
+            report["campaigns_scanned"] += 1
 
-        build_items = read_validated_phase(campaign, "build")
-        review_items = read_validated_phase(campaign, "review")
-        report["validated_build_items"] += len(build_items)
-        report["validated_review_items"] += len(review_items)
+            build_items = read_validated_phase(campaign, "build")
+            review_items = read_validated_phase(campaign, "review")
+            report["validated_build_items"] += len(build_items)
+            report["validated_review_items"] += len(review_items)
 
-        for source_item_id, item in build_items.items():
-            candidate = item.get("statement_candidate") or {}
-            select(
-                prepare_campaign_record(
-                    item,
-                    candidate,
-                    campaign.name,
-                    "0809_campaign_build",
-                    ledger_evidence.get(source_item_id, {}),
-                )
-            )
-
-        for source_item_id, item in review_items.items():
-            candidate = item.get("statement_candidate") or {}
-            select(
-                prepare_campaign_record(
-                    item,
-                    candidate,
-                    campaign.name,
-                    "0809_campaign_reviewed",
-                    ledger_evidence.get(source_item_id, {}),
-                )
-            )
-
-        overlay_path = campaign / "publish/reviewed_textbook_coverage_overlay.json"
-        if overlay_path.exists():
-            overlay = read_json(overlay_path)
-            for record in overlay.get("existing_node_statement_candidates", []):
-                source_item_id = str(record.get("source_item_id") or "")
-                report["published_items"] += 1
+            for source_item_id, item in build_items.items():
+                candidate = item.get("statement_candidate") or {}
                 select(
                     prepare_campaign_record(
-                        record,
-                        record,
+                        item,
+                        candidate,
+                        relative_root,
                         campaign.name,
-                        "0809_campaign_published",
-                        record.get("source_evidence") or ledger_evidence.get(source_item_id, {}),
+                        "0809_campaign_build",
+                        ledger_evidence.get(source_item_id, {}),
                     )
                 )
-            for wrapper in overlay.get("new_node_candidates", []):
-                source_item_id = str(wrapper.get("source_item_id") or "")
-                report["published_items"] += 1
+
+            for source_item_id, item in review_items.items():
+                candidate = item.get("statement_candidate") or {}
                 select(
                     prepare_campaign_record(
-                        wrapper,
-                        wrapper.get("statement_candidate") or {},
+                        item,
+                        candidate,
+                        relative_root,
                         campaign.name,
-                        "0809_campaign_published",
-                        wrapper.get("source_evidence") or ledger_evidence.get(source_item_id, {}),
+                        "0809_campaign_reviewed",
+                        ledger_evidence.get(source_item_id, {}),
                     )
                 )
+
+            overlay_path = campaign / "publish/reviewed_textbook_coverage_overlay.json"
+            if overlay_path.exists():
+                overlay = read_json(overlay_path)
+                for record in overlay.get("existing_node_statement_candidates", []):
+                    source_item_id = str(record.get("source_item_id") or "")
+                    report["published_items"] += 1
+                    select(
+                        prepare_campaign_record(
+                            record,
+                            record,
+                            relative_root,
+                            campaign.name,
+                            "0809_campaign_published",
+                            record.get("source_evidence") or ledger_evidence.get(source_item_id, {}),
+                        )
+                    )
+                for wrapper in overlay.get("new_node_candidates", []):
+                    source_item_id = str(wrapper.get("source_item_id") or "")
+                    report["published_items"] += 1
+                    select(
+                        prepare_campaign_record(
+                            wrapper,
+                            wrapper.get("statement_candidate") or {},
+                            relative_root,
+                            campaign.name,
+                            "0809_campaign_published",
+                            wrapper.get("source_evidence") or ledger_evidence.get(source_item_id, {}),
+                        )
+                    )
 
     candidates = [selected[key] for key in sorted(selected)]
     report["candidates_with_body"] = len(candidates)
@@ -588,21 +759,31 @@ def merge_campaign_candidates(
     candidates, report = collect_campaign_candidates(source)
     topic_index: dict[str, tuple[str, dict[str, Any]]] = {}
     title_index: dict[str, set[str]] = {}
+    statement_id_index: dict[str, set[str]] = {}
     for domain_id, tree in trees.items():
+        statement_id_index.setdefault(domain_id, set())
         for root in tree["roots"]:
             for node in walk(root):
                 topic_id = node["topic_id"]
+                if domain_id == LEGACY_DOMAIN_ID and topic_id in topic_index:
+                    continue
                 topic_index[topic_id] = (domain_id, node)
                 title_index[topic_id] = {
                     normalize_text(item.get("statement_title") or item.get("title"))
                     for item in node["knowledge_statements"]
                     if item.get("statement_title") or item.get("title")
                 }
+                statement_id_index[domain_id].update(
+                    str(item.get("id") or item.get("statement_id"))
+                    for item in node["knowledge_statements"]
+                    if item.get("id") or item.get("statement_id")
+                )
 
     report["added_by_domain"] = Counter()
     report["added_by_stage"] = Counter()
     report["placement_methods"] = Counter()
     report["duplicate_title_count"] = 0
+    report["versioned_duplicate_id_count"] = 0
     report["unmapped_count"] = 0
 
     for entry in candidates:
@@ -631,7 +812,7 @@ def merge_campaign_candidates(
             topic_id,
             "intermediate_result",
             entry["stage"],
-            str(CAMPAIGN_RELATIVE_PATH / entry["campaign"]),
+            str(entry["campaign_root"] / entry["campaign"]),
             {
                 **entry["context"],
                 "placement_hint": original_hint,
@@ -641,6 +822,20 @@ def merge_campaign_candidates(
         normalized["mapping_method"] = mapping_method
         normalized["original_topic_id"] = original_hint
         normalized["mapped_topic_ids"] = [topic_id]
+        if normalized["id"] in statement_id_index[domain_id]:
+            report["versioned_duplicate_id_count"] += 1
+            normalized["id"] = "stmt_0809_version_" + sha256(
+                repr(
+                    (
+                        entry["source_item_id"],
+                        topic_id,
+                        title_key,
+                        entry["stage"],
+                        normalize_text(normalized.get("statement_latex")),
+                    )
+                ).encode()
+            ).hexdigest()[:20]
+        statement_id_index[domain_id].add(normalized["id"])
         node["knowledge_statements"].append(normalized)
         if title_key:
             title_index[topic_id].add(title_key)
@@ -649,6 +844,9 @@ def merge_campaign_candidates(
         report["placement_methods"][mapping_method] += 1
 
     for domain_id, tree in trees.items():
+        if domain_id == LEGACY_DOMAIN_ID:
+            domains[domain_id]["campaign_snapshot_statement_count"] = 0
+            continue
         refresh_domain_metadata(tree, domains[domain_id])
         domains[domain_id]["campaign_snapshot_statement_count"] = report["added_by_domain"][domain_id]
 
@@ -663,6 +861,7 @@ def convert_part(
     source: Path,
     raw_part: dict[str, Any],
     config: dict[str, str],
+    preserved_nodes: dict[str, dict[str, Any]],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     topic_ids = {raw_part["part_id"]}
     for raw in raw_part.get("children", []):
@@ -680,7 +879,7 @@ def convert_part(
         node = {
             "topic_id": topic_id,
             "display_number": number,
-            "title": raw.get("title") or topic_id,
+            "title": (preserved_nodes.get(topic_id) or {}).get("title") or raw.get("title") or topic_id,
             "topic_type": raw.get("node_type") or raw.get("navigation_kind") or "topic",
             "depth": depth,
             "classification_axis": raw.get("navigation_kind") or "pedagogical dependency",
@@ -694,7 +893,19 @@ def convert_part(
 
     root_number = re.sub(r"\D", "", config["part_id"]).lstrip("0") or "0"
     root = convert(raw_part, config["part_id"], root_number, 0)
-
+    tree = {
+        "schema_version": "knowledge-classification-tree-v1",
+        "generated_at": generated_at,
+        "domain_id": config["id"],
+        "display_name": config["short_name"],
+        "construction": {
+            "top_down": "complete A02-A16 directory from the source v57 full-depth snapshot",
+            "bottom_up": "previous ReasAtlas content, v58 published statements, topic-complete accepted and deferred records, and validated textbook campaign snapshots",
+            "hard_boundary": "source placement and mechanical import do not certify mathematical correctness",
+        },
+        "roots": [root],
+    }
+    preserved_report = merge_preserved_statements(tree, preserved_nodes)
     update_tree_counts(root)
     nodes = list(walk(root))
     statements = [item for node in nodes for item in node["knowledge_statements"]]
@@ -712,18 +923,6 @@ def convert_part(
         }
         for chapter in root["children"]
     ]
-    tree = {
-        "schema_version": "knowledge-classification-tree-v1",
-        "generated_at": generated_at,
-        "domain_id": config["id"],
-        "display_name": config["short_name"],
-        "construction": {
-            "top_down": "complete A03/A05 directory from the source v57 full-depth snapshot",
-            "bottom_up": "v58 published statements plus topic-complete accepted and deferred records",
-            "hard_boundary": "source placement and mechanical import do not certify mathematical correctness",
-        },
-        "roots": [root],
-    }
     domain = {
         "id": config["id"],
         "short_name": config["short_name"],
@@ -745,6 +944,7 @@ def convert_part(
             "content_kinds": dict(sorted(content_kinds.items())),
         },
         "intermediate_result_report": intermediate_report,
+        "preserved_content_report": preserved_report,
         "chapters": chapter_summaries,
     }
     return tree, domain
@@ -754,41 +954,60 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=Path("/root/workspace/lcy/optistacks"))
     parser.add_argument("--site", type=Path, default=Path(__file__).resolve().parents[1] / "site")
+    parser.add_argument(
+        "--previous-site",
+        type=Path,
+        help="Optional clean previous snapshot used to preserve existing content",
+    )
     args = parser.parse_args()
     source = args.source.resolve()
     site = args.site.resolve()
+    previous_site = (args.previous_site or site).resolve()
     manifest_path = site / "data/manifest.json"
-    manifest = read_json(manifest_path)
+    previous_manifest = read_json(previous_site / "data/manifest.json")
+    manifest = deepcopy(previous_manifest)
 
-    existing_domains: dict[str, dict[str, Any]] = {}
+    preserved_nodes, preserved_report = collect_preserved_nodes(
+        previous_site,
+        previous_manifest,
+        excluded_domain_ids={LEGACY_DOMAIN_ID},
+    )
+    print(
+        f"Previous snapshot: {preserved_report['topics']:,} topics, "
+        f"{preserved_report['statements']:,} statements preserved"
+    )
     trees: dict[str, dict[str, Any]] = {}
-    for domain in manifest["domains"]:
-        if domain["id"] in {item["id"] for item in NEW_DOMAINS}:
-            continue
-        full_data = restore_full_domain(site, domain["data_url"])
-        strip_campaign_statements(full_data)
-        preserved = deepcopy(domain)
-        preserved.pop("loading", None)
-        preserved.pop("campaign_snapshot_statement_count", None)
-        existing_domains[domain["id"]] = preserved
-        trees[domain["id"]] = full_data
+
+    legacy_meta = next(
+        (deepcopy(domain) for domain in previous_manifest["domains"] if domain["id"] == LEGACY_DOMAIN_ID),
+        None,
+    )
+    if legacy_meta is None:
+        raise RuntimeError(f"Previous snapshot is missing required compatibility domain {LEGACY_DOMAIN_ID}")
+    legacy_tree = restore_full_domain(previous_site, legacy_meta["data_url"])
+    legacy_meta.pop("loading", None)
+    legacy_meta.pop("campaign_snapshot_statement_count", None)
 
     package = source / "outputs/packages/optistacks_tree_graph_corrected_v27.zip"
     with zipfile.ZipFile(package) as archive:
         source_tree = json.loads(archive.read("snapshot/tree.json"))
     parts = {part["part_id"]: part for part in source_tree["parts"]}
 
-    imported_domains: dict[str, dict[str, Any]] = {}
-    for config in NEW_DOMAINS:
-        tree, domain = convert_part(source, parts[config["part_id"]], config)
-        imported_domains[domain["id"]] = domain
+    domains: dict[str, dict[str, Any]] = {}
+    for config in PART_DOMAINS:
+        tree, domain = convert_part(
+            source, parts[config["part_id"]], config, preserved_nodes
+        )
+        domains[domain["id"]] = domain
         trees[domain["id"]] = tree
         print(
             f"{domain['short_name']}: {domain['stats']['topics']:,} topics, "
             f"{domain['stats']['statements']:,} statements"
         )
 
-    domains = {**existing_domains, **imported_domains}
+    domains[LEGACY_DOMAIN_ID] = legacy_meta
+    trees[LEGACY_DOMAIN_ID] = legacy_tree
+
     campaign_report = merge_campaign_candidates(source, trees, domains)
     for domain_id, tree in trees.items():
         write_json(site / domains[domain_id]["data_url"], tree)
@@ -799,6 +1018,7 @@ def main() -> None:
 
     manifest["domains"] = [domains[domain_id] for domain_id in DOMAIN_ORDER]
     manifest["built_at"] = datetime.now(timezone.utc).isoformat()
+    manifest["preserved_snapshot"] = preserved_report
     manifest["source_campaign_snapshot"] = campaign_report
     manifest["totals"] = {
         "topics": sum(item["stats"]["topics"] for item in manifest["domains"]),

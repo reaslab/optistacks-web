@@ -61,6 +61,8 @@ def shard_domain(data_path: Path, domain_id: str) -> dict[str, int | str]:
         )
 
     shard_directory = data_path.parent / "shards" / domain_id
+    existing_shards = set(shard_directory.glob("*.json"))
+    written_shards: set[Path] = set()
     routes: dict[str, str] = {}
     shard_count = 0
     total_shard_bytes = 0
@@ -79,12 +81,20 @@ def shard_domain(data_path: Path, domain_id: str) -> dict[str, int | str]:
                 "root": chapter,
             }
             write_json(shard_path, payload)
+            written_shards.add(shard_path)
             total_shard_bytes += shard_path.stat().st_size
             shard_count += 1
             for node in walk(chapter):
                 routes[node["topic_id"]] = chapter_id
             summaries.append(chapter_summary(chapter, shard_url))
         root["children"] = summaries
+
+    pruned_shards = 0
+    for orphan in sorted(existing_shards - written_shards):
+        if orphan.is_symlink() or not orphan.is_file() or orphan.parent.resolve() != shard_directory.resolve():
+            raise RuntimeError(f"Refusing to remove unexpected shard path: {orphan}")
+        orphan.unlink()
+        pruned_shards += 1
 
     data["loading"] = {
         "mode": "chapter_shards",
@@ -100,6 +110,7 @@ def shard_domain(data_path: Path, domain_id: str) -> dict[str, int | str]:
         "routes": len(routes),
         "catalog_bytes": data_path.stat().st_size,
         "shard_bytes": total_shard_bytes,
+        "pruned_shards": pruned_shards,
     }
 
 
@@ -122,7 +133,8 @@ def main() -> None:
         domain["loading"] = report
         print(
             f"{domain['id']}: {report['shards']} shards, "
-            f"catalog {report['catalog_bytes']:,} bytes, payloads {report['shard_bytes']:,} bytes"
+            f"catalog {report['catalog_bytes']:,} bytes, payloads {report['shard_bytes']:,} bytes, "
+            f"pruned {report['pruned_shards']} stale shards"
         )
 
     manifest["loading"] = {

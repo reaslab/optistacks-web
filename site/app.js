@@ -535,7 +535,17 @@ function renderPrerequisite(nodeId) {
     A03: "variational_analysis",
     A04: "nonlinear_programming",
     A05: "first_order_methods",
-    A07: "distributed_optimization",
+    A06: "nonsmooth_optimization",
+    A07: "specialized_continuous_methods",
+    A08: "convex_programming",
+    A09: "linear_programming",
+    A10: "conic_optimization",
+    A11: "quadratic_optimization",
+    A12: "integer_mixed_integer_optimization",
+    A13: "combinatorial_optimization",
+    A14: "constraint_logic_optimization",
+    A15: "global_optimization",
+    A16: "optimization_under_uncertainty",
   };
   const domainId = domainByPrefix[prefix];
   if (!domainId) return `<code>${esc(nodeId)}</code>`;

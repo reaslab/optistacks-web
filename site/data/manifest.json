@@ -1,142 +1,145 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-10T03:41:12.887121+00:00",
+  "built_at": "2026-08-12T03:57:29.637009+00:00",
   "domains": [
     {
       "id": "convex_analysis",
       "short_name": "Convex Analysis",
-      "accent": "#2563eb",
+      "accent": "#315b7d",
       "data_url": "data/convex_analysis.json",
-      "generated_at": "2026-08-03T06:40:01.959772+00:00",
+      "generated_at": "2026-07-19T14:45:43.313617+00:00",
       "validation_status": "PASS",
-      "publication_status": "structural_overlay_built_with_unverified_evidence_exposed",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
       "stats": {
         "topics": 2921,
-        "statements": 7418,
-        "official_statements": 2961,
-        "intermediate_statements": 4457,
+        "statements": 8124,
+        "official_statements": 1375,
+        "intermediate_statements": 6749,
         "chapters": 9,
         "leaf_topics": 2095,
-        "base_statements": 2961,
+        "base_statements": 1375,
         "coverage": 1.0,
         "max_depth": 6,
         "content_kinds": {
-          "algorithm": 101,
-          "certificate": 237,
-          "complexity_bound": 57,
-          "condition": 343,
-          "counterexample": 432,
-          "definition": 2163,
-          "duality": 377,
+          "algorithm": 104,
+          "certificate": 245,
+          "complexity_bound": 60,
+          "condition": 365,
+          "counterexample": 430,
+          "definition": 2289,
+          "duality": 397,
           "example": 2,
-          "failure_boundary": 511,
-          "notation": 10,
-          "principle": 34,
-          "property": 1036,
-          "representation": 927,
-          "theorem": 1188
+          "failure_boundary": 512,
+          "notation": 15,
+          "principle": 40,
+          "property": 1122,
+          "representation": 975,
+          "theorem": 1568
         }
       },
       "intermediate_result_report": {
-        "official_statement_count": 3301,
-        "added_intermediate_count": 2837,
+        "official_statement_count": 1375,
+        "added_intermediate_count": 2361,
         "unmapped_intermediate_count": 0,
-        "duplicate_intermediate_count": 11979,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 17,
         "duplicate_official_title_count": 0,
-        "duplicate_intermediate_title_count": 11979,
+        "duplicate_intermediate_title_count": 17,
         "sources": {
-          "builder_draft": 249,
-          "deferred_ledger": 221,
-          "reviewer_intermediate": 35,
-          "v10_fulltext_reviewed": 5,
-          "v11_builder_candidate": 861,
-          "v11_reviewed_candidate": 551,
-          "v12_consolidated_preview": 850,
-          "v60_resolved_intermediate": 65
+          "topic_complete_current": 1586,
+          "topic_complete_new_deferred": 67,
+          "topic_complete_seed_deferred": 708
         },
-        "total_statement_count": 6138
+        "total_statement_count": 3736
+      },
+      "preserved_content_report": {
+        "matched_topics": 2921,
+        "added_statements": 3682,
+        "duplicate_titles": 3736,
+        "duplicate_ids": 0
       },
       "chapters": [
         {
           "topic_id": "A02.C01",
           "display_number": "2.1",
           "title": "Convex Sets",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 303,
-          "subtree_statement_count": 860
+          "subtree_statement_count": 999
         },
         {
           "topic_id": "A02.C02",
           "display_number": "2.2",
           "title": "Convex Cones",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 300,
-          "subtree_statement_count": 1112
+          "subtree_statement_count": 1158
         },
         {
           "topic_id": "A02.C03",
           "display_number": "2.3",
           "title": "Convex Functions",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 488,
-          "subtree_statement_count": 1457
+          "subtree_statement_count": 1689
         },
         {
           "topic_id": "A02.C04",
           "display_number": "2.4",
           "title": "Subdifferentials",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 284,
-          "subtree_statement_count": 439
+          "subtree_statement_count": 472
         },
         {
           "topic_id": "A02.C05",
           "display_number": "2.5",
           "title": "Conjugacy",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 330,
-          "subtree_statement_count": 952
+          "subtree_statement_count": 1011
         },
         {
           "topic_id": "A02.C06",
           "display_number": "2.6",
           "title": "Polarity and Gauge Theory",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 376,
-          "subtree_statement_count": 744
+          "subtree_statement_count": 762
         },
         {
           "topic_id": "A02.C07",
           "display_number": "2.7",
           "title": "Polyhedral Convex Analysis",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 324,
-          "subtree_statement_count": 606
+          "subtree_statement_count": 623
         },
         {
           "topic_id": "A02.C08",
           "display_number": "2.8",
           "title": "Convex Duality",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 278,
-          "subtree_statement_count": 796
+          "subtree_statement_count": 913
         },
         {
           "topic_id": "A02.C09",
           "display_number": "2.9",
           "title": "Self-Concordance",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 237,
-          "subtree_statement_count": 452
+          "subtree_statement_count": 497
         }
       ],
-      "campaign_snapshot_statement_count": 1280,
+      "campaign_snapshot_statement_count": 706,
       "loading": {
         "mode": "chapter_shards",
         "shards": 9,
         "routes": 2920,
-        "catalog_bytes": 126846,
-        "shard_bytes": 24823261
+        "catalog_bytes": 127016,
+        "shard_bytes": 29010067,
+        "pruned_shards": 0
       }
     },
     {
@@ -149,27 +152,27 @@
       "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
       "stats": {
         "topics": 4736,
-        "statements": 4783,
+        "statements": 5050,
         "official_statements": 1367,
-        "intermediate_statements": 3416,
+        "intermediate_statements": 3683,
         "chapters": 12,
         "leaf_topics": 3437,
         "base_statements": 1367,
         "coverage": 1.0,
         "max_depth": 7,
         "content_kinds": {
-          "algorithm": 166,
+          "algorithm": 167,
           "certificate": 117,
           "complexity_bound": 45,
-          "condition": 398,
+          "condition": 399,
           "counterexample": 460,
-          "definition": 889,
-          "duality": 93,
+          "definition": 921,
+          "duality": 94,
           "failure_boundary": 482,
-          "principle": 91,
-          "property": 611,
-          "representation": 613,
-          "theorem": 818
+          "principle": 93,
+          "property": 648,
+          "representation": 629,
+          "theorem": 995
         }
       },
       "intermediate_result_report": {
@@ -187,6 +190,12 @@
         },
         "total_statement_count": 4745
       },
+      "preserved_content_report": {
+        "matched_topics": 4736,
+        "added_statements": 38,
+        "duplicate_titles": 4745,
+        "duplicate_ids": 0
+      },
       "chapters": [
         {
           "topic_id": "A03.SC01",
@@ -194,7 +203,7 @@
           "title": "Set Convergence",
           "classification_axis": "chapter",
           "subtree_topic_count": 395,
-          "subtree_statement_count": 289
+          "subtree_statement_count": 314
         },
         {
           "topic_id": "A03.SC02",
@@ -202,7 +211,7 @@
           "title": "Variational Geometry",
           "classification_axis": "chapter",
           "subtree_topic_count": 215,
-          "subtree_statement_count": 159
+          "subtree_statement_count": 160
         },
         {
           "topic_id": "A03.SC03",
@@ -210,7 +219,7 @@
           "title": "Variational Principles",
           "classification_axis": "chapter",
           "subtree_topic_count": 290,
-          "subtree_statement_count": 215
+          "subtree_statement_count": 233
         },
         {
           "topic_id": "A03.SC04",
@@ -218,7 +227,7 @@
           "title": "Generalized Differentiation",
           "classification_axis": "chapter",
           "subtree_topic_count": 419,
-          "subtree_statement_count": 617
+          "subtree_statement_count": 629
         },
         {
           "topic_id": "A03.SC05",
@@ -234,7 +243,7 @@
           "title": "Generalized Equations",
           "classification_axis": "chapter",
           "subtree_topic_count": 297,
-          "subtree_statement_count": 402
+          "subtree_statement_count": 404
         },
         {
           "topic_id": "A03.SC07",
@@ -242,7 +251,7 @@
           "title": "Monotone Operators",
           "classification_axis": "chapter",
           "subtree_topic_count": 500,
-          "subtree_statement_count": 478
+          "subtree_statement_count": 660
         },
         {
           "topic_id": "A03.SC08",
@@ -250,7 +259,7 @@
           "title": "Variational Inequalities",
           "classification_axis": "chapter",
           "subtree_topic_count": 491,
-          "subtree_statement_count": 335
+          "subtree_statement_count": 337
         },
         {
           "topic_id": "A03.SC09",
@@ -274,7 +283,7 @@
           "title": "Variational Dynamics",
           "classification_axis": "chapter",
           "subtree_topic_count": 524,
-          "subtree_statement_count": 393
+          "subtree_statement_count": 417
         },
         {
           "topic_id": "A03.SC12",
@@ -282,193 +291,198 @@
           "title": "Wasserstein Variational Geometry",
           "classification_axis": "chapter",
           "subtree_topic_count": 619,
-          "subtree_statement_count": 439
+          "subtree_statement_count": 440
         }
       ],
-      "campaign_snapshot_statement_count": 38,
+      "campaign_snapshot_statement_count": 267,
       "loading": {
         "mode": "chapter_shards",
         "shards": 12,
         "routes": 4735,
-        "catalog_bytes": 214164,
-        "shard_bytes": 15471037
+        "catalog_bytes": 214270,
+        "shard_bytes": 16680269,
+        "pruned_shards": 0
       }
     },
     {
       "id": "nonlinear_programming",
       "short_name": "Nonlinear Programming",
-      "accent": "#0f7c99",
+      "accent": "#316a5c",
       "data_url": "data/nonlinear_programming.json",
-      "generated_at": "2026-08-03T06:40:06.527917+00:00",
+      "generated_at": "2026-07-21T06:42:33.047866+00:00",
       "validation_status": "PASS",
-      "publication_status": "structural_overlay_built_with_unverified_evidence_exposed",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
       "stats": {
         "topics": 3873,
-        "statements": 7106,
-        "official_statements": 2362,
-        "intermediate_statements": 4744,
+        "statements": 8057,
+        "official_statements": 1160,
+        "intermediate_statements": 6897,
         "chapters": 14,
         "leaf_topics": 2783,
-        "base_statements": 2362,
+        "base_statements": 1160,
         "coverage": 1.0,
         "max_depth": 6,
         "content_kinds": {
-          "algorithm": 770,
-          "certificate": 248,
-          "complexity_bound": 179,
-          "condition": 453,
-          "counterexample": 292,
-          "definition": 2746,
-          "duality": 45,
+          "algorithm": 918,
+          "certificate": 253,
+          "complexity_bound": 183,
+          "condition": 604,
+          "counterexample": 290,
+          "definition": 2842,
+          "duality": 49,
           "example": 4,
-          "failure_boundary": 612,
-          "notation": 6,
-          "principle": 107,
-          "property": 488,
-          "remark": 3,
-          "representation": 598,
-          "theorem": 555
+          "failure_boundary": 633,
+          "notation": 8,
+          "principle": 124,
+          "property": 512,
+          "remark": 5,
+          "representation": 672,
+          "theorem": 960
         }
       },
       "intermediate_result_report": {
-        "official_statement_count": 3648,
-        "added_intermediate_count": 2859,
+        "official_statement_count": 1160,
+        "added_intermediate_count": 2873,
         "unmapped_intermediate_count": 0,
-        "duplicate_intermediate_count": 12756,
-        "duplicate_official_title_count": 9,
-        "duplicate_intermediate_title_count": 12756,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 29,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 29,
         "sources": {
-          "builder_draft": 165,
-          "deferred_ledger": 241,
-          "reviewer_intermediate": 39,
-          "v10_fulltext_reviewed": 8,
-          "v11_builder_candidate": 2205,
-          "v12_consolidated_preview": 154,
-          "v60_resolved_intermediate": 47
+          "topic_complete_current": 1202,
+          "topic_complete_new_deferred": 57,
+          "topic_complete_seed_deferred": 1614
         },
-        "total_statement_count": 6507
+        "total_statement_count": 4033
+      },
+      "preserved_content_report": {
+        "matched_topics": 3873,
+        "added_statements": 3073,
+        "duplicate_titles": 4033,
+        "duplicate_ids": 0
       },
       "chapters": [
         {
           "topic_id": "A04.C01",
           "display_number": "4.1",
           "title": "Line Search and Descent Globalization",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 196,
-          "subtree_statement_count": 296
+          "subtree_statement_count": 328
         },
         {
           "topic_id": "A04.C02",
           "display_number": "4.2",
           "title": "Trust-Region Methods and Model Adequacy",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 253,
-          "subtree_statement_count": 345
+          "subtree_statement_count": 538
         },
         {
           "topic_id": "A04.C03",
           "display_number": "4.3",
           "title": "Newton Methods and Linear Solvers",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 289,
-          "subtree_statement_count": 480
+          "subtree_statement_count": 580
         },
         {
           "topic_id": "A04.C04",
           "display_number": "4.4",
           "title": "Quasi-Newton and Variable-Metric Methods",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 211,
-          "subtree_statement_count": 338
+          "subtree_statement_count": 435
         },
         {
           "topic_id": "A04.C05",
           "display_number": "4.5",
           "title": "Nonlinear Equations and Least-Squares Methods",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 445,
-          "subtree_statement_count": 630
+          "subtree_statement_count": 725
         },
         {
           "topic_id": "A04.C06",
           "display_number": "4.6",
           "title": "Optimality and Active-Set Theory for Constrained NLP",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 273,
-          "subtree_statement_count": 651
+          "subtree_statement_count": 720
         },
         {
           "topic_id": "A04.C07",
           "display_number": "4.7",
           "title": "Equality-Constrained Reduction Methods",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 288,
-          "subtree_statement_count": 719
+          "subtree_statement_count": 747
         },
         {
           "topic_id": "A04.C08",
           "display_number": "4.8",
           "title": "Sequential Quadratic Programming",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 212,
-          "subtree_statement_count": 338
+          "subtree_statement_count": 421
         },
         {
           "topic_id": "A04.C09",
           "display_number": "4.9",
           "title": "Feasibility Globalization Methods",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 198,
-          "subtree_statement_count": 587
+          "subtree_statement_count": 670
         },
         {
           "topic_id": "A04.C10",
           "display_number": "4.10",
           "title": "Smooth Nonconvex Criticality and Landscape Theory",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 273,
-          "subtree_statement_count": 424
+          "subtree_statement_count": 463
         },
         {
           "topic_id": "A04.C11",
           "display_number": "4.11",
           "title": "Smooth Nonconvex Regularization and Complexity",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 291,
-          "subtree_statement_count": 455
+          "subtree_statement_count": 468
         },
         {
           "topic_id": "A04.C12",
           "display_number": "4.12",
           "title": "Kurdyka–Łojasiewicz Convergence and Landscape Analysis",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 369,
-          "subtree_statement_count": 447
+          "subtree_statement_count": 456
         },
         {
           "topic_id": "A04.C13",
           "display_number": "4.13",
           "title": "Interior-Point and Barrier Methods",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 333,
-          "subtree_statement_count": 724
+          "subtree_statement_count": 810
         },
         {
           "topic_id": "A04.C14",
           "display_number": "4.14",
           "title": "Augmented Lagrangian Methods",
-          "classification_axis": "",
+          "classification_axis": "chapter",
           "subtree_topic_count": 241,
-          "subtree_statement_count": 671
+          "subtree_statement_count": 695
         }
       ],
-      "campaign_snapshot_statement_count": 599,
+      "campaign_snapshot_statement_count": 951,
       "loading": {
         "mode": "chapter_shards",
         "shards": 14,
         "routes": 3872,
-        "catalog_bytes": 170767,
-        "shard_bytes": 27739396
+        "catalog_bytes": 170952,
+        "shard_bytes": 32903884,
+        "pruned_shards": 0
       }
     },
     {
@@ -481,29 +495,29 @@
       "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
       "stats": {
         "topics": 6810,
-        "statements": 6729,
+        "statements": 6940,
         "official_statements": 1696,
-        "intermediate_statements": 5033,
+        "intermediate_statements": 5244,
         "chapters": 17,
         "leaf_topics": 4903,
         "base_statements": 1696,
         "coverage": 1.0,
         "max_depth": 6,
         "content_kinds": {
-          "algorithm": 1058,
-          "certificate": 317,
-          "complexity_bound": 606,
-          "condition": 705,
+          "algorithm": 1094,
+          "certificate": 320,
+          "complexity_bound": 615,
+          "condition": 716,
           "counterexample": 315,
-          "definition": 1181,
-          "duality": 50,
+          "definition": 1210,
+          "duality": 52,
           "example": 9,
-          "failure_boundary": 682,
-          "notation": 6,
-          "principle": 118,
-          "property": 678,
-          "representation": 656,
-          "theorem": 348
+          "failure_boundary": 690,
+          "notation": 7,
+          "principle": 122,
+          "property": 682,
+          "representation": 668,
+          "theorem": 440
         }
       },
       "intermediate_result_report": {
@@ -521,6 +535,12 @@
         },
         "total_statement_count": 6104
       },
+      "preserved_content_report": {
+        "matched_topics": 6810,
+        "added_statements": 625,
+        "duplicate_titles": 6104,
+        "duplicate_ids": 0
+      },
       "chapters": [
         {
           "topic_id": "A05.C01",
@@ -528,7 +548,7 @@
           "title": "Smooth Deterministic Gradient Algorithms",
           "classification_axis": "chapter",
           "subtree_topic_count": 277,
-          "subtree_statement_count": 323
+          "subtree_statement_count": 430
         },
         {
           "topic_id": "A05.C02",
@@ -536,7 +556,7 @@
           "title": "Conditional-Gradient Methods",
           "classification_axis": "chapter",
           "subtree_topic_count": 278,
-          "subtree_statement_count": 527
+          "subtree_statement_count": 532
         },
         {
           "topic_id": "A05.C03",
@@ -544,7 +564,7 @@
           "title": "Nonsmooth Subgradient-Mirror-Bregman Algorithm Family",
           "classification_axis": "chapter",
           "subtree_topic_count": 261,
-          "subtree_statement_count": 309
+          "subtree_statement_count": 329
         },
         {
           "topic_id": "A05.C04",
@@ -552,7 +572,7 @@
           "title": "Proximal-Composite Algorithm Family",
           "classification_axis": "chapter",
           "subtree_topic_count": 314,
-          "subtree_statement_count": 377
+          "subtree_statement_count": 379
         },
         {
           "topic_id": "A05.C05",
@@ -560,7 +580,7 @@
           "title": "Foundations of Operator Splitting",
           "classification_axis": "chapter",
           "subtree_topic_count": 530,
-          "subtree_statement_count": 396
+          "subtree_statement_count": 410
         },
         {
           "topic_id": "A05.C06",
@@ -568,7 +588,7 @@
           "title": "Primal-Dual ADMM Splitting Architectures",
           "classification_axis": "chapter",
           "subtree_topic_count": 332,
-          "subtree_statement_count": 259
+          "subtree_statement_count": 263
         },
         {
           "topic_id": "A05.C07",
@@ -584,7 +604,7 @@
           "title": "Saddle-Point Variational Methods",
           "classification_axis": "chapter",
           "subtree_topic_count": 508,
-          "subtree_statement_count": 379
+          "subtree_statement_count": 407
         },
         {
           "topic_id": "A05.C09",
@@ -592,7 +612,7 @@
           "title": "Stochastic Approximation-SGD Method Family",
           "classification_axis": "chapter",
           "subtree_topic_count": 374,
-          "subtree_statement_count": 277
+          "subtree_statement_count": 284
         },
         {
           "topic_id": "A05.C10",
@@ -608,7 +628,7 @@
           "title": "Self-Tuning Stochastic Method Families",
           "classification_axis": "chapter",
           "subtree_topic_count": 319,
-          "subtree_statement_count": 227
+          "subtree_statement_count": 228
         },
         {
           "topic_id": "A05.C12",
@@ -616,7 +636,7 @@
           "title": "Coordinate-Block Method Family",
           "classification_axis": "chapter",
           "subtree_topic_count": 425,
-          "subtree_statement_count": 814
+          "subtree_statement_count": 820
         },
         {
           "topic_id": "A05.C13",
@@ -624,7 +644,7 @@
           "title": "Sketched Subspace First-Order Methods",
           "classification_axis": "chapter",
           "subtree_topic_count": 340,
-          "subtree_statement_count": 242
+          "subtree_statement_count": 244
         },
         {
           "topic_id": "A05.C14",
@@ -640,7 +660,7 @@
           "title": "Oracle Access Models",
           "classification_axis": "chapter",
           "subtree_topic_count": 484,
-          "subtree_statement_count": 402
+          "subtree_statement_count": 413
         },
         {
           "topic_id": "A05.C16",
@@ -648,7 +668,7 @@
           "title": "First-Order Complexity Bounds",
           "classification_axis": "chapter",
           "subtree_topic_count": 444,
-          "subtree_statement_count": 395
+          "subtree_statement_count": 397
         },
         {
           "topic_id": "A05.C17",
@@ -656,16 +676,1907 @@
           "title": "Performance-Estimation Certificate Mechanisms",
           "classification_axis": "chapter",
           "subtree_topic_count": 617,
-          "subtree_statement_count": 456
+          "subtree_statement_count": 457
         }
       ],
-      "campaign_snapshot_statement_count": 625,
+      "campaign_snapshot_statement_count": 211,
       "loading": {
         "mode": "chapter_shards",
         "shards": 17,
         "routes": 6809,
-        "catalog_bytes": 293923,
-        "shard_bytes": 24436382
+        "catalog_bytes": 298118,
+        "shard_bytes": 25365485,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "nonsmooth_optimization",
+      "short_name": "Nonsmooth Optimization",
+      "accent": "#72558a",
+      "data_url": "data/nonsmooth_optimization.json",
+      "generated_at": "2026-07-21T07:33:59.951988+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 4052,
+        "statements": 4511,
+        "official_statements": 1114,
+        "intermediate_statements": 3397,
+        "chapters": 13,
+        "leaf_topics": 2933,
+        "base_statements": 1114,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 400,
+          "certificate": 307,
+          "complexity_bound": 215,
+          "condition": 399,
+          "counterexample": 340,
+          "definition": 765,
+          "duality": 58,
+          "example": 1,
+          "failure_boundary": 469,
+          "principle": 69,
+          "property": 546,
+          "representation": 523,
+          "theorem": 419
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1114,
+        "added_intermediate_count": 3054,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 18,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 18,
+        "sources": {
+          "topic_complete_current": 1194,
+          "topic_complete_new_deferred": 50,
+          "topic_complete_seed_deferred": 1810
+        },
+        "total_statement_count": 4168
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A06.C01",
+          "display_number": "6.1",
+          "title": "Nonsmooth Model Sources",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 340,
+          "subtree_statement_count": 268
+        },
+        {
+          "topic_id": "A06.C02",
+          "display_number": "6.2",
+          "title": "Generalized Differential Geometry Calculus",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 575,
+          "subtree_statement_count": 496
+        },
+        {
+          "topic_id": "A06.C03",
+          "display_number": "6.3",
+          "title": "Nonsmooth Optimality Certificate System",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 212,
+          "subtree_statement_count": 162
+        },
+        {
+          "topic_id": "A06.C04",
+          "display_number": "6.4",
+          "title": "Convex Subgradient",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 257,
+          "subtree_statement_count": 508
+        },
+        {
+          "topic_id": "A06.C05",
+          "display_number": "6.5",
+          "title": "Convex Nonsmooth Model Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 296,
+          "subtree_statement_count": 559
+        },
+        {
+          "topic_id": "A06.C06",
+          "display_number": "6.6",
+          "title": "Composite Residual-Envelope Calculus",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 385,
+          "subtree_statement_count": 668
+        },
+        {
+          "topic_id": "A06.C07",
+          "display_number": "6.7",
+          "title": "Smoothing-Penalty-Continuation Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 270,
+          "subtree_statement_count": 218
+        },
+        {
+          "topic_id": "A06.C08",
+          "display_number": "6.8",
+          "title": "Nonsmooth Equation Local-Model Calculus",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 294,
+          "subtree_statement_count": 221
+        },
+        {
+          "topic_id": "A06.C09",
+          "display_number": "6.9",
+          "title": "Semismooth Newton Active-Set Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 295,
+          "subtree_statement_count": 222
+        },
+        {
+          "topic_id": "A06.C10",
+          "display_number": "6.10",
+          "title": "Sampled Computational Nonsmooth Analysis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 207,
+          "subtree_statement_count": 144
+        },
+        {
+          "topic_id": "A06.C11",
+          "display_number": "6.11",
+          "title": "DC-Type Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 349,
+          "subtree_statement_count": 564
+        },
+        {
+          "topic_id": "A06.C12",
+          "display_number": "6.12",
+          "title": "Deterministic Weakly Convex-Nonconvex Model Method Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 281,
+          "subtree_statement_count": 263
+        },
+        {
+          "topic_id": "A06.C13",
+          "display_number": "6.13",
+          "title": "Stochastic Weakly Convex Nonsmooth Methods",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 290,
+          "subtree_statement_count": 218
+        }
+      ],
+      "campaign_snapshot_statement_count": 343,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 13,
+        "routes": 4051,
+        "catalog_bytes": 170900,
+        "shard_bytes": 14936679,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "specialized_continuous_methods",
+      "short_name": "Specialized Continuous and Large-Scale Methods",
+      "accent": "#3f7589",
+      "data_url": "data/specialized_continuous_methods.json",
+      "generated_at": "2026-07-21T07:33:58.575354+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 3480,
+        "statements": 4003,
+        "official_statements": 713,
+        "intermediate_statements": 3290,
+        "chapters": 8,
+        "leaf_topics": 2551,
+        "base_statements": 713,
+        "coverage": 1.0,
+        "max_depth": 6,
+        "content_kinds": {
+          "algorithm": 709,
+          "certificate": 235,
+          "complexity_bound": 183,
+          "condition": 370,
+          "counterexample": 201,
+          "definition": 517,
+          "duality": 50,
+          "failure_boundary": 571,
+          "principle": 65,
+          "property": 397,
+          "remark": 1,
+          "representation": 520,
+          "theorem": 184
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 713,
+        "added_intermediate_count": 3235,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 16,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 16,
+        "sources": {
+          "topic_complete_current": 1352,
+          "topic_complete_new_deferred": 53,
+          "topic_complete_seed_deferred": 1830
+        },
+        "total_statement_count": 3948
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A07.C01",
+          "display_number": "7.1",
+          "title": "Derivative-Free Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 582,
+          "subtree_statement_count": 1304
+        },
+        {
+          "topic_id": "A07.C02",
+          "display_number": "7.2",
+          "title": "Manifold Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 572,
+          "subtree_statement_count": 434
+        },
+        {
+          "topic_id": "A07.C03",
+          "display_number": "7.3",
+          "title": "Distributed Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 474,
+          "subtree_statement_count": 574
+        },
+        {
+          "topic_id": "A07.C04.BAL01",
+          "display_number": "7.4",
+          "title": "Continuous Lagrangian-Block Decomposition Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 350,
+          "subtree_statement_count": 572
+        },
+        {
+          "topic_id": "A07.C04.BAL02",
+          "display_number": "7.5",
+          "title": "Scenario-Splitting Decomposition Interface",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 326,
+          "subtree_statement_count": 238
+        },
+        {
+          "topic_id": "A07.C04.BAL03",
+          "display_number": "7.6",
+          "title": "Mathematical-Programming Decomposition Regime Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 556,
+          "subtree_statement_count": 410
+        },
+        {
+          "topic_id": "A07.C05",
+          "display_number": "7.7",
+          "title": "Matrix-Free Second-Order Solver Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 311,
+          "subtree_statement_count": 247
+        },
+        {
+          "topic_id": "A07.C06",
+          "display_number": "7.8",
+          "title": "Fixed-Point Solver Acceleration",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 308,
+          "subtree_statement_count": 224
+        }
+      ],
+      "campaign_snapshot_statement_count": 55,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 8,
+        "routes": 3479,
+        "catalog_bytes": 164791,
+        "shard_bytes": 12974864,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "convex_programming",
+      "short_name": "Convex Programming",
+      "accent": "#8a643b",
+      "data_url": "data/convex_programming.json",
+      "generated_at": "2026-07-21T07:33:59.862728+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 4217,
+        "statements": 5016,
+        "official_statements": 946,
+        "intermediate_statements": 4070,
+        "chapters": 12,
+        "leaf_topics": 3089,
+        "base_statements": 946,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 232,
+          "certificate": 326,
+          "complexity_bound": 107,
+          "condition": 358,
+          "counterexample": 297,
+          "definition": 828,
+          "duality": 182,
+          "failure_boundary": 668,
+          "principle": 73,
+          "property": 565,
+          "representation": 1081,
+          "theorem": 299
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 946,
+        "added_intermediate_count": 3788,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 40,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 40,
+        "sources": {
+          "topic_complete_current": 1569,
+          "topic_complete_new_deferred": 81,
+          "topic_complete_seed_deferred": 2138
+        },
+        "total_statement_count": 4734
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A08.C01",
+          "display_number": "8.1",
+          "title": "Disciplined Convex Modeling",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 552,
+          "subtree_statement_count": 784
+        },
+        {
+          "topic_id": "A08.C02.BAL01",
+          "display_number": "8.2",
+          "title": "Loss Templates",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 157,
+          "subtree_statement_count": 113
+        },
+        {
+          "topic_id": "A08.C02.BAL02",
+          "display_number": "8.3",
+          "title": "Regularized Learning Formulation Templates",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 345,
+          "subtree_statement_count": 264
+        },
+        {
+          "topic_id": "A08.C02.BAL03",
+          "display_number": "8.4",
+          "title": "Low-Complexity Model Templates",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 313,
+          "subtree_statement_count": 235
+        },
+        {
+          "topic_id": "A08.C02.BAL04",
+          "display_number": "8.5",
+          "title": "Robust Constraint Template Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 307,
+          "subtree_statement_count": 228
+        },
+        {
+          "topic_id": "A08.C02.BAL05",
+          "display_number": "8.6",
+          "title": "Application-Facing Convex Templates",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 398,
+          "subtree_statement_count": 819
+        },
+        {
+          "topic_id": "A08.C03",
+          "display_number": "8.7",
+          "title": "Graph Canonicalization Reformulation Calculus",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 333,
+          "subtree_statement_count": 249
+        },
+        {
+          "topic_id": "A08.C04",
+          "display_number": "8.8",
+          "title": "Composite Objective-Regularizer Structure",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 261,
+          "subtree_statement_count": 502
+        },
+        {
+          "topic_id": "A08.C05",
+          "display_number": "8.9",
+          "title": "Proximal Inclusion Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 434,
+          "subtree_statement_count": 357
+        },
+        {
+          "topic_id": "A08.C06",
+          "display_number": "8.10",
+          "title": "Convexification-Reformulation Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 294,
+          "subtree_statement_count": 482
+        },
+        {
+          "topic_id": "A08.C07",
+          "display_number": "8.11",
+          "title": "Lifted-Conic Representation Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 484,
+          "subtree_statement_count": 418
+        },
+        {
+          "topic_id": "A08.C08",
+          "display_number": "8.12",
+          "title": "Convex Program Form-Certificate System",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 338,
+          "subtree_statement_count": 564
+        }
+      ],
+      "campaign_snapshot_statement_count": 282,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 12,
+        "routes": 4216,
+        "catalog_bytes": 206207,
+        "shard_bytes": 15652704,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "linear_programming",
+      "short_name": "Linear Programming",
+      "accent": "#4f6f46",
+      "data_url": "data/linear_programming.json",
+      "generated_at": "2026-07-21T07:34:01.193799+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 4009,
+        "statements": 4264,
+        "official_statements": 1524,
+        "intermediate_statements": 2740,
+        "chapters": 14,
+        "leaf_topics": 2904,
+        "base_statements": 1524,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 728,
+          "certificate": 231,
+          "complexity_bound": 241,
+          "condition": 449,
+          "counterexample": 162,
+          "definition": 535,
+          "duality": 57,
+          "failure_boundary": 539,
+          "notation": 1,
+          "principle": 67,
+          "property": 438,
+          "representation": 548,
+          "theorem": 268
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1524,
+        "added_intermediate_count": 2472,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 9,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 9,
+        "sources": {
+          "topic_complete_current": 1050,
+          "topic_complete_new_deferred": 50,
+          "topic_complete_seed_deferred": 1372
+        },
+        "total_statement_count": 3996
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A09.C01",
+          "display_number": "9.1",
+          "title": "LP Model Geometry",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 271,
+          "subtree_statement_count": 300
+        },
+        {
+          "topic_id": "A09.C02",
+          "display_number": "9.2",
+          "title": "LP Duality Certificate System",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 205,
+          "subtree_statement_count": 255
+        },
+        {
+          "topic_id": "A09.C03",
+          "display_number": "9.3",
+          "title": "LP Parametric Sensitivity Calculus",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 243,
+          "subtree_statement_count": 189
+        },
+        {
+          "topic_id": "A09.C04",
+          "display_number": "9.4",
+          "title": "Structured Large-Scale LP Regimes",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 345,
+          "subtree_statement_count": 270
+        },
+        {
+          "topic_id": "A09.C05",
+          "display_number": "9.5",
+          "title": "Simplex Basis-State Algebra Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 323,
+          "subtree_statement_count": 250
+        },
+        {
+          "topic_id": "A09.C06",
+          "display_number": "9.6",
+          "title": "Simplex Initialization-Variant Reoptimization Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 128,
+          "subtree_statement_count": 102
+        },
+        {
+          "topic_id": "A09.C07",
+          "display_number": "9.7",
+          "title": "Simplex Pivot-Control Dynamics",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 159,
+          "subtree_statement_count": 111
+        },
+        {
+          "topic_id": "A09.C08",
+          "display_number": "9.8",
+          "title": "Simplex Termination-Complexity Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 187,
+          "subtree_statement_count": 138
+        },
+        {
+          "topic_id": "A09.C09.BAL01",
+          "display_number": "9.9",
+          "title": "Barrier Path Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 190,
+          "subtree_statement_count": 225
+        },
+        {
+          "topic_id": "A09.C09.BAL02",
+          "display_number": "9.10",
+          "title": "Primal-Dual Equation-Embedding Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 240,
+          "subtree_statement_count": 183
+        },
+        {
+          "topic_id": "A09.C09.BAL03",
+          "display_number": "9.11",
+          "title": "Barrier Computational Recovery Pipeline",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 278,
+          "subtree_statement_count": 512
+        },
+        {
+          "topic_id": "A09.C09.BAL04",
+          "display_number": "9.12",
+          "title": "Classical LP Interior-Point Families",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 368,
+          "subtree_statement_count": 513
+        },
+        {
+          "topic_id": "A09.C10",
+          "display_number": "9.13",
+          "title": "LP Algorithmic Complexity",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 518,
+          "subtree_statement_count": 812
+        },
+        {
+          "topic_id": "A09.C11",
+          "display_number": "9.14",
+          "title": "LP Solver Implementation-Diagnostics Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 553,
+          "subtree_statement_count": 404
+        }
+      ],
+      "campaign_snapshot_statement_count": 268,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 14,
+        "routes": 4008,
+        "catalog_bytes": 188144,
+        "shard_bytes": 15149355,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "conic_optimization",
+      "short_name": "Conic Optimization",
+      "accent": "#855a73",
+      "data_url": "data/conic_optimization.json",
+      "generated_at": "2026-07-21T08:46:12.131181+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 3640,
+        "statements": 4193,
+        "official_statements": 1188,
+        "intermediate_statements": 3005,
+        "chapters": 9,
+        "leaf_topics": 2665,
+        "base_statements": 1188,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 471,
+          "certificate": 268,
+          "complexity_bound": 169,
+          "condition": 359,
+          "counterexample": 224,
+          "definition": 474,
+          "duality": 98,
+          "failure_boundary": 493,
+          "principle": 61,
+          "property": 526,
+          "representation": 754,
+          "theorem": 296
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1188,
+        "added_intermediate_count": 2847,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 19,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 19,
+        "sources": {
+          "topic_complete_current": 1327,
+          "topic_complete_new_deferred": 56,
+          "topic_complete_seed_deferred": 1464
+        },
+        "total_statement_count": 4035
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A10.SC01",
+          "display_number": "10.1",
+          "title": "Cone-Program Representation Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 493,
+          "subtree_statement_count": 819
+        },
+        {
+          "topic_id": "A10.SC02",
+          "display_number": "10.2",
+          "title": "Conic Modeling Canonicalization Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 393,
+          "subtree_statement_count": 469
+        },
+        {
+          "topic_id": "A10.SC03.BAL01",
+          "display_number": "10.3",
+          "title": "Barrier-Based Interior-Point Algorithmics",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 381,
+          "subtree_statement_count": 703
+        },
+        {
+          "topic_id": "A10.SC03.BAL02",
+          "display_number": "10.4",
+          "title": "First-Order Conic Solver Diagnostic Interface",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 391,
+          "subtree_statement_count": 286
+        },
+        {
+          "topic_id": "A10.SC03.BAL03",
+          "display_number": "10.5",
+          "title": "Conic Decomposition-Reduction Hierarchy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 347,
+          "subtree_statement_count": 674
+        },
+        {
+          "topic_id": "A10.SC04",
+          "display_number": "10.6",
+          "title": "Semidefinite Theory-Modeling Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 517,
+          "subtree_statement_count": 414
+        },
+        {
+          "topic_id": "A10.SC05.BAL01",
+          "display_number": "10.7",
+          "title": "Semidefinite Algorithms",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 363,
+          "subtree_statement_count": 261
+        },
+        {
+          "topic_id": "A10.SC05.BAL02",
+          "display_number": "10.8",
+          "title": "Semidefinite Relaxation Guarantee System",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 387,
+          "subtree_statement_count": 294
+        },
+        {
+          "topic_id": "A10.SC05.BAL03",
+          "display_number": "10.9",
+          "title": "Structure-Exploiting SDP Computation",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 367,
+          "subtree_statement_count": 273
+        }
+      ],
+      "campaign_snapshot_statement_count": 158,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 9,
+        "routes": 3639,
+        "catalog_bytes": 189956,
+        "shard_bytes": 13704326,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "quadratic_optimization",
+      "short_name": "Quadratic Optimization",
+      "accent": "#536d91",
+      "data_url": "data/quadratic_optimization.json",
+      "generated_at": "2026-07-21T08:46:10.873755+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 3271,
+        "statements": 3772,
+        "official_statements": 837,
+        "intermediate_statements": 2935,
+        "chapters": 10,
+        "leaf_topics": 2371,
+        "base_statements": 837,
+        "coverage": 1.0,
+        "max_depth": 6,
+        "content_kinds": {
+          "algorithm": 542,
+          "certificate": 275,
+          "complexity_bound": 161,
+          "condition": 347,
+          "counterexample": 176,
+          "definition": 341,
+          "duality": 68,
+          "failure_boundary": 421,
+          "principle": 59,
+          "property": 438,
+          "representation": 695,
+          "theorem": 249
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 837,
+        "added_intermediate_count": 2771,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 28,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 28,
+        "sources": {
+          "topic_complete_current": 1180,
+          "topic_complete_new_deferred": 61,
+          "topic_complete_seed_deferred": 1530
+        },
+        "total_statement_count": 3608
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A11.C01.BAL01",
+          "display_number": "11.1",
+          "title": "Convex QP Structural Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 314,
+          "subtree_statement_count": 256
+        },
+        {
+          "topic_id": "A11.C01.BAL02",
+          "display_number": "11.2",
+          "title": "Convex QP Optimality-Duality-Sensitivity Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 283,
+          "subtree_statement_count": 237
+        },
+        {
+          "topic_id": "A11.C01.BAL03",
+          "display_number": "11.3",
+          "title": "Active-Set-Interior-Point Algorithm Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 243,
+          "subtree_statement_count": 606
+        },
+        {
+          "topic_id": "A11.C01.BAL04",
+          "display_number": "11.4",
+          "title": "First-Order QP Solver Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 416,
+          "subtree_statement_count": 299
+        },
+        {
+          "topic_id": "A11.C01.BAL05",
+          "display_number": "11.5",
+          "title": "Convex QP Model Templates",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 400,
+          "subtree_statement_count": 736
+        },
+        {
+          "topic_id": "A11.C02",
+          "display_number": "11.6",
+          "title": "Quadratically Constrained Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 458,
+          "subtree_statement_count": 338
+        },
+        {
+          "topic_id": "A11.C03",
+          "display_number": "11.7",
+          "title": "Continuous Global Indefinite Quadratic Programming",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 359,
+          "subtree_statement_count": 613
+        },
+        {
+          "topic_id": "A11.C04",
+          "display_number": "11.8",
+          "title": "Quadratic Structures in Mixed-Integer Models",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 235,
+          "subtree_statement_count": 172
+        },
+        {
+          "topic_id": "A11.C05",
+          "display_number": "11.9",
+          "title": "Quadratic Relaxation-Strengthening Hierarchy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 268,
+          "subtree_statement_count": 201
+        },
+        {
+          "topic_id": "A11.C06",
+          "display_number": "11.10",
+          "title": "Quadratic Subproblem Solver Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 294,
+          "subtree_statement_count": 314
+        }
+      ],
+      "campaign_snapshot_statement_count": 164,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 10,
+        "routes": 3270,
+        "catalog_bytes": 159961,
+        "shard_bytes": 12290284,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "integer_mixed_integer_optimization",
+      "short_name": "Integer and Mixed-Integer Optimization",
+      "accent": "#84623d",
+      "data_url": "data/integer_mixed_integer_optimization.json",
+      "generated_at": "2026-07-21T08:46:18.920069+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 6962,
+        "statements": 7257,
+        "official_statements": 1949,
+        "intermediate_statements": 5308,
+        "chapters": 16,
+        "leaf_topics": 5076,
+        "base_statements": 1949,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 1120,
+          "certificate": 379,
+          "complexity_bound": 351,
+          "condition": 590,
+          "counterexample": 270,
+          "definition": 1294,
+          "duality": 90,
+          "failure_boundary": 766,
+          "principle": 145,
+          "property": 633,
+          "representation": 1045,
+          "theorem": 574
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1949,
+        "added_intermediate_count": 4524,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 26,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 26,
+        "sources": {
+          "topic_complete_current": 1370,
+          "topic_complete_new_deferred": 41,
+          "topic_complete_seed_deferred": 3113
+        },
+        "total_statement_count": 6473
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A12.C01",
+          "display_number": "12.1",
+          "title": "Integer-Variable Modeling Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 519,
+          "subtree_statement_count": 507
+        },
+        {
+          "topic_id": "A12.C02",
+          "display_number": "12.2",
+          "title": "Logic-Disjunction Formulation Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 346,
+          "subtree_statement_count": 298
+        },
+        {
+          "topic_id": "A12.C03",
+          "display_number": "12.3",
+          "title": "Formulation Strength Extension Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 342,
+          "subtree_statement_count": 549
+        },
+        {
+          "topic_id": "A12.C04",
+          "display_number": "12.4",
+          "title": "Factorable Linearization Calculus",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 204,
+          "subtree_statement_count": 334
+        },
+        {
+          "topic_id": "A12.C05",
+          "display_number": "12.5",
+          "title": "Symmetry in Integer Models",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 333,
+          "subtree_statement_count": 243
+        },
+        {
+          "topic_id": "A12.C06",
+          "display_number": "12.6",
+          "title": "Integer-Polyhedral Systems Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 364,
+          "subtree_statement_count": 477
+        },
+        {
+          "topic_id": "A12.C07",
+          "display_number": "12.7",
+          "title": "Valid-Inequality Cutting-Plane Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 453,
+          "subtree_statement_count": 463
+        },
+        {
+          "topic_id": "A12.C08",
+          "display_number": "12.8",
+          "title": "Separation Cut-Management Interface",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 391,
+          "subtree_statement_count": 305
+        },
+        {
+          "topic_id": "A12.C09",
+          "display_number": "12.9",
+          "title": "Branching Search Bounds",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 386,
+          "subtree_statement_count": 628
+        },
+        {
+          "topic_id": "A12.C10",
+          "display_number": "12.10",
+          "title": "Integrated Branching-Cutting Algorithms",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 370,
+          "subtree_statement_count": 310
+        },
+        {
+          "topic_id": "A12.C11",
+          "display_number": "12.11",
+          "title": "Structured MIP Decomposition Algorithm Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 581,
+          "subtree_statement_count": 429
+        },
+        {
+          "topic_id": "A12.C12",
+          "display_number": "12.12",
+          "title": "Integer-Programming Dynamic Programs",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 386,
+          "subtree_statement_count": 291
+        },
+        {
+          "topic_id": "A12.C13",
+          "display_number": "12.13",
+          "title": "Practical MIP Solver Mechanisms",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 738,
+          "subtree_statement_count": 551
+        },
+        {
+          "topic_id": "A12.C14",
+          "display_number": "12.14",
+          "title": "Mixed-Integer Quadratic-Nonlinear Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 472,
+          "subtree_statement_count": 329
+        },
+        {
+          "topic_id": "A12.C15",
+          "display_number": "12.15",
+          "title": "Binary Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 563,
+          "subtree_statement_count": 1108
+        },
+        {
+          "topic_id": "A12.C16",
+          "display_number": "12.16",
+          "title": "Integer Programming Complexity-Algorithmics Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 513,
+          "subtree_statement_count": 435
+        }
+      ],
+      "campaign_snapshot_statement_count": 784,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 16,
+        "routes": 6961,
+        "catalog_bytes": 305355,
+        "shard_bytes": 25577653,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "combinatorial_optimization",
+      "short_name": "Combinatorial Optimization",
+      "accent": "#3e7565",
+      "data_url": "data/combinatorial_optimization.json",
+      "generated_at": "2026-07-21T08:46:20.902882+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 10445,
+        "statements": 9792,
+        "official_statements": 1935,
+        "intermediate_statements": 7857,
+        "chapters": 19,
+        "leaf_topics": 7544,
+        "base_statements": 1935,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 1351,
+          "certificate": 425,
+          "complexity_bound": 509,
+          "condition": 672,
+          "counterexample": 261,
+          "definition": 2678,
+          "duality": 198,
+          "failure_boundary": 822,
+          "principle": 179,
+          "property": 777,
+          "remark": 1,
+          "representation": 1018,
+          "theorem": 901
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1935,
+        "added_intermediate_count": 7003,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 9,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 9,
+        "sources": {
+          "topic_complete_current": 1331,
+          "topic_complete_new_deferred": 63,
+          "topic_complete_seed_deferred": 5609
+        },
+        "total_statement_count": 8938
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A13.CO01",
+          "display_number": "13.1",
+          "title": "Discrete Optimization Foundation Hierarchy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 581,
+          "subtree_statement_count": 643
+        },
+        {
+          "topic_id": "A13.CO02",
+          "display_number": "13.2",
+          "title": "Spanning Structure Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 368,
+          "subtree_statement_count": 302
+        },
+        {
+          "topic_id": "A13.CO03",
+          "display_number": "13.3",
+          "title": "Static Path-Flow Foundations",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 428,
+          "subtree_statement_count": 385
+        },
+        {
+          "topic_id": "A13.CO04",
+          "display_number": "13.4",
+          "title": "Flow-Cut-Circulation Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 313,
+          "subtree_statement_count": 262
+        },
+        {
+          "topic_id": "A13.CO05",
+          "display_number": "13.5",
+          "title": "Costed Network-Flow Model Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 369,
+          "subtree_statement_count": 490
+        },
+        {
+          "topic_id": "A13.CO06",
+          "display_number": "13.6",
+          "title": "Multicommodity Routing-Design Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 525,
+          "subtree_statement_count": 458
+        },
+        {
+          "topic_id": "A13.CO07",
+          "display_number": "13.7",
+          "title": "Matching-Factor-Join Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 512,
+          "subtree_statement_count": 462
+        },
+        {
+          "topic_id": "A13.CO08",
+          "display_number": "13.8",
+          "title": "Matroid Greedy-Exchange Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 560,
+          "subtree_statement_count": 452
+        },
+        {
+          "topic_id": "A13.CO09",
+          "display_number": "13.9",
+          "title": "Submodular-Discrete-Convex Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 587,
+          "subtree_statement_count": 456
+        },
+        {
+          "topic_id": "A13.CO10",
+          "display_number": "13.10",
+          "title": "Incidence-System Optimization Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 512,
+          "subtree_statement_count": 422
+        },
+        {
+          "topic_id": "A13.CO11",
+          "display_number": "13.11",
+          "title": "Selection-Packing-Cutting Problem Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 491,
+          "subtree_statement_count": 371
+        },
+        {
+          "topic_id": "A13.CO12",
+          "display_number": "13.12",
+          "title": "Tour-Fleet Routing Problem Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 860,
+          "subtree_statement_count": 630
+        },
+        {
+          "topic_id": "A13.CO13",
+          "display_number": "13.13",
+          "title": "Scheduling-Timetabling-Rostering Taxonomy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 1036,
+          "subtree_statement_count": 756
+        },
+        {
+          "topic_id": "A13.CO14",
+          "display_number": "13.14",
+          "title": "Graph Cut-Coloring-Perfection Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 451,
+          "subtree_statement_count": 334
+        },
+        {
+          "topic_id": "A13.CO15",
+          "display_number": "13.15",
+          "title": "Parameterized Exact Algorithm Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 605,
+          "subtree_statement_count": 464
+        },
+        {
+          "topic_id": "A13.CO16",
+          "display_number": "13.16",
+          "title": "Approximation Frontier Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 414,
+          "subtree_statement_count": 948
+        },
+        {
+          "topic_id": "A13.CO17",
+          "display_number": "13.17",
+          "title": "Approximation Conversion Algorithm Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 419,
+          "subtree_statement_count": 921
+        },
+        {
+          "topic_id": "A13.CO18",
+          "display_number": "13.18",
+          "title": "Evolving-Information Discrete Algorithm Regime Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 581,
+          "subtree_statement_count": 396
+        },
+        {
+          "topic_id": "A13.CO19",
+          "display_number": "13.19",
+          "title": "Empirical Algorithm Engineering Benchmark System",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 832,
+          "subtree_statement_count": 629
+        }
+      ],
+      "campaign_snapshot_statement_count": 854,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 19,
+        "routes": 10444,
+        "catalog_bytes": 523763,
+        "shard_bytes": 33803582,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "constraint_logic_optimization",
+      "short_name": "Constraint and Logic-Based Optimization",
+      "accent": "#765e87",
+      "data_url": "data/constraint_logic_optimization.json",
+      "generated_at": "2026-07-21T09:45:34.838570+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 6768,
+        "statements": 6594,
+        "official_statements": 564,
+        "intermediate_statements": 6030,
+        "chapters": 13,
+        "leaf_topics": 4921,
+        "base_statements": 564,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 1186,
+          "certificate": 369,
+          "complexity_bound": 401,
+          "condition": 622,
+          "counterexample": 254,
+          "definition": 1118,
+          "duality": 29,
+          "failure_boundary": 754,
+          "principle": 173,
+          "property": 611,
+          "representation": 888,
+          "theorem": 189
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 564,
+        "added_intermediate_count": 6028,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 10,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 10,
+        "sources": {
+          "topic_complete_current": 1609,
+          "topic_complete_new_deferred": 64,
+          "topic_complete_seed_deferred": 4355
+        },
+        "total_statement_count": 6592
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A14.C01",
+          "display_number": "14.1",
+          "title": "Finite-Domain Constraint Models",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 635,
+          "subtree_statement_count": 443
+        },
+        {
+          "topic_id": "A14.C02",
+          "display_number": "14.2",
+          "title": "Global-Constraint Template Families",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 497,
+          "subtree_statement_count": 356
+        },
+        {
+          "topic_id": "A14.C03",
+          "display_number": "14.3",
+          "title": "Consistency-Propagation Theory",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 427,
+          "subtree_statement_count": 860
+        },
+        {
+          "topic_id": "A14.C04",
+          "display_number": "14.4",
+          "title": "Propagation-Guided CP Search Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 466,
+          "subtree_statement_count": 349
+        },
+        {
+          "topic_id": "A14.C05",
+          "display_number": "14.5",
+          "title": "SAT Representation-to-Certification Stack",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 632,
+          "subtree_statement_count": 472
+        },
+        {
+          "topic_id": "A14.C06",
+          "display_number": "14.6",
+          "title": "Boolean Optimization Representation Family",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 707,
+          "subtree_statement_count": 1560
+        },
+        {
+          "topic_id": "A14.C07",
+          "display_number": "14.7",
+          "title": "SMT-OMT Solver Hierarchy",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 541,
+          "subtree_statement_count": 389
+        },
+        {
+          "topic_id": "A14.C08",
+          "display_number": "14.8",
+          "title": "CP-SAT Solver Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 574,
+          "subtree_statement_count": 410
+        },
+        {
+          "topic_id": "A14.C09",
+          "display_number": "14.9",
+          "title": "Constraint Integer Programming Hybrid Architectures",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 440,
+          "subtree_statement_count": 393
+        },
+        {
+          "topic_id": "A14.C10",
+          "display_number": "14.10",
+          "title": "Logic-Based Benders Decomposition",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 339,
+          "subtree_statement_count": 244
+        },
+        {
+          "topic_id": "A14.C11",
+          "display_number": "14.11",
+          "title": "Decision-Diagram Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 343,
+          "subtree_statement_count": 247
+        },
+        {
+          "topic_id": "A14.C12",
+          "display_number": "14.12",
+          "title": "Distributed Constraint Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 432,
+          "subtree_statement_count": 316
+        },
+        {
+          "topic_id": "A14.C13",
+          "display_number": "14.13",
+          "title": "Constraint-Based Plan-Schedule-Configuration Synthesis",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 734,
+          "subtree_statement_count": 555
+        }
+      ],
+      "campaign_snapshot_statement_count": 2,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 13,
+        "routes": 6767,
+        "catalog_bytes": 293233,
+        "shard_bytes": 21070197,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "global_optimization",
+      "short_name": "Global Optimization",
+      "accent": "#9a5948",
+      "data_url": "data/global_optimization.json",
+      "generated_at": "2026-07-21T09:45:39.421820+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 5780,
+        "statements": 5842,
+        "official_statements": 1886,
+        "intermediate_statements": 3956,
+        "chapters": 20,
+        "leaf_topics": 4214,
+        "base_statements": 1886,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 701,
+          "certificate": 487,
+          "complexity_bound": 222,
+          "condition": 524,
+          "counterexample": 328,
+          "definition": 842,
+          "duality": 68,
+          "failure_boundary": 697,
+          "principle": 108,
+          "property": 658,
+          "representation": 778,
+          "theorem": 429
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 1886,
+        "added_intermediate_count": 3668,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 33,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 33,
+        "sources": {
+          "topic_complete_current": 1285,
+          "topic_complete_new_deferred": 67,
+          "topic_complete_seed_deferred": 2316
+        },
+        "total_statement_count": 5554
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A15.C01.BAL01",
+          "display_number": "15.1",
+          "title": "Continuous Global Problem Classes",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 435,
+          "subtree_statement_count": 905
+        },
+        {
+          "topic_id": "A15.C01.BAL02",
+          "display_number": "15.2",
+          "title": "Convex Underestimation",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 293,
+          "subtree_statement_count": 230
+        },
+        {
+          "topic_id": "A15.C01.BAL03",
+          "display_number": "15.3",
+          "title": "Factorable Relaxations",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 236,
+          "subtree_statement_count": 167
+        },
+        {
+          "topic_id": "A15.C01.BAL04",
+          "display_number": "15.4",
+          "title": "AlphaBB Convexification",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 175,
+          "subtree_statement_count": 272
+        },
+        {
+          "topic_id": "A15.C01.BAL05",
+          "display_number": "15.5",
+          "title": "Relaxation Validity",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 248,
+          "subtree_statement_count": 195
+        },
+        {
+          "topic_id": "A15.C01.BAL06",
+          "display_number": "15.6",
+          "title": "Classical Deterministic Global Model Families",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 316,
+          "subtree_statement_count": 469
+        },
+        {
+          "topic_id": "A15.C02",
+          "display_number": "15.7",
+          "title": "Spatial Subdivision Global Search",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 341,
+          "subtree_statement_count": 240
+        },
+        {
+          "topic_id": "A15.C03",
+          "display_number": "15.8",
+          "title": "Validated Interval Global Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 360,
+          "subtree_statement_count": 275
+        },
+        {
+          "topic_id": "A15.C04",
+          "display_number": "15.9",
+          "title": "Regularity-Based Partition Search",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 277,
+          "subtree_statement_count": 214
+        },
+        {
+          "topic_id": "A15.C05",
+          "display_number": "15.10",
+          "title": "Continuous Global Solver Workflows",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 454,
+          "subtree_statement_count": 402
+        },
+        {
+          "topic_id": "A15.C06.BAL01",
+          "display_number": "15.11",
+          "title": "Polynomial Problem Classes",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 261,
+          "subtree_statement_count": 245
+        },
+        {
+          "topic_id": "A15.C06.BAL02",
+          "display_number": "15.12",
+          "title": "Positivity Objects",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 208,
+          "subtree_statement_count": 163
+        },
+        {
+          "topic_id": "A15.C06.BAL03",
+          "display_number": "15.13",
+          "title": "Algebraic Positivity Certificates",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 194,
+          "subtree_statement_count": 340
+        },
+        {
+          "topic_id": "A15.C06.BAL04",
+          "display_number": "15.14",
+          "title": "Certificate Assumptions",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 195,
+          "subtree_statement_count": 373
+        },
+        {
+          "topic_id": "A15.C06.BAL05",
+          "display_number": "15.15",
+          "title": "Moment Relaxations",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 242,
+          "subtree_statement_count": 202
+        },
+        {
+          "topic_id": "A15.C06.BAL06",
+          "display_number": "15.16",
+          "title": "SOS Hierarchies",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 320,
+          "subtree_statement_count": 239
+        },
+        {
+          "topic_id": "A15.C07",
+          "display_number": "15.17",
+          "title": "Structure-Exploiting Polynomial Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 331,
+          "subtree_statement_count": 242
+        },
+        {
+          "topic_id": "A15.C08a",
+          "display_number": "15.18",
+          "title": "Convex MINLP Decomposition Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 263,
+          "subtree_statement_count": 197
+        },
+        {
+          "topic_id": "A15.C08b",
+          "display_number": "15.19",
+          "title": "Nonconvex MINLP Global Search",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 324,
+          "subtree_statement_count": 238
+        },
+        {
+          "topic_id": "A15.C09",
+          "display_number": "15.20",
+          "title": "Nonconvex MICP Global Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 306,
+          "subtree_statement_count": 234
+        }
+      ],
+      "campaign_snapshot_statement_count": 288,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 20,
+        "routes": 5779,
+        "catalog_bytes": 281786,
+        "shard_bytes": 20343574,
+        "pruned_shards": 0
+      }
+    },
+    {
+      "id": "optimization_under_uncertainty",
+      "short_name": "Optimization under Uncertainty",
+      "accent": "#497286",
+      "data_url": "data/optimization_under_uncertainty.json",
+      "generated_at": "2026-07-21T09:45:34.837756+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "stats": {
+        "topics": 4613,
+        "statements": 5036,
+        "official_statements": 868,
+        "intermediate_statements": 4168,
+        "chapters": 11,
+        "leaf_topics": 3346,
+        "base_statements": 868,
+        "coverage": 1.0,
+        "max_depth": 7,
+        "content_kinds": {
+          "algorithm": 596,
+          "certificate": 218,
+          "complexity_bound": 223,
+          "condition": 432,
+          "counterexample": 278,
+          "definition": 903,
+          "duality": 91,
+          "failure_boundary": 577,
+          "principle": 76,
+          "property": 512,
+          "representation": 738,
+          "theorem": 392
+        }
+      },
+      "intermediate_result_report": {
+        "official_statement_count": 868,
+        "added_intermediate_count": 3822,
+        "unmapped_intermediate_count": 0,
+        "ancestor_mapped_intermediate_count": 0,
+        "duplicate_intermediate_count": 22,
+        "duplicate_official_title_count": 0,
+        "duplicate_intermediate_title_count": 22,
+        "sources": {
+          "topic_complete_current": 1307,
+          "topic_complete_new_deferred": 42,
+          "topic_complete_seed_deferred": 2473
+        },
+        "total_statement_count": 4690
+      },
+      "preserved_content_report": {
+        "matched_topics": 0,
+        "added_statements": 0,
+        "duplicate_titles": 0,
+        "duplicate_ids": 0
+      },
+      "chapters": [
+        {
+          "topic_id": "A16.C01.BAL01",
+          "display_number": "16.1",
+          "title": "Recourse Model Structure",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 288,
+          "subtree_statement_count": 306
+        },
+        {
+          "topic_id": "A16.C01.BAL02",
+          "display_number": "16.2",
+          "title": "Scenario Decomposition Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 581,
+          "subtree_statement_count": 527
+        },
+        {
+          "topic_id": "A16.C01.BAL03",
+          "display_number": "16.3",
+          "title": "Stochastic Mixed-Integer Programming",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 354,
+          "subtree_statement_count": 287
+        },
+        {
+          "topic_id": "A16.C02",
+          "display_number": "16.4",
+          "title": "Risk-Reliability Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 369,
+          "subtree_statement_count": 377
+        },
+        {
+          "topic_id": "A16.C03",
+          "display_number": "16.5",
+          "title": "Distributionally Robust Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 478,
+          "subtree_statement_count": 546
+        },
+        {
+          "topic_id": "A16.C04",
+          "display_number": "16.6",
+          "title": "Dynamic Risk Models",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 301,
+          "subtree_statement_count": 223
+        },
+        {
+          "topic_id": "A16.C05",
+          "display_number": "16.7",
+          "title": "Robust Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 506,
+          "subtree_statement_count": 368
+        },
+        {
+          "topic_id": "A16.C06",
+          "display_number": "16.8",
+          "title": "Simulation Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 496,
+          "subtree_statement_count": 353
+        },
+        {
+          "topic_id": "A16.C07.BAL01",
+          "display_number": "16.9",
+          "title": "Bayesian Optimization Surrogate-Acquisition Architecture",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 527,
+          "subtree_statement_count": 1183
+        },
+        {
+          "topic_id": "A16.C07.BAL02",
+          "display_number": "16.10",
+          "title": "Structure-Resource Bayesian Optimization",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 443,
+          "subtree_statement_count": 325
+        },
+        {
+          "topic_id": "A16.C07.BAL03",
+          "display_number": "16.11",
+          "title": "Bayesian Optimization Guarantee Calculus under Noise",
+          "classification_axis": "chapter",
+          "subtree_topic_count": 269,
+          "subtree_statement_count": 539
+        }
+      ],
+      "campaign_snapshot_statement_count": 346,
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 11,
+        "routes": 4612,
+        "catalog_bytes": 236307,
+        "shard_bytes": 17217728,
+        "pruned_shards": 0
       }
     },
     {
@@ -800,49 +2711,71 @@
         "mode": "chapter_shards",
         "shards": 9,
         "routes": 542,
-        "catalog_bytes": 39607,
-        "shard_bytes": 2864677
+        "catalog_bytes": 39354,
+        "shard_bytes": 2851577,
+        "pruned_shards": 0
       }
     }
   ],
   "totals": {
-    "topics": 18883,
-    "statements": 26912
+    "topics": 76120,
+    "statements": 89327
   },
   "source_campaign_snapshot": {
-    "campaign_root": "0809_optimize/formal_runs/20260809_full_library_v2",
-    "campaigns_scanned": 5,
-    "validated_build_items": 3816,
-    "validated_review_items": 2693,
-    "published_items": 868,
-    "candidates_with_body": 3580,
+    "campaign_roots": [
+      "0809_optimize/formal_runs/20260809_full_library_v2",
+      "0809_optimize/formal_runs/20260812_full_library_200_supplemental25_v1"
+    ],
+    "campaigns_scanned": 48,
+    "validated_build_items": 10364,
+    "validated_review_items": 9890,
+    "published_items": 5182,
+    "candidates_with_body": 9736,
     "stage_counts": {
-      "0809_campaign_build": 1858,
-      "0809_campaign_published": 868,
-      "0809_campaign_reviewed": 854
+      "0809_campaign_build": 3419,
+      "0809_campaign_published": 5182,
+      "0809_campaign_reviewed": 1135
     },
     "status": "snapshot_collected",
     "added_by_domain": {
-      "convex_analysis": 1280,
-      "first_order_methods": 625,
-      "nonlinear_programming": 599,
-      "variational_analysis": 38
+      "combinatorial_optimization": 854,
+      "conic_optimization": 158,
+      "constraint_logic_optimization": 2,
+      "convex_analysis": 706,
+      "convex_programming": 282,
+      "first_order_methods": 211,
+      "global_optimization": 288,
+      "integer_mixed_integer_optimization": 784,
+      "linear_programming": 268,
+      "nonlinear_programming": 951,
+      "nonsmooth_optimization": 343,
+      "optimization_under_uncertainty": 346,
+      "quadratic_optimization": 164,
+      "specialized_continuous_methods": 55,
+      "variational_analysis": 267
     },
     "added_by_stage": {
-      "0809_campaign_build": 1149,
-      "0809_campaign_published": 818,
-      "0809_campaign_reviewed": 575
+      "0809_campaign_build": 1981,
+      "0809_campaign_published": 3509,
+      "0809_campaign_reviewed": 189
     },
     "placement_methods": {
-      "campaign_existing_node": 1237,
-      "campaign_parent_fallback": 897,
-      "campaign_preferred_home": 347,
-      "campaign_single_affected_node": 61
+      "campaign_existing_node": 2744,
+      "campaign_parent_fallback": 2303,
+      "campaign_preferred_home": 384,
+      "campaign_single_affected_node": 248
     },
-    "duplicate_title_count": 47,
-    "unmapped_count": 991,
-    "added_statement_count": 2542,
-    "captured_at": "2026-08-10T02:21:48.339494+00:00"
+    "duplicate_title_count": 2520,
+    "versioned_duplicate_id_count": 111,
+    "unmapped_count": 1537,
+    "added_statement_count": 5679,
+    "captured_at": "2026-08-12T03:57:19.382842+00:00"
+  },
+  "preserved_snapshot": {
+    "domains": 4,
+    "topics": 18340,
+    "statements": 26036,
+    "duplicate_topic_occurrences": 0
   },
   "loading": {
     "mode": "chapter_shards",

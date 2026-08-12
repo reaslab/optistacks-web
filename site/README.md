@@ -1,6 +1,7 @@
 # ReasAtlas
 
-这是凸分析、变分分析、非线性规划、一阶优化方法与分布式优化的静态可视化知识站点。
+这是覆盖优化知识目录 A02–A16 的静态可视化知识站点，并保留此前发布的
+Distributed Optimization 兼容域及其原有深链接。
 它直接使用当前知识目录与 statement layer，因此目录和 statement 不需要在前端重复维护。
 
 ## 构建数据
@@ -12,12 +13,13 @@ python scripts/import_source_domains.py --source /root/workspace/lcy/optistacks
 python scripts/build_lazy_shards.py
 ```
 
-导入脚本会从原始材料读取完整 A03 Variational Analysis 和 A05 First-Order Methods，
-合并 v58 正式 statement、topic-complete 已接受结果和具有 payload 的 deferred 结果。
-它还会读取 `0809_optimize/formal_runs/20260809_full_library_v2`：正式 publish overlay
-优先，其次使用机械校验通过的 review shard，再使用尚未 review 的 PASS build shard。
+导入脚本会从原始材料读取完整 A02–A16 目录，并保留已有网页中的全部非 campaign
+statement 与人工调整过的目录名称；随后合并 v58 正式 statement、topic-complete
+已接受结果和具有 payload 的 deferred 结果。它还会读取主教材 campaign 与 25 本
+补充教材 campaign：正式 publish overlay 优先，其次使用机械校验通过的 review shard，
+再使用尚未 review 的 PASS build shard。
 新目录候选的 statement 会挂到其现有父节点，并保留原始 placement 和 review 状态；
-没有正文或无法对应当前五个领域目录的记录不会被强行归类。
+没有正文或无法对应当前 A02–A16 目录的记录不会被强行归类。
 分片脚本随后把每个领域拆成轻量目录与按章节加载的 shard：首次访问只读取目录骨架，
 进入章节时才下载正文，已经访问的章节由内存与浏览器缓存复用。
 
@@ -42,7 +44,7 @@ python -m http.server 8000 -d site
 
 站点功能包括：
 
-- 凸分析 / 变分分析 / 非线性规划 / 一阶优化方法 / 分布式优化五领域切换；
+- A02–A16 十五个完整领域，以及旧版 Distributed Optimization 兼容域切换；
 - 可滚动的领域导航与完整递归目录浏览；
 - 当前节点的直接父节点与直接子节点导航；
 - statement 的正文、公式、假设、结论、前置节点、notation 与中间阶段信息展示；
