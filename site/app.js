@@ -22,6 +22,9 @@ const state = {
 const QUALITY_STORAGE_KEY = "optistacks-quality-review-v1";
 const LAYOUT_STORAGE_KEY = "optistacks-layout-v1";
 const PANE_LABELS = { library: "domains", directory: "outline", detail: "content" };
+const LEGACY_DOMAIN_ROUTES = {
+  distributed_optimization: "specialized_continuous_methods",
+};
 const QUALITY_TYPES = {
   statement: [
     ["natural_language", "Natural-language wording"],
@@ -224,7 +227,7 @@ function bindPaneResizers() {
 function parseRoute() {
   const raw = decodeURIComponent(location.hash.slice(1));
   const [domain, ...node] = raw.split("/");
-  return { domain, node: node.join("/") || null };
+  return { domain: LEGACY_DOMAIN_ROUTES[domain] || domain, node: node.join("/") || null };
 }
 
 function versionedDataUrl(path) {
@@ -259,6 +262,7 @@ function renderDomainNav() {
 }
 
 async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
+  domainId = LEGACY_DOMAIN_ROUTES[domainId] || domainId;
   const loadToken = ++state.domainLoadToken;
   const navigationToken = ++state.navigationToken;
   const meta = state.manifest.domains.find(item => item.id === domainId) || state.manifest.domains[0];

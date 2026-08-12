@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-12T03:57:29.637009+00:00",
+  "built_at": "2026-08-12T06:43:29.840608+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -867,36 +867,36 @@
       "data_url": "data/specialized_continuous_methods.json",
       "generated_at": "2026-07-21T07:33:58.575354+00:00",
       "validation_status": "PASS",
-      "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
+      "publication_status": "source_snapshot_with_revised_distributed_overlay_and_unverified_intermediate_results_exposed",
       "stats": {
-        "topics": 3480,
-        "statements": 4003,
-        "official_statements": 713,
-        "intermediate_statements": 3290,
+        "topics": 3549,
+        "statements": 4305,
+        "official_statements": 911,
+        "intermediate_statements": 3394,
         "chapters": 8,
-        "leaf_topics": 2551,
-        "base_statements": 713,
+        "leaf_topics": 2585,
+        "base_statements": 911,
         "coverage": 1.0,
-        "max_depth": 6,
+        "max_depth": 7,
         "content_kinds": {
-          "algorithm": 709,
-          "certificate": 235,
-          "complexity_bound": 183,
-          "condition": 370,
-          "counterexample": 201,
-          "definition": 517,
-          "duality": 50,
-          "failure_boundary": 571,
-          "principle": 65,
-          "property": 397,
+          "algorithm": 729,
+          "certificate": 242,
+          "complexity_bound": 185,
+          "condition": 378,
+          "counterexample": 205,
+          "definition": 750,
+          "duality": 51,
+          "failure_boundary": 580,
+          "principle": 68,
+          "property": 400,
           "remark": 1,
-          "representation": 520,
-          "theorem": 184
+          "representation": 528,
+          "theorem": 188
         }
       },
       "intermediate_result_report": {
-        "official_statement_count": 713,
-        "added_intermediate_count": 3235,
+        "official_statement_count": 911,
+        "added_intermediate_count": 3339,
         "unmapped_intermediate_count": 0,
         "ancestor_mapped_intermediate_count": 0,
         "duplicate_intermediate_count": 16,
@@ -905,9 +905,10 @@
         "sources": {
           "topic_complete_current": 1352,
           "topic_complete_new_deferred": 53,
-          "topic_complete_seed_deferred": 1830
+          "topic_complete_seed_deferred": 1830,
+          "distributed_revision_overlay_net": 104
         },
-        "total_statement_count": 3948
+        "total_statement_count": 4250
       },
       "preserved_content_report": {
         "matched_topics": 0,
@@ -936,9 +937,9 @@
           "topic_id": "A07.C03",
           "display_number": "7.3",
           "title": "Distributed Optimization",
-          "classification_axis": "chapter",
-          "subtree_topic_count": 474,
-          "subtree_statement_count": 574
+          "classification_axis": "pedagogical dependency",
+          "subtree_topic_count": 543,
+          "subtree_statement_count": 876
         },
         {
           "topic_id": "A07.C04.BAL01",
@@ -985,10 +986,21 @@
       "loading": {
         "mode": "chapter_shards",
         "shards": 8,
-        "routes": 3479,
-        "catalog_bytes": 164791,
-        "shard_bytes": 12974864,
+        "routes": 3548,
+        "catalog_bytes": 167066,
+        "shard_bytes": 13955713,
         "pruned_shards": 0
+      },
+      "distributed_revision_merge_report": {
+        "previous_topics": 474,
+        "revised_topics": 543,
+        "previous_statements": 574,
+        "revised_statements": 876,
+        "base_statement_delta": 198,
+        "intermediate_statement_delta": 104,
+        "preserved_statements_added": 0,
+        "duplicate_statements_skipped": 574,
+        "unmapped_topics_with_statements": 0
       }
     },
     {
@@ -2578,148 +2590,11 @@
         "shard_bytes": 17217728,
         "pruned_shards": 0
       }
-    },
-    {
-      "id": "distributed_optimization",
-      "short_name": "Distributed Optimization",
-      "accent": "#6d5bd0",
-      "data_url": "data/distributed_optimization.json",
-      "generated_at": "2026-08-03T06:40:08.215594+00:00",
-      "validation_status": "PASS",
-      "publication_status": "structural_overlay_built_with_unverified_evidence_exposed",
-      "stats": {
-        "topics": 543,
-        "statements": 876,
-        "official_statements": 347,
-        "intermediate_statements": 529,
-        "chapters": 9,
-        "leaf_topics": 397,
-        "base_statements": 347,
-        "coverage": 1.0,
-        "max_depth": 7,
-        "content_kinds": {
-          "algorithm": 125,
-          "certificate": 41,
-          "complexity_bound": 39,
-          "condition": 73,
-          "counterexample": 36,
-          "definition": 336,
-          "duality": 6,
-          "failure_boundary": 75,
-          "principle": 4,
-          "property": 55,
-          "representation": 61,
-          "theorem": 25
-        }
-      },
-      "intermediate_result_report": {
-        "official_statement_count": 542,
-        "added_intermediate_count": 334,
-        "unmapped_intermediate_count": 0,
-        "ancestor_mapped_intermediate_count": 3,
-        "duplicate_intermediate_count": 2029,
-        "duplicate_official_title_count": 1,
-        "duplicate_intermediate_title_count": 2029,
-        "sources": {
-          "builder_draft": 35,
-          "deferred_ledger": 13,
-          "v3_deferred_mass_generation": 41,
-          "v3_reviewed_mass_generation": 12,
-          "v5_definition_builder_candidate": 222,
-          "v60_resolved_intermediate": 5,
-          "v6_adaptive_current": 1,
-          "v6_adaptive_deferred": 5
-        },
-        "total_statement_count": 876
-      },
-      "chapters": [
-        {
-          "topic_id": "A07.C03.N2AAC78962CED",
-          "display_number": "7.3.1",
-          "title": "Distributed Optimization Problem Formulations",
-          "classification_axis": "formulation facet",
-          "subtree_topic_count": 41,
-          "subtree_statement_count": 43
-        },
-        {
-          "topic_id": "A07.C03.NE8C81A23973E",
-          "display_number": "7.3.2",
-          "title": "Graph and Communication Foundations",
-          "classification_axis": "foundational object",
-          "subtree_topic_count": 67,
-          "subtree_statement_count": 81
-        },
-        {
-          "topic_id": "A07.C03.NF800EBDC2744",
-          "display_number": "7.3.3",
-          "title": "Distributed Optimization Algorithms",
-          "classification_axis": "algorithmic mechanism",
-          "subtree_topic_count": 82,
-          "subtree_statement_count": 206
-        },
-        {
-          "topic_id": "A07.C03.NF9B3FBEBDB6E",
-          "display_number": "7.3.4",
-          "title": "Distributed Optimization Convergence Theory",
-          "classification_axis": "convergence-analysis component",
-          "subtree_topic_count": 51,
-          "subtree_statement_count": 90
-        },
-        {
-          "topic_id": "A07.C03.R05",
-          "display_number": "7.3.5",
-          "title": "Distributed Optimization Complexity and Lower Bounds",
-          "classification_axis": "complexity result",
-          "subtree_topic_count": 28,
-          "subtree_statement_count": 38
-        },
-        {
-          "topic_id": "A07.C03.N981E388C0079",
-          "display_number": "7.3.6",
-          "title": "Communication-Efficient and Asynchronous Distributed Optimization",
-          "classification_axis": "resource-constrained design area",
-          "subtree_topic_count": 97,
-          "subtree_statement_count": 225
-        },
-        {
-          "topic_id": "A07.C03.SC03",
-          "display_number": "7.3.7",
-          "title": "Federated Optimization",
-          "classification_axis": "federated-optimization knowledge role",
-          "subtree_topic_count": 76,
-          "subtree_statement_count": 83
-        },
-        {
-          "topic_id": "A07.C03.ND8779845F416",
-          "display_number": "7.3.8",
-          "title": "Distributed Optimization Robustness and Failure Modes",
-          "classification_axis": "risk source or threat domain",
-          "subtree_topic_count": 76,
-          "subtree_statement_count": 84
-        },
-        {
-          "topic_id": "A07.C03.R09",
-          "display_number": "7.3.9",
-          "title": "Distributed Optimization Evaluation Methodology",
-          "classification_axis": "evaluation component",
-          "subtree_topic_count": 24,
-          "subtree_statement_count": 26
-        }
-      ],
-      "campaign_snapshot_statement_count": 0,
-      "loading": {
-        "mode": "chapter_shards",
-        "shards": 9,
-        "routes": 542,
-        "catalog_bytes": 39354,
-        "shard_bytes": 2851577,
-        "pruned_shards": 0
-      }
     }
   ],
   "totals": {
-    "topics": 76120,
-    "statements": 89327
+    "topics": 75646,
+    "statements": 88753
   },
   "source_campaign_snapshot": {
     "campaign_roots": [
@@ -2780,5 +2655,17 @@
   "loading": {
     "mode": "chapter_shards",
     "cache_strategy": "versioned_url_memory_and_http_cache"
+  },
+  "distributed_revision": {
+    "status": "installed_at_A07.C03",
+    "previous_topics": 474,
+    "revised_topics": 543,
+    "previous_statements": 574,
+    "revised_statements": 876,
+    "base_statement_delta": 198,
+    "intermediate_statement_delta": 104,
+    "preserved_statements_added": 0,
+    "duplicate_statements_skipped": 574,
+    "unmapped_topics_with_statements": 0
   }
 }

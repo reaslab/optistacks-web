@@ -109,7 +109,9 @@ PART_DOMAINS = (
 )
 
 LEGACY_DOMAIN_ID = "distributed_optimization"
-DOMAIN_ORDER = tuple(config["id"] for config in PART_DOMAINS) + (LEGACY_DOMAIN_ID,)
+SPECIALIZED_DOMAIN_ID = "specialized_continuous_methods"
+DISTRIBUTED_ROOT_ID = "A07.C03"
+DOMAIN_ORDER = tuple(config["id"] for config in PART_DOMAINS)
 
 CAMPAIGN_RELATIVE_PATHS = (
     Path("0809_optimize/formal_runs/20260809_full_library_v2"),
@@ -143,6 +145,120 @@ def walk(node: dict[str, Any]) -> Iterator[dict[str, Any]]:
     yield node
     for child in node.get("children", []):
         yield from walk(child)
+
+
+def find_node(tree: dict[str, Any], topic_id: str) -> dict[str, Any] | None:
+    for root in tree.get("roots", []):
+        for node in walk(root):
+            if node.get("topic_id") == topic_id:
+                return node
+    return None
+
+
+def install_revised_distributed_subtree(
+    specialized_tree: dict[str, Any], revised_root: dict[str, Any]
+) -> dict[str, int]:
+    """Replace canonical A07.C03 with its reviewed revision without losing statements."""
+    root = specialized_tree["roots"][0]
+    old_index = {node["topic_id"]: node for node in walk(root)}
+    old_distributed_root = old_index.get(DISTRIBUTED_ROOT_ID)
+    if old_distributed_root is None:
+        raise RuntimeError(f"{DISTRIBUTED_ROOT_ID} is missing from {SPECIALIZED_DOMAIN_ID}")
+    old_distributed_nodes = list(walk(old_distributed_root))
+    old_statements = [
+        statement
+        for node in old_distributed_nodes
+        for statement in node.get("knowledge_statements", [])
+    ]
+    replacement = deepcopy(revised_root)
+    revised_index = {node["topic_id"]: node for node in walk(replacement)}
+    revised_title_index: dict[str, list[dict[str, Any]]] = {}
+    for node in revised_index.values():
+        revised_title_index.setdefault(normalize_text(node.get("title")), []).append(node)
+
+    preserved_statements = 0
+    duplicate_statements = 0
+    unmapped_topics = 0
+    for source_node in old_distributed_nodes:
+        topic_id = source_node["topic_id"]
+        if topic_id == DISTRIBUTED_ROOT_ID:
+            continue
+        target = revised_index.get(topic_id)
+        if target is None:
+            same_title = revised_title_index.get(normalize_text(source_node.get("title")), [])
+            target = same_title[0] if len(same_title) == 1 else None
+        if target is None:
+            unmapped_topics += 1
+            continue
+
+        existing_titles = {
+            normalize_text(statement.get("statement_title") or statement.get("title"))
+            for statement in target.get("knowledge_statements", [])
+        }
+        existing_ids = {
+            statement.get("statement_id") or statement.get("id")
+            for statement in target.get("knowledge_statements", [])
+        }
+        for statement in source_node.get("knowledge_statements", []):
+            title = normalize_text(statement.get("statement_title") or statement.get("title"))
+            statement_id = statement.get("statement_id") or statement.get("id")
+            if (title and title in existing_titles) or (statement_id and statement_id in existing_ids):
+                duplicate_statements += 1
+                continue
+            target.setdefault("knowledge_statements", []).append(deepcopy(statement))
+            if title:
+                existing_titles.add(title)
+            if statement_id:
+                existing_ids.add(statement_id)
+            preserved_statements += 1
+
+    replaced = False
+    for index, child in enumerate(root.get("children", [])):
+        if child.get("topic_id") == DISTRIBUTED_ROOT_ID:
+            root["children"][index] = replacement
+            replaced = True
+            break
+    if not replaced:
+        raise RuntimeError(f"{DISTRIBUTED_ROOT_ID} is missing from {SPECIALIZED_DOMAIN_ID}")
+
+    revised_statements = [
+        statement
+        for node in walk(replacement)
+        for statement in node.get("knowledge_statements", [])
+    ]
+    previous_base = sum(
+        statement.get("layer_role") == "base_statement_layer" for statement in old_statements
+    )
+    revised_base = sum(
+        statement.get("layer_role") == "base_statement_layer" for statement in revised_statements
+    )
+    return {
+        "previous_topics": len(old_distributed_nodes),
+        "revised_topics": sum(1 for _ in walk(replacement)),
+        "previous_statements": len(old_statements),
+        "revised_statements": len(revised_statements),
+        "base_statement_delta": revised_base - previous_base,
+        "intermediate_statement_delta": (
+            len(revised_statements) - revised_base - (len(old_statements) - previous_base)
+        ),
+        "preserved_statements_added": preserved_statements,
+        "duplicate_statements_skipped": duplicate_statements,
+        "unmapped_topics_with_statements": unmapped_topics,
+    }
+
+
+def update_revision_import_report(domain: dict[str, Any], report: dict[str, int]) -> None:
+    intermediate_report = domain.get("intermediate_result_report")
+    if not intermediate_report:
+        return
+    base_delta = report["base_statement_delta"]
+    intermediate_delta = report["intermediate_statement_delta"]
+    intermediate_report["official_statement_count"] += base_delta
+    intermediate_report["added_intermediate_count"] += intermediate_delta
+    intermediate_report["total_statement_count"] += base_delta + intermediate_delta
+    intermediate_report.setdefault("sources", {})[
+        "distributed_revision_overlay_net"
+    ] = intermediate_delta
 
 
 def statement_has_body(record: dict[str, Any]) -> bool:
@@ -982,11 +1098,27 @@ def main() -> None:
         (deepcopy(domain) for domain in previous_manifest["domains"] if domain["id"] == LEGACY_DOMAIN_ID),
         None,
     )
-    if legacy_meta is None:
-        raise RuntimeError(f"Previous snapshot is missing required compatibility domain {LEGACY_DOMAIN_ID}")
-    legacy_tree = restore_full_domain(previous_site, legacy_meta["data_url"])
-    legacy_meta.pop("loading", None)
-    legacy_meta.pop("campaign_snapshot_statement_count", None)
+    if legacy_meta is not None:
+        legacy_tree = restore_full_domain(previous_site, legacy_meta["data_url"])
+        revised_distributed_root = deepcopy(legacy_tree["roots"][0])
+    else:
+        previous_specialized_meta = next(
+            (
+                domain
+                for domain in previous_manifest["domains"]
+                if domain["id"] == SPECIALIZED_DOMAIN_ID
+            ),
+            None,
+        )
+        if previous_specialized_meta is None:
+            raise RuntimeError("Previous snapshot has no revised distributed optimization subtree")
+        previous_specialized_tree = restore_full_domain(
+            previous_site, previous_specialized_meta["data_url"]
+        )
+        revised_distributed_root = find_node(previous_specialized_tree, DISTRIBUTED_ROOT_ID)
+        if revised_distributed_root is None:
+            raise RuntimeError("Previous snapshot is missing revised A07.C03")
+        revised_distributed_root = deepcopy(revised_distributed_root)
 
     package = source / "outputs/packages/optistacks_tree_graph_corrected_v27.zip"
     with zipfile.ZipFile(package) as archive:
@@ -1005,8 +1137,20 @@ def main() -> None:
             f"{domain['stats']['statements']:,} statements"
         )
 
-    domains[LEGACY_DOMAIN_ID] = legacy_meta
-    trees[LEGACY_DOMAIN_ID] = legacy_tree
+    revision_report = install_revised_distributed_subtree(
+        trees[SPECIALIZED_DOMAIN_ID], revised_distributed_root
+    )
+    domains[SPECIALIZED_DOMAIN_ID]["distributed_revision_merge_report"] = revision_report
+    update_revision_import_report(domains[SPECIALIZED_DOMAIN_ID], revision_report)
+    domains[SPECIALIZED_DOMAIN_ID]["publication_status"] = (
+        "source_snapshot_with_revised_distributed_overlay_and_unverified_intermediate_results_exposed"
+    )
+    refresh_domain_metadata(trees[SPECIALIZED_DOMAIN_ID], domains[SPECIALIZED_DOMAIN_ID])
+    print(
+        "Distributed Optimization revision: "
+        f"{revision_report['revised_topics']:,} topics, "
+        f"{revision_report['preserved_statements_added']:,} prior statements added"
+    )
 
     campaign_report = merge_campaign_candidates(source, trees, domains)
     for domain_id, tree in trees.items():
