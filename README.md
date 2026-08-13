@@ -55,3 +55,13 @@ current website snapshot and installs it in Part A07. Rebuild it with:
 python scripts/import_source_domains.py --source /root/workspace/lcy/optistacks
 python scripts/build_lazy_shards.py
 ```
+
+Legacy `#distributed_optimization/...` links and the merged A07 node are
+resolved through the audited mapping sidecar. The subject navigation exposes
+Distributed Optimization as the fifth shortcut while keeping A07.C03 as its
+single data source. Validate the rebuilt snapshot and its statement placement
+with:
+
+```bash
+python scripts/validate_distributed_unification.py
+```

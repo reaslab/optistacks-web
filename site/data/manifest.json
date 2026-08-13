@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-12T06:43:29.840608+00:00",
+  "built_at": "2026-08-12T06:58:43+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -1000,7 +1000,8 @@
         "intermediate_statement_delta": 104,
         "preserved_statements_added": 0,
         "duplicate_statements_skipped": 574,
-        "unmapped_topics_with_statements": 0
+        "unmapped_topics_with_statements": 0,
+        "alias_relocated_statements": 1
       }
     },
     {
@@ -2666,6 +2667,63 @@
     "intermediate_statement_delta": 104,
     "preserved_statements_added": 0,
     "duplicate_statements_skipped": 574,
-    "unmapped_topics_with_statements": 0
+    "unmapped_topics_with_statements": 0,
+    "alias_relocated_statements": 1
+  },
+  "legacy_domain_routes": {
+    "distributed_optimization": {
+      "domain_id": "specialized_continuous_methods",
+      "default_node_id": "A07.C03"
+    }
+  },
+  "navigation_shortcuts": [
+    {
+      "id": "distributed_optimization",
+      "short_name": "Distributed Optimization",
+      "accent": "#6d5bd0",
+      "position": 5,
+      "domain_id": "specialized_continuous_methods",
+      "default_node_id": "A07.C03",
+      "stats": {
+        "topics": 543,
+        "statements": 876,
+        "chapters": 9
+      }
+    }
+  ],
+  "node_redirects": {
+    "specialized_continuous_methods": {
+      "A07.C03.NC77ECCB1B848.AND6C2C62B88F": "A07.C03.N398539E5271D.AND232ED22A86",
+      "A22d1.C05.S01.K01": "A07.C03.N8930BA241017",
+      "A22d1.C05.S01.K02": "A07.C03.N2E98A409D3E9",
+      "A22d1.C05.S01.K03.a": "A07.C03.NBD25AEDD1BDB.AND72A05F257E",
+      "A22d1.C05.S01.K04.a": "A07.C03.N5947F3B16911",
+      "A22d1.C05.S02.D01": "A07.C03.S05.K06",
+      "A22d1.C05.S02.D05.D01": "A07.C03.N602D257E6344.AND112BEC6416",
+      "A22d1.C05.S02.D05.D02": "A07.C03.N8F2DD4C45AA7.AND1F0C480CF3",
+      "A22d1.C05.S04.D01.D01": "A07.C03.N9AACEF73E82B",
+      "A22d1.C05.S04.D01.D02": "A07.C03.N11C10DD74277",
+      "A22d1.C05.S04.D02": "A07.C03.ND7D6317DFE8E"
+    }
+  },
+  "distributed_route_compatibility": {
+    "legacy_domain_id": "distributed_optimization",
+    "domain_id": "specialized_continuous_methods",
+    "default_node_id": "A07.C03",
+    "node_redirects": {
+      "A07.C03.NC77ECCB1B848.AND6C2C62B88F": "A07.C03.N398539E5271D.AND232ED22A86",
+      "A22d1.C05.S01.K01": "A07.C03.N8930BA241017",
+      "A22d1.C05.S01.K02": "A07.C03.N2E98A409D3E9",
+      "A22d1.C05.S01.K03.a": "A07.C03.NBD25AEDD1BDB.AND72A05F257E",
+      "A22d1.C05.S01.K04.a": "A07.C03.N5947F3B16911",
+      "A22d1.C05.S02.D01": "A07.C03.S05.K06",
+      "A22d1.C05.S02.D05.D01": "A07.C03.N602D257E6344.AND112BEC6416",
+      "A22d1.C05.S02.D05.D02": "A07.C03.N8F2DD4C45AA7.AND1F0C480CF3",
+      "A22d1.C05.S04.D01.D01": "A07.C03.N9AACEF73E82B",
+      "A22d1.C05.S04.D01.D02": "A07.C03.N11C10DD74277",
+      "A22d1.C05.S04.D02": "A07.C03.ND7D6317DFE8E"
+    },
+    "mapping_path": "distributed/distributed_optimization_node_mapping.json",
+    "mapping_sha256": "d544e759c29dc762d21922f221999dbe9de43bf68da6c3b4e6eb3e279bb3bfed"
   }
 }

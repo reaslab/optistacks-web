@@ -156,9 +156,12 @@ def find_node(tree: dict[str, Any], topic_id: str) -> dict[str, Any] | None:
 
 
 def install_revised_distributed_subtree(
-    specialized_tree: dict[str, Any], revised_root: dict[str, Any]
+    specialized_tree: dict[str, Any],
+    revised_root: dict[str, Any],
+    node_redirects: dict[str, str] | None = None,
 ) -> dict[str, int]:
     """Replace canonical A07.C03 with its reviewed revision without losing statements."""
+    node_redirects = node_redirects or {}
     root = specialized_tree["roots"][0]
     old_index = {node["topic_id"]: node for node in walk(root)}
     old_distributed_root = old_index.get(DISTRIBUTED_ROOT_ID)
@@ -172,6 +175,37 @@ def install_revised_distributed_subtree(
     ]
     replacement = deepcopy(revised_root)
     revised_index = {node["topic_id"]: node for node in walk(replacement)}
+    relocated_statements = 0
+    for source_node in list(revised_index.values()):
+        retained: list[dict[str, Any]] = []
+        for statement in source_node.get("knowledge_statements", []):
+            statement_node = str(
+                statement.get("node_id")
+                or statement.get("source_node_id")
+                or statement.get("original_topic_id")
+                or ""
+            )
+            target_id = node_redirects.get(statement_node)
+            if not target_id or target_id == source_node["topic_id"]:
+                retained.append(statement)
+                continue
+            target = revised_index.get(target_id)
+            if target is None:
+                raise RuntimeError(
+                    f"Statement redirect target is absent from revised A07.C03: {target_id}"
+                )
+            relocated = deepcopy(statement)
+            relocated["original_source_node_id"] = statement_node
+            if "node_id" in relocated:
+                relocated["node_id"] = target_id
+            if "source_node_id" in relocated:
+                relocated["source_node_id"] = target_id
+            relocated["original_topic_id"] = statement_node
+            relocated["mapped_topic_ids"] = [target_id]
+            relocated["mapping_method"] = "explicit_node_alias"
+            target.setdefault("knowledge_statements", []).append(relocated)
+            relocated_statements += 1
+        source_node["knowledge_statements"] = retained
     revised_title_index: dict[str, list[dict[str, Any]]] = {}
     for node in revised_index.values():
         revised_title_index.setdefault(normalize_text(node.get("title")), []).append(node)
@@ -244,6 +278,7 @@ def install_revised_distributed_subtree(
         "preserved_statements_added": preserved_statements,
         "duplicate_statements_skipped": duplicate_statements,
         "unmapped_topics_with_statements": unmapped_topics,
+        "alias_relocated_statements": relocated_statements,
     }
 
 
@@ -259,6 +294,42 @@ def update_revision_import_report(domain: dict[str, Any], report: dict[str, int]
     intermediate_report.setdefault("sources", {})[
         "distributed_revision_overlay_net"
     ] = intermediate_delta
+
+
+def distributed_route_compatibility(
+    source: Path, revised_root: dict[str, Any]
+) -> dict[str, Any]:
+    """Build audited redirects for links into the former standalone domain."""
+    mapping_path = source / "distributed/distributed_optimization_node_mapping.json"
+    mapping = read_json(mapping_path)
+    revised_ids = {str(node["topic_id"]) for node in walk(revised_root)}
+    redirects: dict[str, str] = {}
+    rows = list(mapping.get("primary_source_mapping") or [])
+    rows.extend(mapping.get("primary_cross_reference_mapping") or [])
+    rows.extend(mapping.get("external_cross_reference_mapping") or [])
+    for row in rows:
+        source_id = str(row.get("source_node_id") or "")
+        target_id = str(
+            row.get("primary_target_node_id")
+            or row.get("target_node_id")
+            or ((row.get("target_node_ids") or [""])[0])
+        )
+        if not source_id or not target_id or source_id == target_id:
+            continue
+        if target_id not in revised_ids:
+            raise RuntimeError(
+                "Distributed redirect target is absent from revised A07.C03: "
+                f"{source_id} -> {target_id}"
+            )
+        redirects[source_id] = target_id
+    return {
+        "legacy_domain_id": LEGACY_DOMAIN_ID,
+        "domain_id": SPECIALIZED_DOMAIN_ID,
+        "default_node_id": DISTRIBUTED_ROOT_ID,
+        "node_redirects": dict(sorted(redirects.items())),
+        "mapping_path": str(mapping_path.relative_to(source)),
+        "mapping_sha256": sha256(mapping_path.read_bytes()).hexdigest(),
+    }
 
 
 def statement_has_body(record: dict[str, Any]) -> bool:
@@ -1137,8 +1208,13 @@ def main() -> None:
             f"{domain['stats']['statements']:,} statements"
         )
 
+    route_compatibility = distributed_route_compatibility(
+        source, revised_distributed_root
+    )
     revision_report = install_revised_distributed_subtree(
-        trees[SPECIALIZED_DOMAIN_ID], revised_distributed_root
+        trees[SPECIALIZED_DOMAIN_ID],
+        revised_distributed_root,
+        route_compatibility["node_redirects"],
     )
     domains[SPECIALIZED_DOMAIN_ID]["distributed_revision_merge_report"] = revision_report
     update_revision_import_report(domains[SPECIALIZED_DOMAIN_ID], revision_report)
@@ -1164,6 +1240,40 @@ def main() -> None:
     manifest["built_at"] = datetime.now(timezone.utc).isoformat()
     manifest["preserved_snapshot"] = preserved_report
     manifest["source_campaign_snapshot"] = campaign_report
+    manifest["distributed_revision"] = {
+        "status": "installed_at_A07.C03",
+        **revision_report,
+    }
+    manifest["legacy_domain_routes"] = {
+        LEGACY_DOMAIN_ID: {
+            "domain_id": route_compatibility["domain_id"],
+            "default_node_id": route_compatibility["default_node_id"],
+        }
+    }
+    distributed_chapter = next(
+        chapter
+        for chapter in domains[SPECIALIZED_DOMAIN_ID]["chapters"]
+        if chapter["topic_id"] == DISTRIBUTED_ROOT_ID
+    )
+    manifest["navigation_shortcuts"] = [
+        {
+            "id": LEGACY_DOMAIN_ID,
+            "short_name": "Distributed Optimization",
+            "accent": "#6d5bd0",
+            "position": 5,
+            "domain_id": SPECIALIZED_DOMAIN_ID,
+            "default_node_id": DISTRIBUTED_ROOT_ID,
+            "stats": {
+                "topics": distributed_chapter["subtree_topic_count"],
+                "statements": distributed_chapter["subtree_statement_count"],
+                "chapters": len(revised_distributed_root.get("children", [])),
+            },
+        }
+    ]
+    manifest["node_redirects"] = {
+        SPECIALIZED_DOMAIN_ID: route_compatibility["node_redirects"]
+    }
+    manifest["distributed_route_compatibility"] = route_compatibility
     manifest["totals"] = {
         "topics": sum(item["stats"]["topics"] for item in manifest["domains"]),
         "statements": sum(item["stats"]["statements"] for item in manifest["domains"]),

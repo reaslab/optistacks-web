@@ -23,7 +23,10 @@ const QUALITY_STORAGE_KEY = "optistacks-quality-review-v1";
 const LAYOUT_STORAGE_KEY = "optistacks-layout-v1";
 const PANE_LABELS = { library: "domains", directory: "outline", detail: "content" };
 const LEGACY_DOMAIN_ROUTES = {
-  distributed_optimization: "specialized_continuous_methods",
+  distributed_optimization: {
+    domain_id: "specialized_continuous_methods",
+    default_node_id: "A07.C03",
+  },
 };
 const QUALITY_TYPES = {
   statement: [
@@ -86,7 +89,7 @@ async function bootstrap() {
     loadQualityIssues();
     loadLayout();
     $("#total-statements").textContent = formatNumber(state.manifest.totals.statements);
-    $("#domain-count").textContent = formatNumber(state.manifest.domains.length);
+    $("#domain-count").textContent = formatNumber(domainNavigationItems().length);
     renderDomainNav();
     bindEvents();
     const route = parseRoute();
@@ -227,7 +230,17 @@ function bindPaneResizers() {
 function parseRoute() {
   const raw = decodeURIComponent(location.hash.slice(1));
   const [domain, ...node] = raw.split("/");
-  return { domain: LEGACY_DOMAIN_ROUTES[domain] || domain, node: node.join("/") || null };
+  return resolveLegacyRoute(domain, node.join("/") || null);
+}
+
+function resolveLegacyRoute(domainId, nodeId = null) {
+  const route = state.manifest?.legacy_domain_routes?.[domainId]
+    || LEGACY_DOMAIN_ROUTES[domainId];
+  const domain = route?.domain_id || domainId;
+  const requestedNode = nodeId || route?.default_node_id || null;
+  const redirectedNode = state.manifest?.node_redirects?.[domain]?.[requestedNode]
+    || requestedNode;
+  return { domain, node: redirectedNode };
 }
 
 function versionedDataUrl(path) {
@@ -250,19 +263,46 @@ async function fetchPayload(path) {
   return request;
 }
 
+function domainNavigationItems() {
+  const items = state.manifest.domains.map(domain => ({ ...domain, navigation_kind: "domain" }));
+  (state.manifest.navigation_shortcuts || []).forEach(shortcut => {
+    const position = Math.max(0, Math.min(items.length, Number(shortcut.position || items.length + 1) - 1));
+    items.splice(position, 0, { ...shortcut, navigation_kind: "shortcut" });
+  });
+  return items;
+}
+
+function activeNavigationShortcut() {
+  if (!state.selected || !state.domainMeta) return null;
+  const pathIds = new Set((state.byId.get(state.selected)?.path || []).map(node => node.topic_id));
+  return (state.manifest.navigation_shortcuts || []).find(shortcut => (
+    shortcut.domain_id === state.domainMeta.id && pathIds.has(shortcut.default_node_id)
+  )) || null;
+}
+
 function renderDomainNav() {
-  $("#domain-nav").innerHTML = state.manifest.domains.map(domain => `
-    <button class="domain-button ${domain.id === state.domainMeta?.id ? "active" : ""}" data-domain="${esc(domain.id)}" style="--domain-accent:${domain.accent}">
+  const activeShortcut = activeNavigationShortcut();
+  $("#directory-title").textContent = activeShortcut?.short_name || state.domainMeta?.short_name || "Knowledge outline";
+  $("#domain-nav").innerHTML = domainNavigationItems().map(item => {
+    const isShortcut = item.navigation_kind === "shortcut";
+    const active = isShortcut
+      ? activeShortcut?.id === item.id
+      : item.id === state.domainMeta?.id && !activeShortcut;
+    return `
+    <button class="domain-button ${active ? "active" : ""}" data-domain="${esc(item.id)}" ${isShortcut ? `data-node="${esc(item.default_node_id)}"` : ""} style="--domain-accent:${item.accent}">
       <span class="domain-swatch"></span>
-      <span><b>${esc(domain.short_name)}</b><small>${formatNumber(domain.stats.topics)} topics · ${formatNumber(domain.stats.chapters)} chapters</small></span>
-      <em>${formatNumber(domain.stats.statements)}</em>
-    </button>`).join("");
-  document.querySelectorAll("[data-domain]").forEach(button => button.addEventListener("click", () => loadDomain(button.dataset.domain)));
+      <span><b>${esc(item.short_name)}</b><small>${formatNumber(item.stats.topics)} topics · ${formatNumber(item.stats.chapters)} chapters</small></span>
+      <em>${formatNumber(item.stats.statements)}</em>
+    </button>`;
+  }).join("");
+  document.querySelectorAll("[data-domain]").forEach(button => button.addEventListener("click", () => loadDomain(button.dataset.domain, button.dataset.node || null)));
   requestAnimationFrame(() => $("#domain-nav .active")?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" }));
 }
 
 async function loadDomain(domainId, requestedNode = null, updateRoute = true) {
-  domainId = LEGACY_DOMAIN_ROUTES[domainId] || domainId;
+  const resolvedRoute = resolveLegacyRoute(domainId, requestedNode);
+  domainId = resolvedRoute.domain;
+  requestedNode = resolvedRoute.node;
   const loadToken = ++state.domainLoadToken;
   const navigationToken = ++state.navigationToken;
   const meta = state.manifest.domains.find(item => item.id === domainId) || state.manifest.domains[0];
@@ -393,6 +433,7 @@ async function ensureRouteLoaded(nodeId) {
 }
 
 async function navigateToNode(nodeId, updateRoute = true, focusTree = false) {
+  nodeId = state.manifest?.node_redirects?.[state.domainMeta?.id]?.[nodeId] || nodeId;
   const navigationToken = ++state.navigationToken;
   try {
     await ensureRouteLoaded(nodeId);
@@ -427,6 +468,7 @@ function selectNode(nodeId, updateRoute = true) {
   if (updateRoute) history.pushState(null, "", `#${state.domainMeta.id}/${encodeURIComponent(nodeId)}`);
   renderDetail(nodeId);
   renderTree();
+  renderDomainNav();
 }
 
 function renderDetail(nodeId) {
@@ -572,7 +614,21 @@ function typesetMath(container) {
 function loadQualityIssues() {
   try {
     const stored = JSON.parse(localStorage.getItem(QUALITY_STORAGE_KEY) || "[]");
-    state.qualityIssues = Array.isArray(stored) ? stored : [];
+    let migrated = false;
+    state.qualityIssues = Array.isArray(stored) ? stored.map(issue => {
+      const route = resolveLegacyRoute(issue.domain_id, issue.topic_id);
+      if (route.domain === issue.domain_id && route.node === issue.topic_id) return issue;
+      migrated = true;
+      const updated = { ...issue, domain_id: route.domain, topic_id: route.node };
+      if (issue.target_type === "topic" && issue.target_id === issue.topic_id) {
+        updated.target_id = route.node;
+      }
+      updated.page_hash = route.node
+        ? `#${route.domain}/${encodeURIComponent(route.node)}`
+        : `#${route.domain}`;
+      return updated;
+    }) : [];
+    if (migrated) localStorage.setItem(QUALITY_STORAGE_KEY, JSON.stringify(state.qualityIssues));
   } catch {
     state.qualityIssues = [];
   }
