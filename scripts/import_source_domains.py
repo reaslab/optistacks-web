@@ -113,6 +113,57 @@ SPECIALIZED_DOMAIN_ID = "specialized_continuous_methods"
 DISTRIBUTED_ROOT_ID = "A07.C03"
 DOMAIN_ORDER = tuple(config["id"] for config in PART_DOMAINS)
 
+SUBJECT_DOMAIN_CONFIG = (
+    {
+        "id": "continuous_optimization",
+        "short_name": "Continuous Optimization",
+        "accent": "#315b7d",
+        "items": [
+            "convex_analysis",
+            "variational_analysis",
+            "nonlinear_programming",
+            "first_order_methods",
+            LEGACY_DOMAIN_ID,
+            "nonsmooth_optimization",
+            SPECIALIZED_DOMAIN_ID,
+            "convex_programming",
+            "linear_programming",
+            "conic_optimization",
+            "quadratic_optimization",
+            "global_optimization",
+            "optimization_under_uncertainty",
+        ],
+    },
+    {
+        "id": "discrete_optimization",
+        "short_name": "Discrete Optimization",
+        "accent": "#72558a",
+        "items": [
+            "integer_mixed_integer_optimization",
+            "combinatorial_optimization",
+            "constraint_logic_optimization",
+        ],
+    },
+    {
+        "id": "numerical_analysis",
+        "short_name": "Numerical Analysis",
+        "accent": "#3f7589",
+        "items": [],
+    },
+    {
+        "id": "numerical_linear_algebra",
+        "short_name": "Numerical Linear Algebra",
+        "accent": "#8a643b",
+        "items": [],
+    },
+    {
+        "id": "algebraic_geometry",
+        "short_name": "Algebraic Geometry",
+        "accent": "#855a73",
+        "items": [],
+    },
+)
+
 CAMPAIGN_RELATIVE_PATHS = (
     Path("0809_optimize/formal_runs/20260809_full_library_v2"),
     Path("0809_optimize/formal_runs/20260812_full_library_200_supplemental25_v1"),
@@ -1312,6 +1363,32 @@ def main() -> None:
             },
         }
     ]
+    domain_lookup = {domain["id"]: domain for domain in manifest["domains"]}
+    shortcut_lookup = {
+        shortcut["id"]: shortcut for shortcut in manifest["navigation_shortcuts"]
+    }
+    manifest["subject_domains"] = []
+    for config in SUBJECT_DOMAIN_CONFIG:
+        resolved_domain_ids = {
+            shortcut_lookup[item]["domain_id"] if item in shortcut_lookup else item
+            for item in config["items"]
+        }
+        manifest["subject_domains"].append(
+            {
+                **config,
+                "stats": {
+                    "collections": len(config["items"]),
+                    "topics": sum(
+                        domain_lookup[domain_id]["stats"]["topics"]
+                        for domain_id in resolved_domain_ids
+                    ),
+                    "statements": sum(
+                        domain_lookup[domain_id]["stats"]["statements"]
+                        for domain_id in resolved_domain_ids
+                    ),
+                },
+            }
+        )
     manifest["node_redirects"] = {
         SPECIALIZED_DOMAIN_ID: route_compatibility["node_redirects"]
     }

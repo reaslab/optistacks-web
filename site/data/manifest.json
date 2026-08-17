@@ -2699,6 +2699,81 @@
       }
     }
   ],
+  "subject_domains": [
+    {
+      "id": "continuous_optimization",
+      "short_name": "Continuous Optimization",
+      "accent": "#315b7d",
+      "items": [
+        "convex_analysis",
+        "variational_analysis",
+        "nonlinear_programming",
+        "first_order_methods",
+        "distributed_optimization",
+        "nonsmooth_optimization",
+        "specialized_continuous_methods",
+        "convex_programming",
+        "linear_programming",
+        "conic_optimization",
+        "quadratic_optimization",
+        "global_optimization",
+        "optimization_under_uncertainty"
+      ],
+      "stats": {
+        "collections": 13,
+        "topics": 51471,
+        "statements": 83513
+      }
+    },
+    {
+      "id": "discrete_optimization",
+      "short_name": "Discrete Optimization",
+      "accent": "#72558a",
+      "items": [
+        "integer_mixed_integer_optimization",
+        "combinatorial_optimization",
+        "constraint_logic_optimization"
+      ],
+      "stats": {
+        "collections": 3,
+        "topics": 24175,
+        "statements": 32268
+      }
+    },
+    {
+      "id": "numerical_analysis",
+      "short_name": "Numerical Analysis",
+      "accent": "#3f7589",
+      "items": [],
+      "stats": {
+        "collections": 0,
+        "topics": 0,
+        "statements": 0
+      }
+    },
+    {
+      "id": "numerical_linear_algebra",
+      "short_name": "Numerical Linear Algebra",
+      "accent": "#8a643b",
+      "items": [],
+      "stats": {
+        "collections": 0,
+        "topics": 0,
+        "statements": 0
+      }
+    },
+    {
+      "id": "algebraic_geometry",
+      "short_name": "Algebraic Geometry",
+      "accent": "#855a73",
+      "items": [],
+      "stats": {
+        "collections": 0,
+        "topics": 0,
+        "statements": 0
+      }
+    }
+  ],
   "node_redirects": {
     "specialized_continuous_methods": {
       "A07.C03.NC77ECCB1B848.AND6C2C62B88F": "A07.C03.N398539E5271D.AND232ED22A86",

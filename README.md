@@ -8,6 +8,12 @@ Distributed Optimization revision is installed directly at A07.C03, replacing
 the older duplicate compatibility domain. It contains 75,646 topic entries and
 115,781 statements, delivered through 197 lazy chapter shards.
 
+The left rail selects major domains. Published optimization collections are
+separated into Continuous Optimization and Discrete Optimization; Numerical
+Analysis, Numerical Linear Algebra, and Algebraic Geometry are reserved for
+future collections. The outline header selects a collection within the active
+major domain.
+
 ## Run locally
 
 With Docker:

@@ -212,6 +212,61 @@ def main() -> None:
             shortcut.get("stats", {}).get("statements") == len(statements),
             "Distributed shortcut statement count is stale",
         )
+    subject_domains = manifest.get("subject_domains") or []
+    subject_index = {subject.get("id"): subject for subject in subject_domains}
+    require(
+        set(subject_index)
+        == {
+            "continuous_optimization",
+            "discrete_optimization",
+            "numerical_analysis",
+            "numerical_linear_algebra",
+            "algebraic_geometry",
+        },
+        "Major-domain navigation does not match the expected taxonomy",
+    )
+    continuous_items = subject_index.get("continuous_optimization", {}).get("items", [])
+    discrete_items = subject_index.get("discrete_optimization", {}).get("items", [])
+    require(
+        LEGACY_DOMAIN_ID in continuous_items and continuous_items.index(LEGACY_DOMAIN_ID) == 4,
+        "Distributed Optimization is not the fifth Continuous Optimization collection",
+    )
+    require(
+        discrete_items
+        == [
+            "integer_mixed_integer_optimization",
+            "combinatorial_optimization",
+            "constraint_logic_optimization",
+        ],
+        "Discrete Optimization collections are incomplete or out of order",
+    )
+    published_subject_items = {
+        item
+        for subject in subject_domains
+        for item in subject.get("items", [])
+        if item in domain_ids
+    }
+    require(
+        published_subject_items == set(domain_ids),
+        "At least one published collection is missing from the major-domain taxonomy",
+    )
+    domain_stats = {domain["id"]: domain["stats"] for domain in manifest["domains"]}
+    shortcut_targets = {
+        item["id"]: item["domain_id"] for item in distributed_shortcuts
+    }
+    for subject in subject_domains:
+        resolved_ids = {
+            shortcut_targets.get(item, item) for item in subject.get("items", [])
+        }
+        expected_stats = {
+            "collections": len(subject.get("items", [])),
+            "topics": sum(domain_stats[item]["topics"] for item in resolved_ids),
+            "statements": sum(domain_stats[item]["statements"] for item in resolved_ids),
+        }
+        require(
+            subject.get("stats") == expected_stats,
+            f"Major-domain statistics are stale for {subject.get('id')}",
+        )
     require(
         manifest.get("distributed_route_compatibility", {}).get("mapping_sha256")
         == sha256(args.mapping.read_bytes()).hexdigest(),
@@ -254,6 +309,7 @@ def main() -> None:
         "nearest_ancestor_placements": 0,
         "standalone_domain_entries": 0,
         "navigation_shortcuts": len(distributed_shortcuts),
+        "major_domains": len(subject_domains),
     }
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
