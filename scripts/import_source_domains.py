@@ -155,6 +155,36 @@ def find_node(tree: dict[str, Any], topic_id: str) -> dict[str, Any] | None:
     return None
 
 
+def statement_preference(record: dict[str, Any]) -> tuple[int, int, float, int, int]:
+    evidence = len(record.get("source_refs") or []) + len(record.get("source_witnesses") or [])
+    confidence = float(record.get("confidence") or record.get("review_confidence") or 0)
+    body_length = len(str(record.get("statement_latex") or "")) + len(
+        str(record.get("statement_plain") or "")
+    )
+    explicit_mapping = int(record.get("mapping_method") == "explicit_node_alias")
+    return (int(evidence > 0), evidence, confidence, explicit_mapping, body_length)
+
+
+def deduplicate_node_statements(node: dict[str, Any]) -> int:
+    retained: list[dict[str, Any]] = []
+    positions: dict[tuple[str, str], int] = {}
+    removed = 0
+    for statement in node.get("knowledge_statements", []):
+        title = normalize_text(statement.get("statement_title") or statement.get("title"))
+        statement_id = str(statement.get("statement_id") or statement.get("id") or "")
+        key = ("title", title) if title else ("id", statement_id)
+        if not key[1] or key not in positions:
+            positions[key] = len(retained)
+            retained.append(statement)
+            continue
+        position = positions[key]
+        if statement_preference(statement) > statement_preference(retained[position]):
+            retained[position] = statement
+        removed += 1
+    node["knowledge_statements"] = retained
+    return removed
+
+
 def install_revised_distributed_subtree(
     specialized_tree: dict[str, Any],
     revised_root: dict[str, Any],
@@ -255,6 +285,9 @@ def install_revised_distributed_subtree(
     if not replaced:
         raise RuntimeError(f"{DISTRIBUTED_ROOT_ID} is missing from {SPECIALIZED_DOMAIN_ID}")
 
+    duplicate_statements_removed = sum(
+        deduplicate_node_statements(node) for node in revised_index.values()
+    )
     revised_statements = [
         statement
         for node in walk(replacement)
@@ -279,6 +312,7 @@ def install_revised_distributed_subtree(
         "duplicate_statements_skipped": duplicate_statements,
         "unmapped_topics_with_statements": unmapped_topics,
         "alias_relocated_statements": relocated_statements,
+        "duplicate_statements_removed": duplicate_statements_removed,
     }
 
 
@@ -407,6 +441,7 @@ def collect_preserved_nodes(
         "domains": 0,
         "topics": 0,
         "statements": 0,
+        "excluded_campaign_statements": 0,
         "duplicate_topic_occurrences": 0,
     }
     for domain in manifest.get("domains", []):
@@ -417,7 +452,13 @@ def collect_preserved_nodes(
         for root in tree.get("roots", []):
             for node in walk(root):
                 topic_id = node["topic_id"]
-                statements = deepcopy(node.get("knowledge_statements", []))
+                statements = []
+                for statement in node.get("knowledge_statements", []):
+                    stage = str((statement.get("intermediate_metadata") or {}).get("stage") or "")
+                    if stage.startswith("0809_campaign_"):
+                        report["excluded_campaign_statements"] += 1
+                        continue
+                    statements.append(deepcopy(statement))
                 if topic_id not in preserved:
                     preserved[topic_id] = {
                         "title": node.get("title"),
@@ -1190,6 +1231,7 @@ def main() -> None:
         if revised_distributed_root is None:
             raise RuntimeError("Previous snapshot is missing revised A07.C03")
         revised_distributed_root = deepcopy(revised_distributed_root)
+    strip_campaign_statements({"roots": [revised_distributed_root]})
 
     package = source / "outputs/packages/optistacks_tree_graph_corrected_v27.zip"
     with zipfile.ZipFile(package) as archive:

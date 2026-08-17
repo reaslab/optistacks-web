@@ -21,6 +21,7 @@ DEFAULT_MAPPING = Path(
 DOMAIN_ID = "specialized_continuous_methods"
 LEGACY_DOMAIN_ID = "distributed_optimization"
 ROOT_ID = "A07.C03"
+BASE_REVISION_STATEMENT_COUNT = 876
 HARD_ALIAS_SOURCE = "A07.C03.NC77ECCB1B848.AND6C2C62B88F"
 
 
@@ -147,6 +148,17 @@ def main() -> None:
         for node in nodes
         for statement in node.get("knowledge_statements") or []
     ]
+    duplicate_statement_titles = []
+    for node in nodes:
+        titles = [
+            " ".join(str(statement.get("statement_title") or statement.get("title") or "").split()).casefold()
+            for statement in node.get("knowledge_statements") or []
+        ]
+        duplicate_statement_titles.extend(
+            (node["topic_id"], title)
+            for title, count in Counter(titles).items()
+            if title and count > 1
+        )
     statement_ids = [
         str(statement.get("id") or statement.get("statement_id") or "")
         for _, statement in statements
@@ -171,8 +183,16 @@ def main() -> None:
     require(len(node_index) == len(nodes), "A07.C03 topic IDs are not unique")
     require(leaves == 397, f"A07.C03 has {leaves} leaves, expected 397")
     require(len(shard["root"].get("children") or []) == 9, "A07.C03 does not have nine top-level themes")
-    require(len(statements) == 876, f"A07.C03 contains {len(statements)} statements, expected 876")
+    require(
+        len(statements) >= BASE_REVISION_STATEMENT_COUNT,
+        f"A07.C03 contains {len(statements)} statements, below the reviewed revision baseline "
+        f"of {BASE_REVISION_STATEMENT_COUNT}",
+    )
     require(len(set(statement_ids)) == len(statement_ids), "Statement IDs are not unique")
+    require(
+        not duplicate_statement_titles,
+        f"A07.C03 contains duplicate statement titles: {duplicate_statement_titles[:3]}",
+    )
     require(HARD_ALIAS_SOURCE not in node_index, "Merged old A07 node is still materialized")
     require(set(alias_map.values()) <= set(node_index), "At least one redirect target is absent from A07.C03")
     require(manifest_aliases == dict(sorted(alias_map.items())), "Manifest redirect map differs from reviewed mapping")
@@ -188,7 +208,10 @@ def main() -> None:
         require(shortcut.get("domain_id") == DOMAIN_ID, "Distributed shortcut targets the wrong domain")
         require(shortcut.get("default_node_id") == ROOT_ID, "Distributed shortcut targets the wrong node")
         require(shortcut.get("stats", {}).get("topics") == 543, "Distributed shortcut topic count is stale")
-        require(shortcut.get("stats", {}).get("statements") == 876, "Distributed shortcut statement count is stale")
+        require(
+            shortcut.get("stats", {}).get("statements") == len(statements),
+            "Distributed shortcut statement count is stale",
+        )
     require(
         manifest.get("distributed_route_compatibility", {}).get("mapping_sha256")
         == sha256(args.mapping.read_bytes()).hexdigest(),
@@ -208,7 +231,8 @@ def main() -> None:
         "Manifest A07.C03 topic accounting is stale",
     )
     require(
-        next(item for item in specialized["chapters"] if item["topic_id"] == ROOT_ID)["subtree_statement_count"] == 876,
+        next(item for item in specialized["chapters"] if item["topic_id"] == ROOT_ID)["subtree_statement_count"]
+        == len(statements),
         "Manifest A07.C03 statement accounting is stale",
     )
     require(not (args.site / "data/distributed_optimization.json").exists(), "Legacy domain payload still exists")

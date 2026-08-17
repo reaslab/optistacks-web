@@ -6,7 +6,7 @@ and analysis. The live site is <https://stacks.reaslab.io/>.
 The current snapshot contains all 15 Parts from A02 through A16. The reviewed
 Distributed Optimization revision is installed directly at A07.C03, replacing
 the older duplicate compatibility domain. It contains 75,646 topic entries and
-88,753 statements, delivered through 197 lazy chapter shards.
+115,781 statements, delivered through 197 lazy chapter shards.
 
 ## Run locally
 
