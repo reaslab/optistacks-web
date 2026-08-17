@@ -1,7 +1,7 @@
 # ReasAtlas
 
 ReasAtlas is a public, static browser for structured knowledge in optimization
-and analysis. The live site is <https://stacks.reaslab.io/>.
+and analysis. The live site is <https://atlas.reaslab.io/>.
 
 The current snapshot contains all 15 Parts from A02 through A16. The reviewed
 Distributed Optimization revision is installed directly at A07.C03, replacing
