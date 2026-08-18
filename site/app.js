@@ -91,12 +91,10 @@ async function bootstrap() {
     loadLayout();
     $("#total-statements").textContent = formatNumber(state.manifest.totals.statements);
     state.subjectId = state.manifest.subject_domains?.[0]?.id || null;
-    $("#domain-count").textContent = formatNumber(state.manifest.subject_domains?.length || state.manifest.domains.length);
     renderDomainNav();
     bindEvents();
     const route = parseRoute();
-    if (route.subject) await loadSubjectDomain(route.subject, false);
-    else await loadDomain(route.domain || state.manifest.domains[0].id, route.node);
+    await loadDomain(route.domain || state.manifest.domains[0].id, route.node);
   } catch (error) {
     $("#tree-view").innerHTML = `<div class="empty-statements"><b>Site data could not be loaded</b><span>${esc(error.message)}</span><br><br><span>Open this site through a local HTTP server rather than directly from the file system.</span></div>`;
   }
@@ -121,8 +119,7 @@ function bindEvents() {
   bindPaneResizers();
   window.addEventListener("hashchange", async () => {
     const route = parseRoute();
-    if (route.subject) await loadSubjectDomain(route.subject, false);
-    else if (route.domain && route.domain !== state.domainMeta?.id) await loadDomain(route.domain, route.node, false);
+    if (route.domain && route.domain !== state.domainMeta?.id) await loadDomain(route.domain, route.node, false);
     else if (route.node) await navigateToNode(route.node, false, true);
   });
   $("#quality-queue-button").addEventListener("click", openQualityDrawer);
@@ -234,7 +231,6 @@ function bindPaneResizers() {
 function parseRoute() {
   const raw = decodeURIComponent(location.hash.slice(1));
   const [domain, ...node] = raw.split("/");
-  if (domain === "subject") return { subject: node.join("/") || null, domain: null, node: null };
   return resolveLegacyRoute(domain, node.join("/") || null);
 }
 
@@ -306,64 +302,34 @@ function activeNavigationShortcut() {
 function renderDomainNav() {
   const activeShortcut = activeNavigationShortcut();
   $("#directory-title").textContent = activeShortcut?.short_name || state.domainMeta?.short_name || "Knowledge outline";
-  $("#domain-nav").innerHTML = subjectDomains().map(subject => {
-    const available = subject.items.length > 0;
-    const active = subject.id === state.subjectId;
+  const subject = activeSubjectDomain();
+  const items = (subject?.items || []).map(navigationItem).filter(Boolean);
+  $("#domain-count").textContent = formatNumber(items.length);
+  $("#subject-domain-selector").innerHTML = subjectDomains().map(item => (
+    `<option value="${esc(item.id)}" ${item.id === subject?.id ? "selected" : ""}>${esc(item.short_name)}</option>`
+  )).join("");
+  $("#subject-domain-selector").onchange = () => loadSubjectDomain($("#subject-domain-selector").value);
+  $("#domain-nav").innerHTML = items.length ? items.map(item => {
+    const isShortcut = item.navigation_kind === "shortcut";
+    const active = isShortcut
+      ? activeShortcut?.id === item.id
+      : item.id === state.domainMeta?.id && !activeShortcut;
     return `
-    <button class="domain-button ${active ? "active" : ""} ${available ? "" : "planned"}" data-subject-domain="${esc(subject.id)}" style="--domain-accent:${subject.accent}">
+    <button class="domain-button ${active ? "active" : ""}" data-domain="${esc(item.id)}" ${isShortcut ? `data-node="${esc(item.default_node_id)}"` : ""} style="--domain-accent:${item.accent}">
       <span class="domain-swatch"></span>
-      <span><b>${esc(subject.short_name)}</b><small>${available ? `${formatNumber(subject.stats.collections)} collections · ${formatNumber(subject.stats.topics)} topics` : "Collection planned"}</small></span>
-      ${available ? `<em>${formatNumber(subject.stats.statements)}</em>` : ""}
+      <span><b>${esc(item.short_name)}</b><small>${formatNumber(item.stats.topics)} topics · ${formatNumber(item.stats.chapters)} chapters</small></span>
+      <em>${formatNumber(item.stats.statements)}</em>
     </button>`;
-  }).join("");
-  document.querySelectorAll("[data-subject-domain]").forEach(button => button.addEventListener("click", () => loadSubjectDomain(button.dataset.subjectDomain)));
-  renderCollectionPicker(activeShortcut);
+  }).join("") : `<div class="domain-empty">No subject domains have been published in this major domain yet.</div>`;
+  document.querySelectorAll("[data-domain]").forEach(button => button.addEventListener("click", () => loadDomain(button.dataset.domain, button.dataset.node || null)));
   requestAnimationFrame(() => $("#domain-nav .active")?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" }));
 }
 
-function renderCollectionPicker(activeShortcut = activeNavigationShortcut()) {
-  const subject = activeSubjectDomain();
-  const picker = $("#collection-picker");
-  const selector = $("#collection-selector");
-  if (!subject?.items.length || !state.domainMeta) {
-    picker.hidden = true;
-    selector.innerHTML = "";
-    return;
-  }
-  const items = subject.items.map(navigationItem).filter(Boolean);
-  const currentId = activeShortcut?.id || state.domainMeta.id;
-  selector.innerHTML = items.map(item => `<option value="${esc(item.id)}" ${item.id === currentId ? "selected" : ""}>${esc(item.short_name)}</option>`).join("");
-  selector.onchange = () => {
-    const item = navigationItem(selector.value);
-    if (item) loadDomain(item.id, item.navigation_kind === "shortcut" ? item.default_node_id : null);
-  };
-  picker.hidden = false;
-}
-
-async function loadSubjectDomain(subjectId, updateRoute = true) {
+function loadSubjectDomain(subjectId) {
   const subject = subjectDomains().find(item => item.id === subjectId) || subjectDomains()[0];
   if (!subject) return;
   state.subjectId = subject.id;
-  document.documentElement.style.setProperty("--accent", subject.accent);
-  document.documentElement.style.setProperty("--accent-soft", `${subject.accent}24`);
-  if (subject.items.length) {
-    const item = navigationItem(subject.items[0]);
-    if (item) await loadDomain(item.id, item.navigation_kind === "shortcut" ? item.default_node_id : null, updateRoute);
-    return;
-  }
-  ++state.domainLoadToken;
-  ++state.navigationToken;
-  state.domainMeta = null;
-  state.data = null;
-  state.selected = null;
-  state.flat = [];
-  state.byId = new Map();
-  state.parents = new Map();
   renderDomainNav();
-  $("#directory-title").textContent = subject.short_name;
-  $("#tree-view").innerHTML = `<div class="empty-statements"><b>${esc(subject.short_name)}</b><span>This major domain is ready for future collections.</span></div>`;
-  $("#detail-panel").innerHTML = `<div class="detail-placeholder"><span class="big-mark">∇</span><p>No collection has been published in this domain yet.</p></div>`;
-  if (updateRoute) history.pushState(null, "", `#subject/${encodeURIComponent(subject.id)}`);
 }
 
 async function loadDomain(domainId, requestedNode = null, updateRoute = true) {

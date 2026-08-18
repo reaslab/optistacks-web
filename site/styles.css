@@ -86,12 +86,10 @@ body.library-hidden .rail { display: none; }
 .domain-button b { display: block; font: 600 13px/1.25 var(--sans); }
 .domain-button small { display: block; margin-top: 6px; color: var(--muted); font-size: 8px; line-height: 1.35; }
 .domain-button > em { align-self: start; margin-top: 4px; color: #7a8798; font: normal 9px var(--mono); }
-.domain-button.planned { opacity: .68; }
-.domain-button.planned .domain-swatch { height: 30px; box-shadow: none; }
-.collection-picker { display: grid; grid-template-columns: auto minmax(180px, 1fr); align-items: center; gap: 9px; margin-top: 12px; }
-.collection-picker[hidden] { display: none; }
-.collection-picker span { color: var(--muted); font: 8px var(--mono); letter-spacing: 1.1px; text-transform: uppercase; }
-.collection-picker select { width: 100%; min-width: 0; padding: 8px 30px 8px 10px; border: 1px solid #d6deea; border-radius: 7px; color: var(--ink); background: rgba(255,255,255,.78); font: 500 11px var(--sans); }
+.major-domain-picker { display: grid; gap: 7px; padding: 5px 3px 8px; }
+.major-domain-picker span { color: var(--muted); font: 8px var(--mono); letter-spacing: 1.2px; text-transform: uppercase; }
+.major-domain-picker select { width: 100%; min-width: 0; padding: 9px 30px 9px 10px; border: 1px solid #d6deea; border-radius: 7px; color: var(--ink); background: rgba(255,255,255,.72); font: 500 11px var(--sans); }
+.domain-empty { padding: 22px 12px; color: var(--muted); font: 10px/1.6 var(--sans); }
 .rail-scroll-hint { display: flex; align-items: center; gap: 7px; padding: 11px 8px 0; border-top: 1px solid rgba(199,209,222,.75); color: #8b96a6; font: 8px var(--mono); letter-spacing: .8px; text-transform: uppercase; }
 .rail-scroll-hint span { width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid #d5dde8; border-radius: 50%; background: rgba(255,255,255,.6); }
 
@@ -115,7 +113,6 @@ body.library-hidden #library-resizer, body.directory-hidden #directory-resizer, 
 body.resizing { cursor: col-resize; user-select: none; }
 body.resizing * { cursor: col-resize !important; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; padding: 31px 29px 20px; }
-.panel-head > div { flex: 1; min-width: 0; }
 .eyebrow { color: var(--accent); font: 10px var(--mono); letter-spacing: 2px; }
 .panel-head h1 { margin: 5px 0 0; font: 500 26px/1.1 var(--serif); }
 .icon-button { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; }
