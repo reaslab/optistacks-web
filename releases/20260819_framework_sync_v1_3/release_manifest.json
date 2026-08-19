@@ -1,0 +1,59 @@
+{
+  "schema_version": "reasatlas-release-manifest-v1",
+  "snapshot_version": "20260819_framework_sync_v1_3",
+  "release_status": "VALIDATED_CONSERVATIVE_PUBLIC_SNAPSHOT",
+  "canonical_tree_mutated": false,
+  "site_totals": {
+    "domains": 15,
+    "topics": 75649,
+    "statements": 93941,
+    "convergence_candidates": 115
+  },
+  "campaign_placement": {
+    "candidates_with_body": 54471,
+    "public_statement_count": 13295,
+    "duplicate_title_count": 422,
+    "quarantined_candidate_count": 40754,
+    "unsafe_public_placement_count": 0,
+    "public_policy": "published exact-existing plus reviewed exact-existing/preferred-home",
+    "quarantine_reasons": {
+      "builder_only_not_independently_reviewed": 14263,
+      "missing_or_unresolved_specific_container": 9478,
+      "affected_node_is_not_a_confirmed_primary_owner": 1254,
+      "no_live_target": 15759
+    }
+  },
+  "performance": {
+    "statement_initial_render_limit": 24,
+    "generated_site_mib": 338,
+    "chapter_shard_payload_mib": 314.92,
+    "largest_shard_mib": 4.19,
+    "largest_direct_statement_count": 42
+  },
+  "a07_navigation": [
+    {"id": "derivative_free_optimization", "canonical_root": "A07.C01", "topics": 582, "statements": 1476},
+    {"id": "manifold_optimization", "canonical_root": "A07.C02", "topics": 572, "statements": 746},
+    {"id": "distributed_optimization", "canonical_root": "A07.C03", "topics": 543, "statements": 916}
+  ],
+  "generated_artifacts": {
+    "live_manifest_path": "/root/workspace/lcy/optistacks-web/site/data/manifest.json",
+    "live_manifest_sha256": "819e3a1031693c2ebb7d7cabcb6260f24c005b2dc61bcd2465da344cd7fa7e85",
+    "application_path": "/root/workspace/lcy/optistacks-web/site/app.js",
+    "application_sha256": "0589617eb7b15c61dfc7d3fb3bcc5fa2766975b3564fa3924eb09f7a9dbab03e",
+    "stylesheet_path": "/root/workspace/lcy/optistacks-web/site/styles.css",
+    "stylesheet_sha256": "6a8bba7a0f4371fd12146de7ed087bb03fae3d09044e1a5c8fff666046130552",
+    "quarantine_path": "/root/workspace/lcy/optistacks-web/site/data/campaign_placement_quarantine.json",
+    "quarantine_sha256": "0d398c91543f7d2672e86851fbf8cecc1dc51224a453eb37b28325f06457cbde",
+    "framework_validation_path": "/root/workspace/lcy/optistacks-web/releases/20260819_framework_sync_v1_3/live_framework_validation_report.json",
+    "framework_validation_sha256": "c92743f5dfbe393a3c75748ee86c905bf2e299f0c9f5150b53f2ba57b1398b30"
+  },
+  "validation": {
+    "framework_sync": "PASS",
+    "distributed_unification": "PASS",
+    "statement_render_contract": "PASS",
+    "campaign_candidate_accounting": "PASS",
+    "unsafe_public_campaign_placement_count": 0,
+    "javascript_syntax": "PASS",
+    "localhost_asset_loading": "PASS"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": "reasatlas-release-manifest-v1",
+  "snapshot_version": "20260819_framework_sync_v1_2",
+  "release_status": "VALIDATED_CANDIDATE_SNAPSHOT",
+  "canonical_tree_mutated": false,
+  "site_totals": {
+    "domains": 15,
+    "topics": 75649,
+    "statements": 118750,
+    "convergence_candidates": 115
+  },
+  "a07_navigation": [
+    {
+      "id": "derivative_free_optimization",
+      "canonical_root": "A07.C01",
+      "topics": 582,
+      "statements": 1738
+    },
+    {
+      "id": "manifold_optimization",
+      "canonical_root": "A07.C02",
+      "topics": 572,
+      "statements": 1225
+    },
+    {
+      "id": "distributed_optimization",
+      "canonical_root": "A07.C03",
+      "topics": 543,
+      "statements": 1089
+    }
+  ],
+  "knowledge_rendering": {
+    "validated_statement_count": 118750,
+    "render_contract_failures": 0,
+    "structured_convergence_records": 115,
+    "review_status_visible": false,
+    "review_flags_visible": false,
+    "pipeline_status_visible": false
+  },
+  "generated_artifacts": {
+    "live_manifest_path": "/root/workspace/lcy/optistacks-web/site/data/manifest.json",
+    "live_manifest_sha256": "89341e14ac97d14c13c0506ad0f6c18ce6cc40e39053033ed831924f214e5878",
+    "application_path": "/root/workspace/lcy/optistacks-web/site/app.js",
+    "application_sha256": "f06c9fb5bef79b29cc757933ecc52648fc18cb36ab6d0d5138da8ef1f4d603ac",
+    "stylesheet_path": "/root/workspace/lcy/optistacks-web/site/styles.css",
+    "stylesheet_sha256": "e06504aa8b81dc9fe1490a68e685621b553fdf49551245aaf0adcabcab497fd2",
+    "framework_validation_path": "/root/workspace/lcy/optistacks-web/releases/20260819_framework_sync_v1_2/live_framework_validation_report.json",
+    "framework_validation_sha256": "a65c43dd8a945fb86b0d406ed51834d2eef5c4ee101a3f896021607be0eeb6fb"
+  },
+  "validation": {
+    "a07_navigation_split": "PASS",
+    "distributed_unification": "PASS",
+    "statement_render_contract": "PASS",
+    "framework_sync": "PASS",
+    "javascript_syntax": "PASS",
+    "localhost_asset_loading": "PASS"
+  }
+}

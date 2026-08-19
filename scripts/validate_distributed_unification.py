@@ -20,6 +20,8 @@ DEFAULT_MAPPING = Path(
 )
 DOMAIN_ID = "specialized_continuous_methods"
 LEGACY_DOMAIN_ID = "distributed_optimization"
+DERIVATIVE_FREE_SHORTCUT_ID = "derivative_free_optimization"
+MANIFOLD_SHORTCUT_ID = "manifold_optimization"
 ROOT_ID = "A07.C03"
 BASE_REVISION_STATEMENT_COUNT = 876
 HARD_ALIAS_SOURCE = "A07.C03.NC77ECCB1B848.AND6C2C62B88F"
@@ -200,11 +202,26 @@ def main() -> None:
     require(route.get("domain_id") == DOMAIN_ID, "Legacy domain does not route to A07 domain")
     require(route.get("default_node_id") == ROOT_ID, "Legacy domain does not default to A07.C03")
     shortcuts = manifest.get("navigation_shortcuts") or []
+    shortcut_index = {item.get("id"): item for item in shortcuts}
+    expected_shortcuts = {
+        DERIVATIVE_FREE_SHORTCUT_ID: ("A07.C01", 6),
+        MANIFOLD_SHORTCUT_ID: ("A07.C02", 7),
+        LEGACY_DOMAIN_ID: (ROOT_ID, 8),
+    }
+    require(set(shortcut_index) == set(expected_shortcuts), "A07 navigation shortcuts are incomplete or duplicated")
+    for shortcut_id, (target_id, position) in expected_shortcuts.items():
+        shortcut = shortcut_index.get(shortcut_id, {})
+        shortcut_route = manifest.get("legacy_domain_routes", {}).get(shortcut_id, {})
+        require(shortcut.get("position") == position, f"Shortcut position is stale: {shortcut_id}")
+        require(shortcut.get("domain_id") == DOMAIN_ID, f"Shortcut domain is stale: {shortcut_id}")
+        require(shortcut.get("default_node_id") == target_id, f"Shortcut target is stale: {shortcut_id}")
+        require(shortcut_route.get("domain_id") == DOMAIN_ID, f"Shortcut route domain is stale: {shortcut_id}")
+        require(shortcut_route.get("default_node_id") == target_id, f"Shortcut route target is stale: {shortcut_id}")
     distributed_shortcuts = [item for item in shortcuts if item.get("id") == LEGACY_DOMAIN_ID]
     require(len(distributed_shortcuts) == 1, "Distributed navigation shortcut is missing or duplicated")
     if distributed_shortcuts:
         shortcut = distributed_shortcuts[0]
-        require(shortcut.get("position") == 5, "Distributed navigation shortcut is not fifth")
+        require(shortcut.get("position") == 8, "Distributed navigation shortcut is not eighth")
         require(shortcut.get("domain_id") == DOMAIN_ID, "Distributed shortcut targets the wrong domain")
         require(shortcut.get("default_node_id") == ROOT_ID, "Distributed shortcut targets the wrong node")
         require(shortcut.get("stats", {}).get("topics") == 543, "Distributed shortcut topic count is stale")
@@ -228,8 +245,14 @@ def main() -> None:
     continuous_items = subject_index.get("continuous_optimization", {}).get("items", [])
     discrete_items = subject_index.get("discrete_optimization", {}).get("items", [])
     require(
-        LEGACY_DOMAIN_ID in continuous_items and continuous_items.index(LEGACY_DOMAIN_ID) == 4,
-        "Distributed Optimization is not the fifth Continuous Optimization collection",
+        continuous_items[5:9]
+        == [
+            DERIVATIVE_FREE_SHORTCUT_ID,
+            MANIFOLD_SHORTCUT_ID,
+            LEGACY_DOMAIN_ID,
+            DOMAIN_ID,
+        ],
+        "A07 methods are not split into derivative-free, manifold, distributed, and remaining specialized collections",
     )
     require(
         discrete_items
@@ -251,9 +274,7 @@ def main() -> None:
         "At least one published collection is missing from the major-domain taxonomy",
     )
     domain_stats = {domain["id"]: domain["stats"] for domain in manifest["domains"]}
-    shortcut_targets = {
-        item["id"]: item["domain_id"] for item in distributed_shortcuts
-    }
+    shortcut_targets = {item["id"]: item["domain_id"] for item in shortcuts}
     for subject in subject_domains:
         resolved_ids = {
             shortcut_targets.get(item, item) for item in subject.get("items", [])
@@ -308,7 +329,7 @@ def main() -> None:
         "statement_aliases_relocated": relocated,
         "nearest_ancestor_placements": 0,
         "standalone_domain_entries": 0,
-        "navigation_shortcuts": len(distributed_shortcuts),
+        "navigation_shortcuts": len(shortcuts),
         "major_domains": len(subject_domains),
     }
     print(json.dumps(report, ensure_ascii=False, indent=2))

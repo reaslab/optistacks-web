@@ -18,12 +18,22 @@ const state = {
   qualityTarget: null,
   historyFilter: "all",
   layoutBeforeAnnotation: null,
+  statementLimits: new Map(),
 };
 
 const QUALITY_STORAGE_KEY = "optistacks-quality-review-v1";
 const LAYOUT_STORAGE_KEY = "optistacks-layout-v1";
 const PANE_LABELS = { library: "domains", directory: "outline", detail: "content" };
+const STATEMENT_PAGE_SIZE = 24;
 const LEGACY_DOMAIN_ROUTES = {
+  derivative_free_optimization: {
+    domain_id: "specialized_continuous_methods",
+    default_node_id: "A07.C01",
+  },
+  manifold_optimization: {
+    domain_id: "specialized_continuous_methods",
+    default_node_id: "A07.C02",
+  },
   distributed_optimization: {
     domain_id: "specialized_continuous_methods",
     default_node_id: "A07.C03",
@@ -301,6 +311,9 @@ function activeNavigationShortcut() {
 
 function renderDomainNav() {
   const activeShortcut = activeNavigationShortcut();
+  const activeAccent = activeShortcut?.accent || state.domainMeta?.accent || "#2563eb";
+  document.documentElement.style.setProperty("--accent", activeAccent);
+  document.documentElement.style.setProperty("--accent-soft", `${activeAccent}24`);
   $("#directory-title").textContent = activeShortcut?.short_name || state.domainMeta?.short_name || "Knowledge outline";
   const subject = activeSubjectDomain();
   const items = (subject?.items || []).map(navigationItem).filter(Boolean);
@@ -403,7 +416,7 @@ function renderTreeNode(node) {
   return `<li class="tree-node" data-node-shell="${esc(node.topic_id)}">
     <div class="tree-row ${state.selected === node.topic_id ? "selected" : ""}" data-select-node="${esc(node.topic_id)}" ${loading ? 'aria-busy="true"' : ""}>
       <button class="tree-toggle ${loading ? "loading" : hasChildren ? (open ? "open" : "") : "leaf"}" data-toggle-node="${esc(node.topic_id)}" aria-label="${loading ? "Loading" : open ? "Collapse" : "Expand"}" ${loading ? "disabled" : ""}></button>
-      <span class="tree-label"><small>${esc(node.display_number)}</small><b title="${esc(node.title)}">${esc(node.title)}</b></span>
+      <span class="tree-label"><b title="${esc(node.title)}">${esc(node.title)}</b></span>
       ${node.descendant_statement_count ? `<span class="tree-count">${formatNumber(node.descendant_statement_count)}</span>` : ""}
     </div>
     ${hasChildren && open ? `<ul class="tree-children">${node.children.map(renderTreeNode).join("")}</ul>` : ""}
@@ -512,7 +525,9 @@ function renderDetail(nodeId) {
   if (!entry) return;
   const node = entry.node;
   const allStatements = node.knowledge_statements || [];
-  const statements = allStatements;
+  const statementLimit = state.statementLimits.get(nodeId) || STATEMENT_PAGE_SIZE;
+  const statements = allStatements.slice(0, statementLimit);
+  const hasMoreStatements = statements.length < allStatements.length;
   const path = entry.path.map(item => `<span>${esc(item.title)}</span>`).join("<i>/</i>");
   const witnesses = node.top_down_textbook_witnesses || [];
   const relationships = renderTopicRelationships(entry);
@@ -528,6 +543,7 @@ function renderDetail(nodeId) {
       <div class="section-heading"><h3>Knowledge statements</h3><span>${statements.length} / ${allStatements.length} records</span></div>
       ${statements.length ? `<div class="statement-list">${statements.map((statement, index) => renderStatement(statement, index)).join("")}</div>` : `
         <div class="empty-statements"><b>${allStatements.length ? "No statements match this filter" : "Structural topic"}</b><span>${allStatements.length ? "Choose another statement type above." : `Concrete knowledge is stored in ${formatNumber(node.descendant_statement_count)} descendant statements.`}</span></div>`}
+      ${hasMoreStatements ? `<button class="load-more-statements" type="button" data-load-more-statements="${esc(nodeId)}">Show ${Math.min(STATEMENT_PAGE_SIZE, allStatements.length - statements.length)} more statements</button>` : ""}
       ${witnesses.length ? `<section class="witness-section"><div class="section-heading"><h3>Source references</h3><span>${witnesses.length} references</span></div><div class="source-list">${witnesses.map(renderWitness).join("")}</div></section>` : ""}
     </div>`;
   $("#detail-panel").scrollTop = 0;
@@ -552,6 +568,10 @@ function renderDetail(nodeId) {
       event.stopPropagation();
       openQualityDialog(button.dataset.qualityTargetType, button.dataset.qualityTargetId);
     });
+  });
+  $("#detail-panel").querySelector("[data-load-more-statements]")?.addEventListener("click", () => {
+    state.statementLimits.set(nodeId, statementLimit + STATEMENT_PAGE_SIZE);
+    renderDetail(nodeId);
   });
   typesetMath($("#detail-panel"));
 }
@@ -585,12 +605,59 @@ function renderTopicRelationships(entry) {
   return `<div class="topic-relations">${groups.join("")}</div>`;
 }
 
+function arrayValues(value) {
+  if (Array.isArray(value)) return value.filter(item => item !== null && item !== undefined && String(item).trim());
+  if (value === null || value === undefined || String(value).trim() === "") return [];
+  return [value];
+}
+
+function renderStatementSource(source) {
+  const title = source.source_title || source.source_id || source.source_graph_id || "Source evidence";
+  const locator = source.locator || source.source_locator || "No item-level locator supplied";
+  const itemId = source.source_item_id || source.statement_id || "";
+  const grounding = source.fulltext_span_verified === true
+    ? "full-text span verified"
+    : source.fulltext_span_verified === false
+      ? "extraction grounded; full-text span not verified"
+      : "grounding status not recorded";
+  return `<div class="statement-source-item">
+    <b>${esc(title)}</b>
+    <span>${esc(locator)}</span>
+    <small>${itemId ? `<code>${esc(itemId)}</code> · ` : ""}${esc(grounding)}</small>
+  </div>`;
+}
+
+function renderVariantDimensions(dimensions) {
+  if (!dimensions || typeof dimensions !== "object" || Array.isArray(dimensions)) return "";
+  const groups = Object.entries(dimensions).filter(([, value]) => arrayValues(value).length);
+  if (!groups.length) return "";
+  return `<div class="meta-block full"><label>Variant regime</label><div class="variant-grid">${groups.map(([key, values]) => `
+    <section><b>${esc(titleCase(key))}</b><ul>${arrayValues(values).map(value => `<li>${esc(value)}</li>`).join("")}</ul></section>`).join("")}</div></div>`;
+}
+
 function renderStatement(statement, index) {
   const assumptions = statement.assumptions_latex || [];
   const notation = statement.notation || [];
+  const conclusion = statement.conclusion && typeof statement.conclusion === "object" && !Array.isArray(statement.conclusion)
+    ? statement.conclusion
+    : {};
+  const conclusionLatex = statement.conclusion_latex || conclusion.conclusion_latex || "";
+  const sources = statement.source_refs?.length ? statement.source_refs : (statement.source_witnesses || []);
+  const boundaryNotes = arrayValues(statement.boundary_notes);
+  const equivalentFormulations = arrayValues(statement.equivalent_formulations_latex);
+  const relations = arrayValues(statement.relations);
+  const rateClass = conclusion.rate_class && !["none", "not applicable"].includes(String(conclusion.rate_class).toLowerCase())
+    ? conclusion.rate_class
+    : "";
+  const badges = [
+    statement.content_kind ? { value: statement.content_kind, kind: "kind" } : null,
+    rateClass ? { value: rateClass, kind: "rate" } : null,
+    statement.intermediate_metadata?.partial_run ? { value: "partial run", kind: "partial" } : null,
+  ].filter(Boolean);
   return `<details class="statement-card" id="stmt-${esc(statement.id)}" ${index === 0 ? "open" : ""}>
     <summary>
-      <b>${esc(statement.title)}</b>
+      <b>${esc(statement.title || statement.statement_title || "Untitled statement")}</b>
+      <span class="statement-badges">${badges.map(badge => `<em class="statement-badge ${badge.kind}">${esc(titleCase(badge.value))}</em>`).join("")}</span>
     </summary>
     <div class="statement-content">
       <div class="statement-tools"><button class="review-button" type="button" data-quality-target-type="statement" data-quality-target-id="${esc(statement.id)}">Report statement issue</button></div>
@@ -598,12 +665,21 @@ function renderStatement(statement, index) {
       ${statement.statement_latex ? `<div class="formal-block">${renderLatex(statement.statement_latex, true)}</div>` : ""}
       <div class="statement-meta">
         ${assumptions.length ? `<div class="meta-block full"><label>Assumptions</label><ul class="latex-list">${assumptions.map(value => `<li>${renderLatex(value)}</li>`).join("")}</ul></div>` : ""}
-        ${statement.conclusion_latex ? `<div class="meta-block full"><label>Conclusion</label><div class="latex-value">${renderLatex(statement.conclusion_latex)}</div></div>` : ""}
-        ${statement.intermediate_metadata?.stage ? `<div class="meta-block"><label>Pipeline stage</label><p>${esc(titleCase(statement.intermediate_metadata.stage))}</p></div>` : ""}
+        ${conclusionLatex ? `<div class="meta-block full"><label>Conclusion</label><div class="latex-value">${renderLatex(conclusionLatex)}</div></div>` : ""}
+        ${conclusion.target ? `<div class="meta-block full"><label>Convergence target</label><p>${esc(conclusion.target)}</p></div>` : ""}
+        ${arrayValues(conclusion.convergence_objects).length ? `<div class="meta-block full"><label>Convergence objects</label><ul>${arrayValues(conclusion.convergence_objects).map(value => `<li>${esc(value)}</li>`).join("")}</ul></div>` : ""}
+        ${conclusion.nonasymptotic_bound_latex ? `<div class="meta-block full"><label>Nonasymptotic bound</label><div class="latex-value">${renderLatex(conclusion.nonasymptotic_bound_latex)}</div></div>` : ""}
+        ${conclusion.epsilon_complexity_latex ? `<div class="meta-block full"><label>Epsilon complexity</label><div class="latex-value">${renderLatex(conclusion.epsilon_complexity_latex)}</div></div>` : ""}
+        ${["sequence_scope", "topology_or_mode", "probability_mode", "locality", "rate_class"].map(key => conclusion[key] ? `<div class="meta-block"><label>${esc(titleCase(key))}</label><p>${esc(titleCase(conclusion[key]))}</p></div>` : "").join("")}
+        ${renderVariantDimensions(statement.variant_dimensions)}
+        ${equivalentFormulations.length ? `<div class="meta-block full"><label>Equivalent formulations</label><ul class="latex-list">${equivalentFormulations.map(value => `<li>${renderLatex(value)}</li>`).join("")}</ul></div>` : ""}
+        ${boundaryNotes.length ? `<div class="meta-block full boundary-block"><label>Boundary and limitation notes</label><ul>${boundaryNotes.map(value => `<li>${esc(value)}</li>`).join("")}</ul></div>` : ""}
+        ${relations.length ? `<div class="meta-block full"><label>Variant relations</label><div class="variant-relations">${relations.map(relation => `<p><b>${esc(titleCase(relation.relation || "related"))}</b> <code>${esc(relation.target_variant_id || relation.target_local_variant_id || "")}</code>${relation.rationale ? `<span>${esc(relation.rationale)}</span>` : ""}</p>`).join("")}</div></div>` : ""}
         ${statement.intermediate_metadata?.reason ? `<div class="meta-block full"><label>Deferred reason</label><p>${esc(statement.intermediate_metadata.reason)}</p></div>` : ""}
         ${statement.intermediate_metadata?.review_comment ? `<div class="meta-block full"><label>Review comment</label><p>${esc(statement.intermediate_metadata.review_comment)}</p></div>` : ""}
         ${statement.prerequisite_node_ids?.length ? `<div class="meta-block full"><label>Prerequisites</label><p class="prerequisite-links">${statement.prerequisite_node_ids.map(renderPrerequisite).join("<span>·</span>")}</p></div>` : ""}
         ${notation.length ? `<div class="meta-block full"><label>Notation</label><ul class="latex-list">${notation.map(item => `<li><span class="notation-symbol">${renderLatex(item.symbol_latex)}</span><span>— ${esc(item.meaning)}</span></li>`).join("")}</ul></div>` : ""}
+        ${sources.length ? `<div class="meta-block full"><label>Statement evidence</label><div class="statement-source-list">${sources.map(renderStatementSource).join("")}</div></div>` : ""}
         <div class="meta-block full"><label>Statement ID</label><p><code>${esc(statement.id)}</code></p></div>
       </div>
     </div>

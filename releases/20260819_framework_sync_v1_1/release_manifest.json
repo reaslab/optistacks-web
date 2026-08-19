@@ -1,0 +1,59 @@
+{
+  "schema_version": "reasatlas-release-manifest-v1",
+  "snapshot_version": "20260819_framework_sync_v1_1",
+  "release_status": "VALIDATED_CANDIDATE_SNAPSHOT",
+  "canonical_tree_mutated": false,
+  "directory_source": {
+    "tree_id": "opt_stacks_v62_framework_sync_candidate",
+    "path": "/root/workspace/lcy/optistacks/outputs/releases/v62_framework_sync_candidate/opt_stacks_v62_framework_sync_candidate.json",
+    "file_sha256": "cf342f90f99e8b66806a4cea9dda453157d01709ac4ab5fc7888ff6be2778c4d",
+    "canonical_sha256": "08a0b7605318b22a1871e11108cbefa9751f651e413b3dd14dc2a842ee1babec",
+    "validation_status": "PASS"
+  },
+  "convergence_sources": [
+    {
+      "role": "completed_core",
+      "path": "/root/workspace/lcy/optistacks/0809_optimize/convergence_runs/20260818_v1_pilot16/publish/convergence_variant_candidate_layer.json",
+      "file_sha256": "fac935e75f53627a440b88c319010bd87f2bb2974b7d6919528f8fc2f61d5a72",
+      "publication_status": "SHADOW_FAST_CANDIDATE_UNREVIEWED",
+      "record_count": 74
+    },
+    {
+      "role": "validated_partial_broad",
+      "path": "/root/workspace/lcy/optistacks/0809_optimize/convergence_runs/20260818_v2_spine_fast/publish_partial_20260819_12shards/convergence_variant_candidate_layer.json",
+      "file_sha256": "b652d4a97fed1447d0342d157e447ccaadc0497162559642044247960499945c",
+      "partial_manifest_path": "/root/workspace/lcy/optistacks/0809_optimize/convergence_runs/20260818_v2_spine_fast/publish_partial_20260819_12shards/partial_manifest.json",
+      "partial_manifest_sha256": "64e6053dc3350d1db3549d5df5eaaed899246888b365e4711382cbe480cad5c8",
+      "publication_status": "SHADOW_PARTIAL_FAST_CANDIDATE_UNREVIEWED",
+      "record_count": 41,
+      "planned_shards": 128,
+      "passed_shards": 12,
+      "failed_shards": 1,
+      "unstarted_shards": 115,
+      "admitted_algorithm_families": 12,
+      "admitted_evidence_count": 43,
+      "deferred_variant_count": 16
+    }
+  ],
+  "site_totals": {
+    "domains": 15,
+    "topics": 75649,
+    "statements": 118750,
+    "a07_c03_topics": 543,
+    "convergence_candidates": 115
+  },
+  "generated_artifacts": {
+    "live_manifest_path": "/root/workspace/lcy/optistacks-web/site/data/manifest.json",
+    "live_manifest_sha256": "1a248f67c66f31ea748bf62cd35685cbd21037c60431fabc45b6e4e52035f1fb",
+    "framework_validation_path": "/root/workspace/lcy/optistacks-web/releases/20260819_framework_sync_v1_1/live_framework_validation_report.json",
+    "framework_validation_sha256": "8cebda4b83978fb73b9b2409ac46b425ea0430d56f12e46530c9963f1c224c7c"
+  },
+  "validation": {
+    "distributed_unification": "PASS",
+    "framework_sync": "PASS",
+    "javascript_syntax": "PASS",
+    "convergence_variant_ids_unique": true,
+    "convergence_topic_foreign_keys_live": true,
+    "convergence_unmapped_count": 0
+  }
+}

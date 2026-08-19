@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import zipfile
 from collections import Counter
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -109,6 +108,8 @@ PART_DOMAINS = (
 )
 
 LEGACY_DOMAIN_ID = "distributed_optimization"
+DERIVATIVE_FREE_SHORTCUT_ID = "derivative_free_optimization"
+MANIFOLD_SHORTCUT_ID = "manifold_optimization"
 SPECIALIZED_DOMAIN_ID = "specialized_continuous_methods"
 DISTRIBUTED_ROOT_ID = "A07.C03"
 DOMAIN_ORDER = tuple(config["id"] for config in PART_DOMAINS)
@@ -123,8 +124,10 @@ SUBJECT_DOMAIN_CONFIG = (
             "variational_analysis",
             "nonlinear_programming",
             "first_order_methods",
-            LEGACY_DOMAIN_ID,
             "nonsmooth_optimization",
+            DERIVATIVE_FREE_SHORTCUT_ID,
+            MANIFOLD_SHORTCUT_ID,
+            LEGACY_DOMAIN_ID,
             SPECIALIZED_DOMAIN_ID,
             "convex_programming",
             "linear_programming",
@@ -173,6 +176,22 @@ CAMPAIGN_STAGE_PRIORITY = {
     "0809_campaign_reviewed": 2,
     "0809_campaign_published": 3,
 }
+DEFAULT_DIRECTORY_TREE = Path(
+    "/root/workspace/lcy/optistacks/outputs/releases/"
+    "v62_framework_sync_candidate/opt_stacks_v62_framework_sync_candidate.json"
+)
+DEFAULT_CONVERGENCE_LAYERS = (
+    Path(
+        "/root/workspace/lcy/optistacks/0809_optimize/convergence_runs/"
+        "20260818_v1_pilot16/publish/convergence_variant_candidate_layer.json"
+    ),
+    Path(
+        "/root/workspace/lcy/optistacks/0809_optimize/convergence_runs/"
+        "20260818_v2_spine_fast/publish_partial_20260819_12shards/"
+        "convergence_variant_candidate_layer.json"
+    ),
+)
+DEFAULT_SNAPSHOT_VERSION = "20260819_framework_sync_v1_3"
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -367,6 +386,46 @@ def install_revised_distributed_subtree(
     }
 
 
+def relocate_aliased_statements(
+    root: dict[str, Any], node_redirects: dict[str, str]
+) -> dict[str, int]:
+    """Canonicalize statement ownership after all preservation/import passes."""
+    index = {node["topic_id"]: node for node in walk(root)}
+    pending: list[tuple[str, dict[str, Any]]] = []
+    relocated = 0
+    for node in index.values():
+        retained = []
+        for statement in node.get("knowledge_statements") or []:
+            source_id = str(
+                statement.get("node_id")
+                or statement.get("source_node_id")
+                or statement.get("original_topic_id")
+                or ""
+            )
+            target_id = node_redirects.get(source_id)
+            if not target_id or target_id == node["topic_id"]:
+                retained.append(statement)
+                continue
+            if target_id not in index:
+                raise RuntimeError(f"Missing statement alias target: {source_id} -> {target_id}")
+            updated = deepcopy(statement)
+            updated["original_source_node_id"] = source_id
+            if "node_id" in updated:
+                updated["node_id"] = target_id
+            if "source_node_id" in updated:
+                updated["source_node_id"] = target_id
+            updated["original_topic_id"] = source_id
+            updated["mapped_topic_ids"] = [target_id]
+            updated["mapping_method"] = "explicit_node_alias"
+            pending.append((target_id, updated))
+            relocated += 1
+        node["knowledge_statements"] = retained
+    for target_id, statement in pending:
+        index[target_id].setdefault("knowledge_statements", []).append(statement)
+    duplicates_removed = sum(deduplicate_node_statements(node) for node in index.values())
+    return {"relocated": relocated, "duplicates_removed": duplicates_removed}
+
+
 def update_revision_import_report(domain: dict[str, Any], report: dict[str, int]) -> None:
     intermediate_report = domain.get("intermediate_result_report")
     if not intermediate_report:
@@ -468,15 +527,21 @@ def restore_full_domain(site: Path, data_url: str) -> dict[str, Any]:
     return data
 
 
+def is_regenerated_statement(statement: dict[str, Any]) -> bool:
+    stage = str((statement.get("intermediate_metadata") or {}).get("stage") or "")
+    return stage.startswith("0809_campaign_") or stage in {
+        "convergence_fast_candidate_unreviewed",
+        "convergence_partial_fast_candidate_unreviewed",
+    }
+
+
 def strip_campaign_statements(tree: dict[str, Any]) -> None:
     for root in tree.get("roots", []):
         for node in walk(root):
             node["knowledge_statements"] = [
                 statement
                 for statement in node.get("knowledge_statements", [])
-                if not str((statement.get("intermediate_metadata") or {}).get("stage") or "").startswith(
-                    "0809_campaign_"
-                )
+                if not is_regenerated_statement(statement)
             ]
 
 
@@ -493,6 +558,7 @@ def collect_preserved_nodes(
         "topics": 0,
         "statements": 0,
         "excluded_campaign_statements": 0,
+        "excluded_convergence_candidates": 0,
         "duplicate_topic_occurrences": 0,
     }
     for domain in manifest.get("domains", []):
@@ -508,6 +574,12 @@ def collect_preserved_nodes(
                     stage = str((statement.get("intermediate_metadata") or {}).get("stage") or "")
                     if stage.startswith("0809_campaign_"):
                         report["excluded_campaign_statements"] += 1
+                        continue
+                    if stage in {
+                        "convergence_fast_candidate_unreviewed",
+                        "convergence_partial_fast_candidate_unreviewed",
+                    }:
+                        report["excluded_convergence_candidates"] += 1
                         continue
                     statements.append(deepcopy(statement))
                 if topic_id not in preserved:
@@ -545,7 +617,7 @@ def merge_preserved_statements(
             if not old:
                 continue
             report["matched_topics"] += 1
-            if old.get("title"):
+            if old.get("title") and not node.get("framework_adjustment"):
                 node["title"] = old["title"]
             titles = {
                 normalize_text(statement.get("statement_title") or statement.get("title"))
@@ -846,6 +918,7 @@ def prepare_campaign_record(
             "review_decision": item.get("review_decision"),
             "primary_disposition": item.get("primary_disposition"),
             "directory_assessment": item.get("directory_assessment") or {},
+            "new_node_candidate": item.get("new_node_candidate") or {},
         },
     }
 
@@ -1034,7 +1107,9 @@ def merge_campaign_candidates(
     source: Path,
     trees: dict[str, dict[str, Any]],
     domains: dict[str, dict[str, Any]],
+    node_redirects: dict[str, str] | None = None,
 ) -> dict[str, Any]:
+    node_redirects = node_redirects or {}
     candidates, report = collect_campaign_candidates(source)
     topic_index: dict[str, tuple[str, dict[str, Any]]] = {}
     title_index: dict[str, set[str]] = {}
@@ -1064,11 +1139,43 @@ def merge_campaign_candidates(
     report["duplicate_title_count"] = 0
     report["versioned_duplicate_id_count"] = 0
     report["unmapped_count"] = 0
+    report["quarantined_by_reason"] = Counter()
+    report["quarantined_by_stage"] = Counter()
+    report["quarantined_by_method"] = Counter()
+    quarantined_records: list[dict[str, Any]] = []
+
+    def quarantine(
+        entry: dict[str, Any],
+        reason: str,
+        *,
+        topic_id: str = "",
+        mapping_method: str = "",
+        original_hint: str = "",
+    ) -> None:
+        report["quarantined_by_reason"][reason] += 1
+        report["quarantined_by_stage"][entry["stage"]] += 1
+        report["quarantined_by_method"][mapping_method or "unmapped"] += 1
+        record = entry["record"]
+        quarantined_records.append(
+            {
+                "source_item_id": entry["source_item_id"],
+                "campaign": entry["campaign"],
+                "stage": entry["stage"],
+                "reason": reason,
+                "mapping_method": mapping_method,
+                "attempted_topic_id": topic_id,
+                "original_placement_hint": original_hint,
+                "statement_title": record.get("statement_title") or record.get("title") or "",
+                "placement_hints": entry["placement_hints"],
+            }
+        )
 
     for entry in candidates:
         placement: tuple[str, str, str] | None = None
         for method, original_hint in entry["placement_hints"]:
-            topic_id = original_hint
+            topic_id = node_redirects.get(original_hint, original_hint)
+            if topic_id != original_hint:
+                method = "explicit_node_alias"
             while topic_id not in topic_index and "." in topic_id:
                 topic_id = topic_id.rsplit(".", 1)[0]
             if topic_id in topic_index:
@@ -1076,9 +1183,36 @@ def merge_campaign_candidates(
                 break
         if placement is None:
             report["unmapped_count"] += 1
+            quarantine(entry, "no_live_target")
             continue
 
         topic_id, mapping_method, original_hint = placement
+        stage = entry["stage"]
+        quarantine_reason = ""
+        if stage == "0809_campaign_build":
+            quarantine_reason = "builder_only_not_independently_reviewed"
+        elif "ancestor" in mapping_method or mapping_method == "campaign_parent_fallback":
+            quarantine_reason = "missing_or_unresolved_specific_container"
+        elif mapping_method == "campaign_single_affected_node":
+            quarantine_reason = "affected_node_is_not_a_confirmed_primary_owner"
+        elif not (
+            (stage == "0809_campaign_published" and mapping_method in {"campaign_existing_node", "explicit_node_alias"})
+            or (
+                stage == "0809_campaign_reviewed"
+                and mapping_method in {"campaign_existing_node", "campaign_preferred_home", "explicit_node_alias"}
+            )
+        ):
+            quarantine_reason = "placement_not_in_public_allowlist"
+        if quarantine_reason:
+            quarantine(
+                entry,
+                quarantine_reason,
+                topic_id=topic_id,
+                mapping_method=mapping_method,
+                original_hint=original_hint,
+            )
+            continue
+
         domain_id, node = topic_index[topic_id]
         record = entry["record"]
         title_key = normalize_text(record.get("statement_title") or record.get("title"))
@@ -1129,9 +1263,160 @@ def merge_campaign_candidates(
         refresh_domain_metadata(tree, domains[domain_id])
         domains[domain_id]["campaign_snapshot_statement_count"] = report["added_by_domain"][domain_id]
 
-    for key in ("added_by_domain", "added_by_stage", "placement_methods"):
+    for key in (
+        "added_by_domain",
+        "added_by_stage",
+        "placement_methods",
+        "quarantined_by_reason",
+        "quarantined_by_stage",
+        "quarantined_by_method",
+    ):
         report[key] = dict(sorted(report[key].items()))
     report["added_statement_count"] = sum(report["added_by_domain"].values())
+    report["quarantined_count"] = len(quarantined_records)
+    report["_quarantined_records"] = quarantined_records
+    report["captured_at"] = datetime.now(timezone.utc).isoformat()
+    return report
+
+
+def merge_convergence_candidates(
+    layer_path: Path,
+    trees: dict[str, dict[str, Any]],
+    domains: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Attach the completed core convergence layer as unreviewed enrichment."""
+    layer = read_json(layer_path)
+    publication_status = str(layer.get("publication_status") or "")
+    allowed_statuses = {
+        "SHADOW_FAST_CANDIDATE_UNREVIEWED",
+        "SHADOW_PARTIAL_FAST_CANDIDATE_UNREVIEWED",
+    }
+    if publication_status not in allowed_statuses:
+        raise RuntimeError("Convergence layer is not the expected fast shadow candidate")
+    if layer.get("canonical_tree_mutated") is not False:
+        raise RuntimeError("Convergence candidate unexpectedly claims a canonical mutation")
+    records = layer.get("records") or []
+    if int(layer.get("record_count") or -1) != len(records):
+        raise RuntimeError("Convergence candidate record count is inconsistent")
+
+    topic_index: dict[str, tuple[str, dict[str, Any]]] = {}
+    title_index: dict[str, set[str]] = {}
+    statement_ids: set[str] = set()
+    for domain_id, tree in trees.items():
+        for root in tree["roots"]:
+            for node in walk(root):
+                topic_index[node["topic_id"]] = (domain_id, node)
+                title_index[node["topic_id"]] = {
+                    normalize_text(item.get("statement_title") or item.get("title"))
+                    for item in node.get("knowledge_statements") or []
+                }
+                statement_ids.update(
+                    str(item.get("id") or item.get("statement_id"))
+                    for item in node.get("knowledge_statements") or []
+                    if item.get("id") or item.get("statement_id")
+                )
+
+    report: dict[str, Any] = {
+        "schema_version": "web-convergence-snapshot-report-v1",
+        "source_path": str(layer_path),
+        "source_publication_status": publication_status,
+        "partial_run": bool(layer.get("partial_run")),
+        "planned_shard_count": layer.get("planned_shard_count"),
+        "passed_shard_count": layer.get("passed_shard_count"),
+        "failed_shard_count": layer.get("failed_shard_count"),
+        "unstarted_shard_count": layer.get("unstarted_shard_count"),
+        "source_record_count": len(records),
+        "added_statement_count": 0,
+        "duplicate_title_count": 0,
+        "duplicate_id_count": 0,
+        "unmapped_count": 0,
+        "ancestor_mapped_count": 0,
+        "added_by_domain": Counter(),
+        "review_status": "candidate_unreviewed",
+    }
+    for record in records:
+        original_topic_id = str(record.get("algorithm_topic_id") or "")
+        topic_id = original_topic_id
+        while topic_id not in topic_index and "." in topic_id:
+            topic_id = topic_id.rsplit(".", 1)[0]
+        if topic_id not in topic_index:
+            report["unmapped_count"] += 1
+            continue
+        if topic_id != original_topic_id:
+            report["ancestor_mapped_count"] += 1
+        domain_id, node = topic_index[topic_id]
+        title = str(record.get("statement_title") or record.get("variant_id") or "Convergence variant")
+        title_key = normalize_text(title)
+        if title_key and title_key in title_index[topic_id]:
+            report["duplicate_title_count"] += 1
+            continue
+        statement_id = "stmt_" + str(record["variant_id"]).lower().replace("-", "_")
+        if statement_id in statement_ids:
+            report["duplicate_id_count"] += 1
+            continue
+        conclusion = deepcopy(record.get("conclusion") or {})
+        boundary_notes = list(record.get("boundary_notes") or [])
+        is_boundary = bool(boundary_notes) and any(
+            token in " ".join(boundary_notes).lower()
+            for token in ("failure", "not guaranteed", "counterexample", "diverg")
+        )
+        has_rate = bool(
+            conclusion.get("rate_class") not in {None, "", "none"}
+            or conclusion.get("nonasymptotic_bound_latex")
+            or conclusion.get("epsilon_complexity_latex")
+        )
+        normalized = {
+            "id": statement_id,
+            "statement_id": statement_id,
+            "node_type": "knowledge_statement",
+            "title": title,
+            "statement_title": title,
+            "content_kind": "failure_boundary" if is_boundary else "complexity_bound" if has_rate else "theorem",
+            "statement_latex": str(record.get("statement_latex") or conclusion.get("conclusion_latex") or ""),
+            "statement_plain": str(record.get("statement_plain") or ""),
+            "assumptions_latex": list(record.get("assumptions_latex") or []),
+            "conclusion_latex": str(conclusion.get("conclusion_latex") or ""),
+            "conclusion": conclusion,
+            "variant_dimensions": deepcopy(record.get("variant_dimensions") or {}),
+            "equivalent_formulations_latex": list(record.get("equivalent_formulations_latex") or []),
+            "boundary_notes": boundary_notes,
+            "relations": deepcopy(record.get("relations") or []),
+            "source_refs": deepcopy(record.get("source_refs") or []),
+            "source_witnesses": deepcopy(record.get("source_refs") or []),
+            "review_status": "candidate",
+            "review_flags": list(record.get("review_flags") or []),
+            "proof_included": False,
+            "original_topic_id": original_topic_id,
+            "mapped_topic_ids": [topic_id],
+            "mapping_method": "exact_topic_id" if topic_id == original_topic_id else "nearest_canonical_ancestor",
+            "layer_role": "intermediate_result",
+            "intermediate_metadata": {
+                "stage": (
+                    "convergence_partial_fast_candidate_unreviewed"
+                    if layer.get("partial_run")
+                    else "convergence_fast_candidate_unreviewed"
+                ),
+                "source_path": str(layer_path),
+                "source_publication_status": publication_status,
+                "partial_run": bool(layer.get("partial_run")),
+                "variant_id": record.get("variant_id"),
+                "theorem_family_id": record.get("theorem_family_id"),
+            },
+        }
+        node.setdefault("knowledge_statements", []).append(normalized)
+        statement_ids.add(statement_id)
+        if title_key:
+            title_index[topic_id].add(title_key)
+        report["added_statement_count"] += 1
+        report["added_by_domain"][domain_id] += 1
+
+    for domain_id, tree in trees.items():
+        refresh_domain_metadata(tree, domains[domain_id])
+        domains[domain_id]["convergence_candidate_statement_count"] = (
+            int(domains[domain_id].get("convergence_candidate_statement_count") or 0)
+            + report["added_by_domain"][domain_id]
+        )
+    report["added_by_domain"] = dict(sorted(report["added_by_domain"].items()))
     report["captured_at"] = datetime.now(timezone.utc).isoformat()
     return report
 
@@ -1155,10 +1440,12 @@ def convert_part(
             for index, child in enumerate(raw.get("children", []), 1)
         ]
         statements = statements_by_topic.get(topic_id, [])
+        preserved_title = (preserved_nodes.get(topic_id) or {}).get("title")
+        title = raw.get("title") if raw.get("structural_adjustment") else preserved_title or raw.get("title")
         node = {
             "topic_id": topic_id,
             "display_number": number,
-            "title": (preserved_nodes.get(topic_id) or {}).get("title") or raw.get("title") or topic_id,
+            "title": title or topic_id,
             "topic_type": raw.get("node_type") or raw.get("navigation_kind") or "topic",
             "depth": depth,
             "classification_axis": raw.get("navigation_kind") or "pedagogical dependency",
@@ -1168,6 +1455,8 @@ def convert_part(
             "knowledge_statements": statements,
             "children": children,
         }
+        if raw.get("structural_adjustment"):
+            node["framework_adjustment"] = deepcopy(raw["structural_adjustment"])
         return node
 
     root_number = re.sub(r"\D", "", config["part_id"]).lstrip("0") or "0"
@@ -1178,7 +1467,7 @@ def convert_part(
         "domain_id": config["id"],
         "display_name": config["short_name"],
         "construction": {
-            "top_down": "complete A02-A16 directory from the source v57 full-depth snapshot",
+            "top_down": "complete A02-A16 directory from the validated v62 framework-sync candidate",
             "bottom_up": "previous ReasAtlas content, v58 published statements, topic-complete accepted and deferred records, and validated textbook campaign snapshots",
             "hard_boundary": "source placement and mechanical import do not certify mathematical correctness",
         },
@@ -1233,6 +1522,14 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", type=Path, default=Path("/root/workspace/lcy/optistacks"))
     parser.add_argument("--site", type=Path, default=Path(__file__).resolve().parents[1] / "site")
+    parser.add_argument("--directory-tree", type=Path, default=DEFAULT_DIRECTORY_TREE)
+    parser.add_argument(
+        "--convergence-layer",
+        type=Path,
+        action="append",
+        help="Repeat to install several convergence candidate layers; defaults to the stable core and validated partial broad layer.",
+    )
+    parser.add_argument("--snapshot-version", default=DEFAULT_SNAPSHOT_VERSION)
     parser.add_argument(
         "--previous-site",
         type=Path,
@@ -1284,9 +1581,10 @@ def main() -> None:
         revised_distributed_root = deepcopy(revised_distributed_root)
     strip_campaign_statements({"roots": [revised_distributed_root]})
 
-    package = source / "outputs/packages/optistacks_tree_graph_corrected_v27.zip"
-    with zipfile.ZipFile(package) as archive:
-        source_tree = json.loads(archive.read("snapshot/tree.json"))
+    directory_tree = args.directory_tree.resolve()
+    source_tree = read_json(directory_tree)
+    if source_tree.get("tree_id") != "opt_stacks_v62_framework_sync_candidate":
+        raise RuntimeError(f"Unexpected directory tree: {source_tree.get('tree_id')}")
     parts = {part["part_id"]: part for part in source_tree["parts"]}
 
     domains: dict[str, dict[str, Any]] = {}
@@ -1321,48 +1619,115 @@ def main() -> None:
         f"{revision_report['preserved_statements_added']:,} prior statements added"
     )
 
-    campaign_report = merge_campaign_candidates(source, trees, domains)
+    campaign_report = merge_campaign_candidates(
+        source, trees, domains, route_compatibility["node_redirects"]
+    )
+    quarantined_campaign_records = campaign_report.pop("_quarantined_records")
+    quarantine_data_url = "data/campaign_placement_quarantine.json"
+    write_json(
+        site / quarantine_data_url,
+        {
+            "schema_version": "web-campaign-placement-quarantine-v1",
+            "snapshot_version": args.snapshot_version,
+            "policy": (
+                "Public nodes admit published exact-existing placements and reviewed "
+                "exact-existing/preferred-home placements only."
+            ),
+            "record_count": len(quarantined_campaign_records),
+            "records": quarantined_campaign_records,
+        },
+    )
+    campaign_report["quarantine_data_url"] = quarantine_data_url
+    convergence_layers = args.convergence_layer or list(DEFAULT_CONVERGENCE_LAYERS)
+    convergence_layer_reports = [
+        merge_convergence_candidates(layer.resolve(), trees, domains)
+        for layer in convergence_layers
+    ]
+    convergence_report = {
+        "schema_version": "web-convergence-snapshot-report-v2",
+        "layer_count": len(convergence_layer_reports),
+        "partial_layer_count": sum(bool(row.get("partial_run")) for row in convergence_layer_reports),
+        "source_record_count": sum(int(row["source_record_count"]) for row in convergence_layer_reports),
+        "added_statement_count": sum(int(row["added_statement_count"]) for row in convergence_layer_reports),
+        "duplicate_title_count": sum(int(row["duplicate_title_count"]) for row in convergence_layer_reports),
+        "duplicate_id_count": sum(int(row["duplicate_id_count"]) for row in convergence_layer_reports),
+        "unmapped_count": sum(int(row["unmapped_count"]) for row in convergence_layer_reports),
+        "ancestor_mapped_count": sum(int(row["ancestor_mapped_count"]) for row in convergence_layer_reports),
+        "review_status": "candidate_unreviewed",
+        "layers": convergence_layer_reports,
+        "captured_at": datetime.now(timezone.utc).isoformat(),
+    }
+    alias_repair_report = relocate_aliased_statements(
+        trees[SPECIALIZED_DOMAIN_ID]["roots"][0],
+        route_compatibility["node_redirects"],
+    )
+    refresh_domain_metadata(trees[SPECIALIZED_DOMAIN_ID], domains[SPECIALIZED_DOMAIN_ID])
     for domain_id, tree in trees.items():
         write_json(site / domains[domain_id]["data_url"], tree)
     print(
         f"0809 campaign snapshot: {campaign_report['added_statement_count']:,} statements added, "
         f"{campaign_report['unmapped_count']:,} candidates unmapped"
     )
+    print(
+        f"Core convergence snapshot: {convergence_report['added_statement_count']:,} statements added, "
+        f"{convergence_report['unmapped_count']:,} candidates unmapped"
+    )
 
     manifest["domains"] = [domains[domain_id] for domain_id in DOMAIN_ORDER]
+    manifest["snapshot_version"] = args.snapshot_version
     manifest["built_at"] = datetime.now(timezone.utc).isoformat()
     manifest["preserved_snapshot"] = preserved_report
     manifest["source_campaign_snapshot"] = campaign_report
+    manifest["convergence_candidate_snapshot"] = convergence_report
+    manifest["directory_snapshot"] = {
+        "tree_id": source_tree.get("tree_id"),
+        "path": str(directory_tree),
+        "status": source_tree.get("status"),
+        "canonical_tree_mutated": source_tree.get("canonical_tree_mutated"),
+        "framework_sync": source_tree.get("framework_sync"),
+    }
     manifest["distributed_revision"] = {
         "status": "installed_at_A07.C03",
         **revision_report,
+        "post_import_alias_repair": alias_repair_report,
     }
-    manifest["legacy_domain_routes"] = {
-        LEGACY_DOMAIN_ID: {
-            "domain_id": route_compatibility["domain_id"],
-            "default_node_id": route_compatibility["default_node_id"],
-        }
-    }
-    distributed_chapter = next(
-        chapter
-        for chapter in domains[SPECIALIZED_DOMAIN_ID]["chapters"]
-        if chapter["topic_id"] == DISTRIBUTED_ROOT_ID
+    shortcut_specs = (
+        (DERIVATIVE_FREE_SHORTCUT_ID, "Derivative-Free Optimization", "#b2693f", "A07.C01"),
+        (MANIFOLD_SHORTCUT_ID, "Manifold Optimization", "#26756d", "A07.C02"),
+        (LEGACY_DOMAIN_ID, "Distributed Optimization", "#6d5bd0", DISTRIBUTED_ROOT_ID),
     )
-    manifest["navigation_shortcuts"] = [
-        {
-            "id": LEGACY_DOMAIN_ID,
-            "short_name": "Distributed Optimization",
-            "accent": "#6d5bd0",
-            "position": 5,
+    manifest["legacy_domain_routes"] = {
+        shortcut_id: {
             "domain_id": SPECIALIZED_DOMAIN_ID,
-            "default_node_id": DISTRIBUTED_ROOT_ID,
-            "stats": {
-                "topics": distributed_chapter["subtree_topic_count"],
-                "statements": distributed_chapter["subtree_statement_count"],
-                "chapters": len(revised_distributed_root.get("children", [])),
-            },
+            "default_node_id": root_id,
         }
-    ]
+        for shortcut_id, _, _, root_id in shortcut_specs
+    }
+    specialized_chapters = {
+        chapter["topic_id"]: chapter
+        for chapter in domains[SPECIALIZED_DOMAIN_ID]["chapters"]
+    }
+    manifest["navigation_shortcuts"] = []
+    for offset, (shortcut_id, short_name, accent, root_id) in enumerate(shortcut_specs, start=6):
+        chapter = specialized_chapters[root_id]
+        root_node = find_node(trees[SPECIALIZED_DOMAIN_ID], root_id)
+        if root_node is None:
+            raise RuntimeError(f"Specialized-method shortcut root is missing: {root_id}")
+        manifest["navigation_shortcuts"].append(
+            {
+                "id": shortcut_id,
+                "short_name": short_name,
+                "accent": accent,
+                "position": offset,
+                "domain_id": SPECIALIZED_DOMAIN_ID,
+                "default_node_id": root_id,
+                "stats": {
+                    "topics": chapter["subtree_topic_count"],
+                    "statements": chapter["subtree_statement_count"],
+                    "chapters": len(root_node.get("children", [])),
+                },
+            }
+        )
     domain_lookup = {domain["id"]: domain for domain in manifest["domains"]}
     shortcut_lookup = {
         shortcut["id"]: shortcut for shortcut in manifest["navigation_shortcuts"]
