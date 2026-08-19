@@ -3,13 +3,17 @@
 ReasAtlas is a public, static browser for structured knowledge in optimization
 and analysis. The live site is <https://atlas.reaslab.io/>.
 
-The current `20260819_framework_sync_v1_4` snapshot contains all 15 Parts from
+The current `20260819_framework_sync_v1_5` snapshot contains all 15 Parts from
 A02 through A16. The reviewed Distributed Optimization revision is installed
 directly at A07.C03, replacing the older duplicate compatibility domain. It
 contains 75,699 topic entries and 94,171 public statements, delivered through
 lazy chapter shards. The data retains 115 convergence candidates: 74 from the
 completed core pass and 41 from 12 validated shards of the broader pass. The
 interface does not display review state.
+
+Version 1.5 removes the internal statement-storage note from all reader-facing
+Part descriptions. This is a presentation-only cleanup; statement placement,
+topic counts, and public statement counts are unchanged from version 1.4.
 
 The left rail has a major-domain selector above the existing subject-domain
 list. Published optimization collections are separated into Continuous

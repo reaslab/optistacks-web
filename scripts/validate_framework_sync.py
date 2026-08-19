@@ -12,8 +12,9 @@ from typing import Any, Iterator
 
 
 EXPECTED_TREE_ID = "opt_stacks_v62_framework_sync_candidate"
-EXPECTED_SNAPSHOT_VERSION = "20260819_framework_sync_v1_4"
+EXPECTED_SNAPSHOT_VERSION = "20260819_framework_sync_v1_5"
 EXPECTED_CONVERGENCE = 115
+FORBIDDEN_PART_ROLE_TEXT = "formal statements are stored in a later sidecar layer"
 EXPECTED_NEW_NODES = {
     "A05.C04.NA8EECF91A4D2",
     "A11.C01.BAL06",
@@ -142,6 +143,13 @@ def main() -> int:
                     convergence_records.append((topic_id, statement))
 
     require(not duplicate_nodes, "duplicate_topic_ids")
+    require(
+        all(
+            FORBIDDEN_PART_ROLE_TEXT not in str(node.get("top_down_role") or node.get("role") or "")
+            for node in node_index.values()
+        ),
+        "internal_storage_note_exposed",
+    )
     require(all(all_statement_ids), "missing_statement_ids")
     require(len(all_statement_ids) == len(set(all_statement_ids)), "duplicate_statement_ids")
     require(not render_field_failures, "statement_render_contract")

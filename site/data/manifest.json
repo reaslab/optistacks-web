@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-19T04:33:29.912285+00:00",
+  "built_at": "2026-08-19T08:14:52.813434+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -138,7 +138,7 @@
         "mode": "chapter_shards",
         "shards": 9,
         "routes": 2929,
-        "catalog_bytes": 127344,
+        "catalog_bytes": 127289,
         "shard_bytes": 26616182,
         "pruned_shards": 0
       }
@@ -301,7 +301,7 @@
         "mode": "chapter_shards",
         "shards": 12,
         "routes": 4737,
-        "catalog_bytes": 214343,
+        "catalog_bytes": 214288,
         "shard_bytes": 21887022,
         "pruned_shards": 0
       }
@@ -483,7 +483,7 @@
         "mode": "chapter_shards",
         "shards": 14,
         "routes": 3877,
-        "catalog_bytes": 171940,
+        "catalog_bytes": 171885,
         "shard_bytes": 31443125,
         "pruned_shards": 0
       }
@@ -688,7 +688,7 @@
         "mode": "chapter_shards",
         "shards": 17,
         "routes": 6813,
-        "catalog_bytes": 294115,
+        "catalog_bytes": 294060,
         "shard_bytes": 26297644,
         "pruned_shards": 0
       }
@@ -860,7 +860,7 @@
         "mode": "chapter_shards",
         "shards": 13,
         "routes": 4056,
-        "catalog_bytes": 176601,
+        "catalog_bytes": 176546,
         "shard_bytes": 17030076,
         "pruned_shards": 0
       }
@@ -1005,7 +1005,7 @@
         "mode": "chapter_shards",
         "shards": 8,
         "routes": 3552,
-        "catalog_bytes": 167342,
+        "catalog_bytes": 167287,
         "shard_bytes": 16471275,
         "pruned_shards": 0
       }
@@ -1168,7 +1168,7 @@
         "mode": "chapter_shards",
         "shards": 12,
         "routes": 4216,
-        "catalog_bytes": 202050,
+        "catalog_bytes": 201995,
         "shard_bytes": 15426476,
         "pruned_shards": 0
       }
@@ -1348,7 +1348,7 @@
         "mode": "chapter_shards",
         "shards": 14,
         "routes": 4011,
-        "catalog_bytes": 188296,
+        "catalog_bytes": 188241,
         "shard_bytes": 16614226,
         "pruned_shards": 0
       }
@@ -1487,7 +1487,7 @@
         "mode": "chapter_shards",
         "shards": 9,
         "routes": 3639,
-        "catalog_bytes": 189964,
+        "catalog_bytes": 189909,
         "shard_bytes": 14220305,
         "pruned_shards": 0
       }
@@ -1650,7 +1650,7 @@
         "mode": "chapter_shards",
         "shards": 12,
         "routes": 3272,
-        "catalog_bytes": 162153,
+        "catalog_bytes": 162098,
         "shard_bytes": 11998734,
         "pruned_shards": 0
       }
@@ -1845,7 +1845,7 @@
         "mode": "chapter_shards",
         "shards": 16,
         "routes": 6962,
-        "catalog_bytes": 305290,
+        "catalog_bytes": 305235,
         "shard_bytes": 26063244,
         "pruned_shards": 0
       }
@@ -2066,7 +2066,7 @@
         "mode": "chapter_shards",
         "shards": 19,
         "routes": 10453,
-        "catalog_bytes": 476198,
+        "catalog_bytes": 476143,
         "shard_bytes": 45415663,
         "pruned_shards": 0
       }
@@ -2237,7 +2237,7 @@
         "mode": "chapter_shards",
         "shards": 13,
         "routes": 6767,
-        "catalog_bytes": 293241,
+        "catalog_bytes": 293186,
         "shard_bytes": 21090934,
         "pruned_shards": 0
       }
@@ -2465,7 +2465,7 @@
         "mode": "chapter_shards",
         "shards": 20,
         "routes": 5787,
-        "catalog_bytes": 282362,
+        "catalog_bytes": 282307,
         "shard_bytes": 22826241,
         "pruned_shards": 0
       }
@@ -2620,7 +2620,7 @@
         "mode": "chapter_shards",
         "shards": 11,
         "routes": 4613,
-        "catalog_bytes": 225372,
+        "catalog_bytes": 225317,
         "shard_bytes": 18367318,
         "pruned_shards": 0
       }
@@ -3316,14 +3316,14 @@
     },
     "added_statement_count": 13525,
     "quarantined_count": 40507,
-    "captured_at": "2026-08-19T04:33:14.036553+00:00",
+    "captured_at": "2026-08-19T08:12:15.600987+00:00",
     "quarantine_data_url": "data/campaign_placement_quarantine.json"
   },
   "preserved_snapshot": {
     "domains": 15,
     "topics": 75699,
     "statements": 80531,
-    "excluded_campaign_statements": 13443,
+    "excluded_campaign_statements": 13525,
     "excluded_convergence_candidates": 115,
     "duplicate_topic_occurrences": 0
   },
@@ -3546,7 +3546,7 @@
           "specialized_continuous_methods": 22
         },
         "review_status": "candidate_unreviewed",
-        "captured_at": "2026-08-19T04:33:15.314727+00:00"
+        "captured_at": "2026-08-19T08:12:16.944890+00:00"
       },
       {
         "schema_version": "web-convergence-snapshot-report-v1",
@@ -3567,10 +3567,10 @@
           "nonlinear_programming": 41
         },
         "review_status": "candidate_unreviewed",
-        "captured_at": "2026-08-19T04:33:15.936675+00:00"
+        "captured_at": "2026-08-19T08:12:17.596337+00:00"
       }
     ],
-    "captured_at": "2026-08-19T04:33:15.950697+00:00"
+    "captured_at": "2026-08-19T08:12:17.610650+00:00"
   },
   "directory_snapshot": {
     "tree_id": "opt_stacks_v62_framework_sync_candidate",
@@ -3590,7 +3590,7 @@
       "statement_layer_policy": "statements remain external and are joined by stable node ID"
     }
   },
-  "snapshot_version": "20260819_framework_sync_v1_4",
+  "snapshot_version": "20260819_framework_sync_v1_5",
   "loading": {
     "mode": "chapter_shards",
     "cache_strategy": "versioned_url_memory_and_http_cache"
