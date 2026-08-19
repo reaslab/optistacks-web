@@ -1,0 +1,25 @@
+{
+  "schema_version": "reasatlas-framework-sync-validation-v1",
+  "generated_at": "2026-08-19T04:33:32.730766+00:00",
+  "status": "PASS",
+  "failures": [],
+  "directory_tree_id": "opt_stacks_v62_framework_sync_candidate",
+  "domain_count": 15,
+  "topic_count": 75699,
+  "statement_count": 94171,
+  "convergence_candidate_count": 115,
+  "partial_convergence_candidate_count": 41,
+  "statement_render_contract_count": 94171,
+  "statement_render_contract_failures": [],
+  "public_campaign_statement_count": 13525,
+  "quarantined_campaign_candidate_count": 40507,
+  "unsafe_public_campaign_placement_count": 0,
+  "materialized_campaign_candidate_node_count": 50,
+  "a07_c03_node_count": 543,
+  "expected_new_nodes_present": [
+    "A05.C04.NA8EECF91A4D2",
+    "A11.C01.BAL06",
+    "A11.C01.BAL07"
+  ],
+  "duplicate_topic_ids": []
+}

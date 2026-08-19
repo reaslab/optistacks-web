@@ -12,7 +12,7 @@ from typing import Any, Iterator
 
 
 EXPECTED_TREE_ID = "opt_stacks_v62_framework_sync_candidate"
-EXPECTED_SNAPSHOT_VERSION = "20260819_framework_sync_v1_3"
+EXPECTED_SNAPSHOT_VERSION = "20260819_framework_sync_v1_4"
 EXPECTED_CONVERGENCE = 115
 EXPECTED_NEW_NODES = {
     "A05.C04.NA8EECF91A4D2",
@@ -113,10 +113,25 @@ def main() -> int:
                     mapping_method = str(statement.get("mapping_method") or metadata.get("placement_method") or "")
                     allowed = (
                         stage == "0809_campaign_published"
-                        and mapping_method in {"campaign_existing_node", "explicit_node_alias"}
+                        and mapping_method
+                        in {
+                            "campaign_existing_node",
+                            "explicit_node_alias",
+                            "campaign_exact_sibling_title",
+                            "campaign_cross_source_candidate_container",
+                            "campaign_unique_same_part_title",
+                        }
                     ) or (
                         stage == "0809_campaign_reviewed"
-                        and mapping_method in {"campaign_existing_node", "campaign_preferred_home", "explicit_node_alias"}
+                        and mapping_method
+                        in {
+                            "campaign_existing_node",
+                            "campaign_preferred_home",
+                            "explicit_node_alias",
+                            "campaign_exact_sibling_title",
+                            "campaign_cross_source_candidate_container",
+                            "campaign_unique_same_part_title",
+                        }
                     )
                     if not allowed:
                         unsafe_public_campaign_records.append(statement_id)
@@ -204,6 +219,21 @@ def main() -> int:
         + int(campaign_report.get("duplicate_title_count") or 0),
         "campaign_candidate_accounting",
     )
+    materialization = campaign_report.get("candidate_container_materialization") or {}
+    materialized_nodes = materialization.get("materialized_nodes") or []
+    require(
+        materialization.get("materialized_node_count") == len(materialized_nodes),
+        "campaign_materialized_node_count",
+    )
+    require(
+        all(
+            row.get("topic_id") in node_index
+            and row.get("parent_topic_id") in node_index
+            and int(row.get("independent_campaign_count") or 0) >= 2
+            for row in materialized_nodes
+        ),
+        "campaign_materialized_node_contract",
+    )
     shortcuts = {item.get("id"): item for item in manifest.get("navigation_shortcuts") or []}
     require(
         {
@@ -238,6 +268,7 @@ def main() -> int:
         "public_campaign_statement_count": len(public_campaign_records),
         "quarantined_campaign_candidate_count": len(quarantine_records),
         "unsafe_public_campaign_placement_count": len(unsafe_public_campaign_records),
+        "materialized_campaign_candidate_node_count": len(materialized_nodes),
         "a07_c03_node_count": len(a07_nodes),
         "expected_new_nodes_present": sorted(EXPECTED_NEW_NODES & set(node_index)),
         "duplicate_topic_ids": sorted(set(duplicate_nodes)),

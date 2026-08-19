@@ -191,7 +191,7 @@ DEFAULT_CONVERGENCE_LAYERS = (
         "convergence_variant_candidate_layer.json"
     ),
 )
-DEFAULT_SNAPSHOT_VERSION = "20260819_framework_sync_v1_3"
+DEFAULT_SNAPSHOT_VERSION = "20260819_framework_sync_v1_4"
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -1133,6 +1133,163 @@ def merge_campaign_candidates(
                     if item.get("id") or item.get("statement_id")
                 )
 
+    proposal_groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    proposal_titles: dict[tuple[str, str], str] = {}
+    proposal_scopes: dict[tuple[str, str], list[str]] = {}
+    for entry in candidates:
+        if entry["stage"] not in {"0809_campaign_reviewed", "0809_campaign_published"}:
+            continue
+        proposal = entry["context"].get("new_node_candidate") or {}
+        title = str(proposal.get("title") or proposal.get("proposed_title") or "").strip()
+        if not title:
+            continue
+        parent_ids = proposal.get("parent_candidate_ids") or []
+        if isinstance(parent_ids, str):
+            parent_ids = [parent_ids]
+        parent_id = ""
+        for candidate_parent in parent_ids:
+            candidate_parent = str(candidate_parent or "").strip()
+            resolved_parent = node_redirects.get(candidate_parent, candidate_parent)
+            if resolved_parent in topic_index:
+                parent_id = resolved_parent
+                break
+        title_key = normalize_text(title)
+        if not parent_id or not title_key:
+            continue
+        group_key = (parent_id, title_key)
+        proposal_groups.setdefault(group_key, []).append(entry)
+        proposal_titles.setdefault(group_key, title)
+        scope = str(proposal.get("scope_note") or "").strip()
+        if scope:
+            proposal_scopes.setdefault(group_key, []).append(scope)
+
+    direct_child_titles: dict[str, dict[str, list[str]]] = {}
+    for topic_id, (_, node) in topic_index.items():
+        children: dict[str, list[str]] = {}
+        for child in node.get("children") or []:
+            key = normalize_text(child.get("title"))
+            if key:
+                children.setdefault(key, []).append(str(child["topic_id"]))
+        direct_child_titles[topic_id] = children
+
+    proposal_destinations: dict[str, tuple[str, str]] = {}
+    materialized_nodes: list[dict[str, Any]] = []
+    exact_sibling_group_count = 0
+    exact_sibling_candidate_count = 0
+    cross_source_group_count = 0
+    cross_source_candidate_count = 0
+    for group_key in sorted(proposal_groups):
+        parent_id, title_key = group_key
+        entries = proposal_groups[group_key]
+        matching_children = direct_child_titles.get(parent_id, {}).get(title_key) or []
+        if len(matching_children) == 1:
+            destination_id = matching_children[0]
+            method = "campaign_exact_sibling_title"
+            exact_sibling_group_count += 1
+            exact_sibling_candidate_count += len(entries)
+        else:
+            source_campaigns = sorted({entry["campaign"] for entry in entries})
+            if matching_children or len(source_campaigns) < 2:
+                continue
+            parent_domain_id, parent = topic_index[parent_id]
+            destination_id = parent_id + ".WEB" + sha256(
+                f"{parent_id}\n{title_key}".encode()
+            ).hexdigest()[:12].upper()
+            if destination_id in topic_index:
+                raise RuntimeError(f"Duplicate web candidate topic id: {destination_id}")
+            scopes = proposal_scopes.get(group_key) or []
+            scope_note = Counter(scopes).most_common(1)[0][0] if scopes else ""
+            witnesses = []
+            seen_witnesses: set[tuple[str, str]] = set()
+            for entry in entries:
+                evidence = entry["record"].get("source_evidence") or {}
+                witness_key = (
+                    str(entry["campaign"]),
+                    str(evidence.get("locator") or evidence.get("source_path") or ""),
+                )
+                if witness_key in seen_witnesses:
+                    continue
+                seen_witnesses.add(witness_key)
+                witnesses.append(
+                    {
+                        "source": entry["campaign"],
+                        "locator": witness_key[1],
+                        "evidence_role": "independent_textbook_candidate_container_support",
+                    }
+                )
+            destination = {
+                "topic_id": destination_id,
+                "display_number": "",
+                "title": proposal_titles[group_key],
+                "topic_type": "topic",
+                "depth": int(parent.get("depth") or 0) + 1,
+                "classification_axis": "textbook_candidate_topic",
+                "top_down_role": scope_note,
+                "knowledge_status": "statement_attached",
+                "top_down_textbook_witnesses": witnesses,
+                "knowledge_statements": [],
+                "children": [],
+                "web_candidate_container": {
+                    "status": "cross_source_supported",
+                    "parent_topic_id": parent_id,
+                    "normalized_title": title_key,
+                    "independent_campaign_count": len(source_campaigns),
+                    "source_campaigns": source_campaigns,
+                    "source_item_ids": sorted(entry["source_item_id"] for entry in entries),
+                },
+            }
+            parent.setdefault("children", []).append(destination)
+            topic_index[destination_id] = (parent_domain_id, destination)
+            title_index[destination_id] = set()
+            direct_child_titles.setdefault(parent_id, {}).setdefault(title_key, []).append(
+                destination_id
+            )
+            materialized_nodes.append(
+                {
+                    "topic_id": destination_id,
+                    "parent_topic_id": parent_id,
+                    "title": proposal_titles[group_key],
+                    "domain_id": parent_domain_id,
+                    "independent_campaign_count": len(source_campaigns),
+                    "source_campaigns": source_campaigns,
+                    "candidate_count": len(entries),
+                }
+            )
+            method = "campaign_cross_source_candidate_container"
+            cross_source_group_count += 1
+            cross_source_candidate_count += len(entries)
+        for entry in entries:
+            proposal_destinations[entry["source_item_id"]] = (destination_id, method)
+
+    global_topic_titles: dict[str, list[str]] = {}
+    for topic_id, (_, node) in topic_index.items():
+        title_key = normalize_text(node.get("title"))
+        if title_key:
+            global_topic_titles.setdefault(title_key, []).append(topic_id)
+    unique_same_part_group_keys: set[tuple[str, str]] = set()
+    unique_same_part_candidate_count = 0
+    for group_key in sorted(proposal_groups):
+        parent_id, title_key = group_key
+        entries = proposal_groups[group_key]
+        matches = global_topic_titles.get(title_key) or []
+        if len(matches) != 1:
+            continue
+        destination_id = matches[0]
+        if destination_id.split(".", 1)[0] != parent_id.split(".", 1)[0]:
+            continue
+        newly_mapped = 0
+        for entry in entries:
+            if entry["source_item_id"] in proposal_destinations:
+                continue
+            proposal_destinations[entry["source_item_id"]] = (
+                destination_id,
+                "campaign_unique_same_part_title",
+            )
+            newly_mapped += 1
+        if newly_mapped:
+            unique_same_part_group_keys.add(group_key)
+            unique_same_part_candidate_count += newly_mapped
+
     report["added_by_domain"] = Counter()
     report["added_by_stage"] = Counter()
     report["placement_methods"] = Counter()
@@ -1142,6 +1299,23 @@ def merge_campaign_candidates(
     report["quarantined_by_reason"] = Counter()
     report["quarantined_by_stage"] = Counter()
     report["quarantined_by_method"] = Counter()
+    report["candidate_container_materialization"] = {
+        "policy": (
+            "Reviewed or published new-topic proposals are mounted only when their title "
+            "matches one direct existing child exactly, or when at least two source campaigns "
+            "independently propose the same normalized title under the same live parent."
+        ),
+        "eligible_proposal_group_count": len(proposal_groups),
+        "eligible_proposal_candidate_count": sum(len(rows) for rows in proposal_groups.values()),
+        "exact_existing_sibling_group_count": exact_sibling_group_count,
+        "exact_existing_sibling_candidate_count": exact_sibling_candidate_count,
+        "cross_source_new_group_count": cross_source_group_count,
+        "cross_source_new_candidate_count": cross_source_candidate_count,
+        "unique_same_part_title_group_count": len(unique_same_part_group_keys),
+        "unique_same_part_title_candidate_count": unique_same_part_candidate_count,
+        "materialized_node_count": len(materialized_nodes),
+        "materialized_nodes": materialized_nodes,
+    }
     quarantined_records: list[dict[str, Any]] = []
 
     def quarantine(
@@ -1167,20 +1341,28 @@ def merge_campaign_candidates(
                 "original_placement_hint": original_hint,
                 "statement_title": record.get("statement_title") or record.get("title") or "",
                 "placement_hints": entry["placement_hints"],
+                "review_confidence": record.get("review_confidence"),
+                "new_node_candidate": entry["context"].get("new_node_candidate") or {},
+                "directory_assessment": entry["context"].get("directory_assessment") or {},
             }
         )
 
     for entry in candidates:
         placement: tuple[str, str, str] | None = None
-        for method, original_hint in entry["placement_hints"]:
-            topic_id = node_redirects.get(original_hint, original_hint)
-            if topic_id != original_hint:
-                method = "explicit_node_alias"
-            while topic_id not in topic_index and "." in topic_id:
-                topic_id = topic_id.rsplit(".", 1)[0]
-            if topic_id in topic_index:
-                placement = (topic_id, method if topic_id == original_hint else f"{method}_ancestor", original_hint)
-                break
+        proposal_destination = proposal_destinations.get(entry["source_item_id"])
+        if proposal_destination is not None:
+            topic_id, method = proposal_destination
+            placement = (topic_id, method, topic_id)
+        else:
+            for method, original_hint in entry["placement_hints"]:
+                topic_id = node_redirects.get(original_hint, original_hint)
+                if topic_id != original_hint:
+                    method = "explicit_node_alias"
+                while topic_id not in topic_index and "." in topic_id:
+                    topic_id = topic_id.rsplit(".", 1)[0]
+                if topic_id in topic_index:
+                    placement = (topic_id, method if topic_id == original_hint else f"{method}_ancestor", original_hint)
+                    break
         if placement is None:
             report["unmapped_count"] += 1
             quarantine(entry, "no_live_target")
@@ -1199,7 +1381,22 @@ def merge_campaign_candidates(
             (stage == "0809_campaign_published" and mapping_method in {"campaign_existing_node", "explicit_node_alias"})
             or (
                 stage == "0809_campaign_reviewed"
-                and mapping_method in {"campaign_existing_node", "campaign_preferred_home", "explicit_node_alias"}
+                and mapping_method in {
+                    "campaign_existing_node",
+                    "campaign_preferred_home",
+                    "explicit_node_alias",
+                    "campaign_exact_sibling_title",
+                    "campaign_cross_source_candidate_container",
+                    "campaign_unique_same_part_title",
+                }
+            )
+            or (
+                stage == "0809_campaign_published"
+                and mapping_method in {
+                    "campaign_exact_sibling_title",
+                    "campaign_cross_source_candidate_container",
+                    "campaign_unique_same_part_title",
+                }
             )
         ):
             quarantine_reason = "placement_not_in_public_allowlist"
@@ -1627,11 +1824,12 @@ def main() -> None:
     write_json(
         site / quarantine_data_url,
         {
-            "schema_version": "web-campaign-placement-quarantine-v1",
+            "schema_version": "web-campaign-placement-quarantine-v2",
             "snapshot_version": args.snapshot_version,
             "policy": (
-                "Public nodes admit published exact-existing placements and reviewed "
-                "exact-existing/preferred-home placements only."
+                "Public nodes admit exact reviewed placements, exact direct-child title matches, "
+                "and cross-source-supported candidate containers. Broad parent fallbacks, "
+                "single affected nodes, builder-only rows, and unresolved targets remain quarantined."
             ),
             "record_count": len(quarantined_campaign_records),
             "records": quarantined_campaign_records,

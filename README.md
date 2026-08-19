@@ -3,10 +3,10 @@
 ReasAtlas is a public, static browser for structured knowledge in optimization
 and analysis. The live site is <https://atlas.reaslab.io/>.
 
-The current `20260819_framework_sync_v1_3` snapshot contains all 15 Parts from
+The current `20260819_framework_sync_v1_4` snapshot contains all 15 Parts from
 A02 through A16. The reviewed Distributed Optimization revision is installed
 directly at A07.C03, replacing the older duplicate compatibility domain. It
-contains 75,649 topic entries and 93,941 public statements, delivered through
+contains 75,699 topic entries and 94,171 public statements, delivered through
 lazy chapter shards. The data retains 115 convergence candidates: 74 from the
 completed core pass and 41 from 12 validated shards of the broader pass. The
 interface does not display review state.
@@ -60,11 +60,16 @@ topic-complete layers, mechanically validated records from both textbook
 campaign roots, the completed 74-record core convergence candidate layer, and
 41 records from the mechanically validated prefix of the broader convergence
 run.
-Public textbook placement is deliberately conservative: published exact-node
-records and reviewed exact/preferred-home records are mounted, while 40,754
-builder-only, missing-container, affected-node, or unresolved candidates are
-kept in `site/data/campaign_placement_quarantine.json` instead of being attached
-to a misleading parent topic.
+Public textbook placement is deliberately conservative. In addition to exact
+reviewed placements, v1.4 resolves proposed topics when the title exactly
+matches a direct child, when it has a unique same-Part title match, or when at
+least two textbook campaigns independently propose the same title under the
+same live parent. This adds 50 cross-source-supported topic containers and
+recovers 247 formerly quarantined candidates (230 public statements plus 17
+duplicates suppressed). The remaining 40,507 builder-only, missing-container,
+affected-node, or unresolved candidates stay in
+`site/data/campaign_placement_quarantine.json`, now with their proposed-node and
+directory-assessment evidence.
 The importer preserves the reviewed A07.C03 revision from the current website
 snapshot and installs it in Part A07. Rebuild it with:
 
