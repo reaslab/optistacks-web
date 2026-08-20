@@ -14,6 +14,8 @@ display review state.
 The v64 structural synchronization changes directory ownership and navigation;
 it does not duplicate public statements. Robust and Simulation Optimization
 retain the inherited content coverage of the v1.5 website snapshot.
+The middle outline begins at each collection's chapters; the collection root is
+kept for routing and breadcrumbs but is not rendered as a duplicate first row.
 
 The left rail has a major-domain selector above the existing subject-domain
 list. Published optimization collections are separated into Continuous

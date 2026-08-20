@@ -409,7 +409,12 @@ function renderBrowser() {
 
 function renderTree() {
   const view = $("#tree-view");
-  view.innerHTML = `<ul class="tree-root">${state.data.roots.map(renderTreeNode).join("")}</ul>`;
+  // The selected collection is already named by the directory header. Start
+  // the outline at its chapters so a domain title is not shown twice.
+  const visibleNodes = state.data.roots.flatMap(root => (
+    root.children?.length ? root.children : [root]
+  ));
+  view.innerHTML = `<ul class="tree-root">${visibleNodes.map(renderTreeNode).join("")}</ul>`;
   bindTreeEvents(view);
 }
 
