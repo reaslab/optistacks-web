@@ -53,7 +53,9 @@ Keep website changes inside `site/`. Preserve the paths and schema under
 `site/data/` unless a data update is explicitly requested. After changing CSS
 or JavaScript, update its `?v=` value in `site/index.html` so deployed browsers
 do not reuse an old asset. Submission history is stored only in the current
-browser's `localStorage`.
+browser's `localStorage`; active submissions and append-only edit history use
+separate keys (`optistacks-submissions-v1` and
+`optistacks-submission-history-v1`).
 
 Before handing off, run `node --check site/app.js` and preview the site locally.
 Pushing reviewed files to `main` triggers the configured deployment workflows.

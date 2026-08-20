@@ -16,12 +16,17 @@ const state = {
   navigationToken: 0,
   qualityIssues: [],
   qualityTarget: null,
+  editingIssueId: null,
+  submissionHistory: [],
+  submissionView: "queue",
   historyFilter: "all",
   layoutBeforeAnnotation: null,
   statementLimits: new Map(),
 };
 
 const QUALITY_STORAGE_KEY = "optistacks-quality-review-v1";
+const SUBMISSIONS_STORAGE_KEY = "optistacks-submissions-v1";
+const SUBMISSION_HISTORY_STORAGE_KEY = "optistacks-submission-history-v1";
 const LAYOUT_STORAGE_KEY = "optistacks-layout-v1";
 const PANE_LABELS = { library: "domains", directory: "outline", detail: "content" };
 const STATEMENT_PAGE_SIZE = 24;
@@ -135,6 +140,9 @@ function bindEvents() {
   $("#quality-queue-button").addEventListener("click", openQualityDrawer);
   $("#quality-panel-close").addEventListener("click", closeQualityDrawer);
   $("#quality-export-button").addEventListener("click", exportQualityIssues);
+  document.querySelectorAll("[data-submission-view]").forEach(button => button.addEventListener("click", () => {
+    openSubmissionView(button.dataset.submissionView);
+  }));
   document.querySelectorAll("[data-history-filter]").forEach(button => button.addEventListener("click", () => {
     state.historyFilter = button.dataset.historyFilter;
     renderQualityQueue();
@@ -734,7 +742,8 @@ function typesetMath(container) {
 
 function loadQualityIssues() {
   try {
-    const stored = JSON.parse(localStorage.getItem(QUALITY_STORAGE_KEY) || "[]");
+    const raw = localStorage.getItem(SUBMISSIONS_STORAGE_KEY) || localStorage.getItem(QUALITY_STORAGE_KEY) || "[]";
+    const stored = JSON.parse(raw);
     let migrated = false;
     state.qualityIssues = Array.isArray(stored) ? stored.map(issue => {
       const route = resolveLegacyRoute(issue.domain_id, issue.topic_id);
@@ -749,16 +758,53 @@ function loadQualityIssues() {
         : `#${route.domain}`;
       return updated;
     }) : [];
-    if (migrated) localStorage.setItem(QUALITY_STORAGE_KEY, JSON.stringify(state.qualityIssues));
+    if (migrated || !localStorage.getItem(SUBMISSIONS_STORAGE_KEY)) saveQualityIssues();
   } catch {
     state.qualityIssues = [];
   }
+  loadSubmissionHistory();
   updateQualityCount();
 }
 
 function saveQualityIssues() {
-  localStorage.setItem(QUALITY_STORAGE_KEY, JSON.stringify(state.qualityIssues));
+  localStorage.setItem(SUBMISSIONS_STORAGE_KEY, JSON.stringify(state.qualityIssues));
   updateQualityCount();
+}
+
+function loadSubmissionHistory() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(SUBMISSION_HISTORY_STORAGE_KEY) || "[]");
+    state.submissionHistory = Array.isArray(stored) ? stored : [];
+  } catch {
+    state.submissionHistory = [];
+  }
+  if (!state.submissionHistory.length && state.qualityIssues.length) {
+    state.submissionHistory = state.qualityIssues.map(issue => ({
+      event_id: `EV-${issue.issue_id}`,
+      issue_id: issue.issue_id,
+      action: "imported",
+      version: issue.version || 1,
+      created_at: issue.created_at,
+      snapshot: { note: issue.note, severity: issue.severity, issue_type: issue.issue_type, status: issue.status },
+    }));
+    saveSubmissionHistory();
+  }
+}
+
+function saveSubmissionHistory() {
+  localStorage.setItem(SUBMISSION_HISTORY_STORAGE_KEY, JSON.stringify(state.submissionHistory));
+}
+
+function appendSubmissionHistory(issue, action, snapshot = {}) {
+  state.submissionHistory.unshift({
+    event_id: `EV-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`}`,
+    issue_id: issue.issue_id,
+    action,
+    version: issue.version || 1,
+    created_at: new Date().toISOString(),
+    snapshot: { note: issue.note, severity: issue.severity, issue_type: issue.issue_type, status: issue.status, ...snapshot },
+  });
+  saveSubmissionHistory();
 }
 
 function updateQualityCount() {
@@ -811,6 +857,7 @@ function openQualityDialog(targetType, targetId) {
     };
   }
   state.qualityTarget = { ...target, domain_id: state.domainMeta.id };
+  state.editingIssueId = null;
   $("#quality-target").innerHTML = `<b>${esc(target.target_title)}</b><span>${esc(target.path.join(" / "))}</span>`;
   $("#quality-issue-type").innerHTML = QUALITY_TYPES[targetType].map(([value, label]) => `<option value="${value}">${esc(label)}</option>`).join("");
   $("#quality-severity").value = "medium";
@@ -823,8 +870,22 @@ function openQualityDialog(targetType, targetId) {
   setTimeout(() => $("#quality-note").focus(), 20);
 }
 
+function openEditQualityDialog(issueId) {
+  const issue = state.qualityIssues.find(item => item.issue_id === issueId);
+  if (!issue) return;
+  state.editingIssueId = issueId;
+  state.qualityTarget = issue;
+  $("#quality-target").innerHTML = `<b>${esc(issue.target_title)}</b><span>${esc((issue.path || []).join(" / "))}</span>`;
+  $("#quality-issue-type").innerHTML = QUALITY_TYPES[issue.target_type].map(([value, label]) => `<option value="${value}" ${value === issue.issue_type ? "selected" : ""}>${esc(label)}</option>`).join("");
+  $("#quality-severity").value = issue.severity || "medium";
+  $("#quality-note").value = issue.note || "";
+  openQualityPanel("form");
+  setTimeout(() => $("#quality-note").focus(), 20);
+}
+
 function closeQualityDialog() {
   state.qualityTarget = null;
+  state.editingIssueId = null;
   closeQualityPanel();
   restoreLayoutAfterAnnotation();
 }
@@ -834,8 +895,23 @@ function submitQualityIssue(event) {
   if (!state.qualityTarget) return;
   const note = $("#quality-note").value.trim();
   if (!note) return;
+  if (state.editingIssueId) {
+    const issue = state.qualityIssues.find(item => item.issue_id === state.editingIssueId);
+    if (!issue) return;
+    const previous = { note: issue.note, severity: issue.severity, issue_type: issue.issue_type };
+    issue.note = note;
+    issue.severity = $("#quality-severity").value;
+    issue.issue_type = $("#quality-issue-type").value;
+    issue.version = (issue.version || 1) + 1;
+    issue.updated_at = new Date().toISOString();
+    saveQualityIssues();
+    appendSubmissionHistory(issue, "edited", { previous });
+    closeQualityDialog();
+    toast("Submission updated; the previous version remains in edit history");
+    return;
+  }
   const issueId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  state.qualityIssues.unshift({
+  const issue = {
     schema_version: "optistacks-quality-issue-v1",
     issue_id: `QC-${issueId}`,
     status: "open",
@@ -845,8 +921,11 @@ function submitQualityIssue(event) {
     created_at: new Date().toISOString(),
     page_hash: location.hash,
     ...state.qualityTarget,
-  });
+    version: 1,
+  };
+  state.qualityIssues.unshift(issue);
   saveQualityIssues();
+  appendSubmissionHistory(issue, "submitted");
   closeQualityDialog();
   toast("Correction submitted and added to your history");
 }
@@ -874,17 +953,32 @@ function closeQualityDrawer() {
 
 function openQualityPanel(view) {
   const showForm = view === "form";
+  state.submissionView = view === "history" ? "history" : "queue";
   $("#quality-queue-view").hidden = showForm;
+  $("#quality-history-view").hidden = state.submissionView !== "history" || showForm;
   $("#quality-form-view").hidden = !showForm;
+  document.body.classList.add("submission-page-open");
   document.body.classList.add("quality-panel-open");
   $("#quality-panel").setAttribute("aria-hidden", "false");
   $("#quality-queue-button").setAttribute("aria-pressed", "true");
 }
 
 function closeQualityPanel() {
+  document.body.classList.remove("submission-page-open");
   document.body.classList.remove("quality-panel-open");
   $("#quality-panel").setAttribute("aria-hidden", "true");
   $("#quality-queue-button").setAttribute("aria-pressed", "false");
+}
+
+function openSubmissionView(view) {
+  if (view === "history") renderSubmissionHistory();
+  else renderQualityQueue();
+  openQualityPanel(view);
+  document.querySelectorAll("[data-submission-view]").forEach(button => {
+    const active = button.dataset.submissionView === state.submissionView;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
 }
 
 function restoreLayoutAfterAnnotation() {
@@ -916,6 +1010,7 @@ function renderQualityQueue() {
       <p>${esc(issue.note)}</p>
       <div class="quality-card-actions">
         <button type="button" data-quality-goto="${esc(issue.issue_id)}">Open target</button>
+        <button type="button" data-quality-edit="${esc(issue.issue_id)}">Edit</button>
         <button type="button" data-quality-toggle="${esc(issue.issue_id)}">${issue.status === "resolved" ? "Mark open" : "Mark resolved"}</button>
       </div>
     </article>`).join("") : `<div class="quality-empty"><b>No ${state.historyFilter === "all" ? "" : `${esc(state.historyFilter)} `}submissions yet.</b><br>Use “Report topic issue” or “Report statement issue” while exploring the atlas.</div>`;
@@ -925,6 +1020,20 @@ function renderQualityQueue() {
   $("#quality-issue-list").querySelectorAll("[data-quality-toggle]").forEach(button => {
     button.addEventListener("click", () => toggleQualityIssue(button.dataset.qualityToggle));
   });
+  $("#quality-issue-list").querySelectorAll("[data-quality-edit]").forEach(button => {
+    button.addEventListener("click", () => openEditQualityDialog(button.dataset.qualityEdit));
+  });
+}
+
+function renderSubmissionHistory() {
+  const list = $("#submission-history-list");
+  list.innerHTML = state.submissionHistory.length ? state.submissionHistory.map(event => `
+    <article class="submission-history-card">
+      <div class="quality-issue-top"><span class="severity-badge">${esc(titleCase(event.action))}</span><time>${esc(formatSubmissionDate(event.created_at))}</time></div>
+      <h3>${esc(event.issue_id)}</h3>
+      <div class="quality-issue-meta"><span>Version ${formatNumber(event.version || 1)}</span><span>${esc(event.snapshot?.status || "")}</span></div>
+      <p>${esc(event.snapshot?.note || "No note snapshot")}</p>
+    </article>`).join("") : `<div class="quality-empty"><b>No edit history yet.</b><br>Submitted corrections and later changes will appear here.</div>`;
 }
 
 function formatSubmissionDate(value) {
@@ -939,6 +1048,7 @@ function toggleQualityIssue(issueId) {
   issue.status = issue.status === "resolved" ? "open" : "resolved";
   issue.updated_at = new Date().toISOString();
   saveQualityIssues();
+  appendSubmissionHistory(issue, "status_changed");
   renderQualityQueue();
 }
 
@@ -963,9 +1073,11 @@ function exportQualityIssues() {
       total: issues.length,
       open: issues.filter(issue => issue.status !== "resolved").length,
       resolved: issues.filter(issue => issue.status === "resolved").length,
+      history_events: state.submissionHistory.length,
     },
     site_build: state.manifest?.built_at,
     issues,
+    history: state.submissionHistory,
   };
   const blob = new Blob([JSON.stringify(packet, null, 2) + "\n"], { type: "application/json" });
   const url = URL.createObjectURL(blob);

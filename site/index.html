@@ -26,7 +26,7 @@
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script defer src="app.js?v=30"></script>
+  <script defer src="app.js?v=31"></script>
 </head>
 <body>
   <div class="paper-grain" aria-hidden="true"></div>
@@ -98,7 +98,11 @@
             <div><span class="eyebrow">MY ACTIVITY</span><h2>Submission history</h2></div>
             <button id="quality-panel-close" class="icon-button" type="button" aria-label="Close submission history">×</button>
           </header>
-          <p class="quality-intro">Review every correction you have submitted from this device, return to its source, or export a portable record.</p>
+          <p class="quality-intro">Review submissions from this device, edit an existing request, return to its source, or export a portable record.</p>
+          <nav class="submission-tabs" aria-label="Submission workspace views">
+            <button class="active" type="button" data-submission-view="queue" aria-pressed="true">Submissions</button>
+            <button type="button" data-submission-view="history" aria-pressed="false">Edit history</button>
+          </nav>
           <div class="history-summary" aria-label="Submission totals">
             <span><b id="history-total-count">0</b><small>Total</small></span>
             <span><b id="history-open-count">0</b><small>Open</small></span>
@@ -114,6 +118,15 @@
             <button id="quality-export-button" class="secondary-button" type="button">Export JSON</button>
           </div>
           <div id="quality-issue-list" class="quality-issue-list"></div>
+        </section>
+
+        <section id="quality-history-view" class="quality-view" hidden>
+          <header>
+            <div><span class="eyebrow">AUDIT TRAIL</span><h2>Edit history</h2></div>
+            <button class="icon-button" type="button" data-submission-view="queue" aria-label="Back to submissions">&#8592;</button>
+          </header>
+          <p class="quality-intro">Every submission, edit, and status change is recorded as a separate event. Original versions remain available here.</p>
+          <div id="submission-history-list" class="submission-history-list"></div>
         </section>
 
         <section id="quality-form-view" class="quality-view" hidden>
