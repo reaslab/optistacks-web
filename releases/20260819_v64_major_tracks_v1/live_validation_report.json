@@ -1,0 +1,14 @@
+{
+  "schema_version": "web-v64-major-tracks-validation-v1",
+  "captured_at": "2026-08-20T01:16:57.911642+00:00",
+  "snapshot_version": "20260819_v64_major_tracks_v1",
+  "directory_tree_id": "opt_stacks_v64_extracted_major_tracks_candidate",
+  "domain_count": 20,
+  "totals": {
+    "topics": 75699,
+    "statements": 94171
+  },
+  "duplicate_topic_ids": [],
+  "failure_codes": [],
+  "status": "PASS"
+}

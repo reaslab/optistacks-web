@@ -247,8 +247,12 @@ function parseRoute() {
 function resolveLegacyRoute(domainId, nodeId = null) {
   const route = state.manifest?.legacy_domain_routes?.[domainId]
     || LEGACY_DOMAIN_ROUTES[domainId];
-  const domain = route?.domain_id || domainId;
+  let domain = route?.domain_id || domainId;
   const requestedNode = nodeId || route?.default_node_id || null;
+  const structuralRoute = (state.manifest?.node_domain_redirects?.[domain] || [])
+    .filter(item => requestedNode === item.node_prefix || requestedNode?.startsWith(`${item.node_prefix}.`))
+    .sort((left, right) => right.node_prefix.length - left.node_prefix.length)[0];
+  if (structuralRoute) domain = structuralRoute.domain_id;
   const redirectedNode = state.manifest?.node_redirects?.[domain]?.[requestedNode]
     || requestedNode;
   return { domain, node: redirectedNode };

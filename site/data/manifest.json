@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-19T08:14:52.813434+00:00",
+  "built_at": "2026-08-20T01:16:55.299067+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -694,6 +694,156 @@
       }
     },
     {
+      "id": "manifold_optimization",
+      "short_name": "Manifold Optimization",
+      "accent": "#26756d",
+      "data_url": "data/manifold_optimization.json",
+      "generated_at": "2026-08-19T11:43:34.107956+00:00",
+      "validation_status": "PASS",
+      "publication_status": "v64_structural_rehome_with_v1_5_public_content_preserved",
+      "stats": {
+        "statements": 753,
+        "official_statements": 34,
+        "intermediate_statements": 719,
+        "base_statements": 34,
+        "content_kinds": {
+          "algorithm": 82,
+          "certificate": 5,
+          "complexity_bound": 12,
+          "condition": 59,
+          "counterexample": 13,
+          "definition": 188,
+          "duality": 2,
+          "failure_boundary": 74,
+          "principle": 10,
+          "property": 55,
+          "representation": 92,
+          "theorem": 161
+        },
+        "topics": 573,
+        "chapters": 9,
+        "leaf_topics": 433,
+        "coverage": 1.0,
+        "max_depth": 5
+      },
+      "chapters": [],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 1,
+        "routes": 573,
+        "catalog_bytes": 24906,
+        "shard_bytes": 2944164,
+        "pruned_shards": 0
+      },
+      "source_rehome": {
+        "source_domain_id": "specialized_continuous_methods",
+        "source_root_id": "A07.C02",
+        "v64_part_id": "A26",
+        "statements_preserved": 753,
+        "presentation_policy": "promoted_root_without_wrapper"
+      }
+    },
+    {
+      "id": "derivative_free_optimization",
+      "short_name": "Derivative-Free Optimization",
+      "accent": "#b2693f",
+      "data_url": "data/derivative_free_optimization.json",
+      "generated_at": "2026-08-19T11:43:34.107956+00:00",
+      "validation_status": "PASS",
+      "publication_status": "v64_structural_rehome_with_v1_5_public_content_preserved",
+      "stats": {
+        "statements": 1484,
+        "official_statements": 132,
+        "intermediate_statements": 1352,
+        "base_statements": 132,
+        "content_kinds": {
+          "algorithm": 225,
+          "certificate": 84,
+          "complexity_bound": 65,
+          "condition": 103,
+          "counterexample": 86,
+          "definition": 198,
+          "duality": 5,
+          "failure_boundary": 208,
+          "principle": 19,
+          "property": 177,
+          "representation": 163,
+          "theorem": 151
+        },
+        "topics": 585,
+        "chapters": 10,
+        "leaf_topics": 414,
+        "coverage": 1.0,
+        "max_depth": 6
+      },
+      "chapters": [],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 1,
+        "routes": 585,
+        "catalog_bytes": 24949,
+        "shard_bytes": 4249886,
+        "pruned_shards": 0
+      },
+      "source_rehome": {
+        "source_domain_id": "specialized_continuous_methods",
+        "source_root_id": "A07.C01",
+        "v64_part_id": "A25",
+        "statements_preserved": 1484,
+        "presentation_policy": "promoted_root_without_wrapper"
+      }
+    },
+    {
+      "id": "distributed_optimization",
+      "short_name": "Distributed Optimization",
+      "accent": "#6d5bd0",
+      "data_url": "data/distributed_optimization.json",
+      "generated_at": "2026-08-19T11:43:34.107956+00:00",
+      "validation_status": "PASS",
+      "publication_status": "v64_structural_rehome_with_v1_5_public_content_preserved",
+      "stats": {
+        "statements": 916,
+        "official_statements": 347,
+        "intermediate_statements": 569,
+        "base_statements": 347,
+        "content_kinds": {
+          "algorithm": 135,
+          "certificate": 40,
+          "complexity_bound": 43,
+          "condition": 81,
+          "counterexample": 36,
+          "definition": 337,
+          "duality": 6,
+          "failure_boundary": 76,
+          "principle": 4,
+          "property": 55,
+          "representation": 62,
+          "theorem": 41
+        },
+        "topics": 543,
+        "chapters": 9,
+        "leaf_topics": 397,
+        "coverage": 1.0,
+        "max_depth": 7
+      },
+      "chapters": [],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 1,
+        "routes": 543,
+        "catalog_bytes": 22803,
+        "shard_bytes": 3061693,
+        "pruned_shards": 0
+      },
+      "source_rehome": {
+        "source_domain_id": "specialized_continuous_methods",
+        "source_root_id": "A07.C03",
+        "v64_part_id": "A27",
+        "statements_preserved": 916,
+        "presentation_policy": "promoted_root_without_wrapper"
+      }
+    },
+    {
       "id": "nonsmooth_optimization",
       "short_name": "Nonsmooth Optimization",
       "accent": "#72558a",
@@ -874,29 +1024,29 @@
       "validation_status": "PASS",
       "publication_status": "source_snapshot_with_revised_distributed_overlay_and_unverified_intermediate_results_exposed",
       "stats": {
-        "topics": 3553,
-        "statements": 4867,
-        "official_statements": 911,
-        "intermediate_statements": 3956,
-        "chapters": 8,
-        "leaf_topics": 2586,
-        "base_statements": 911,
-        "coverage": 1.0,
-        "max_depth": 7,
+        "statements": 1714,
+        "official_statements": 398,
+        "intermediate_statements": 1316,
+        "base_statements": 398,
         "content_kinds": {
-          "algorithm": 782,
-          "certificate": 244,
-          "complexity_bound": 199,
-          "condition": 414,
-          "counterexample": 205,
-          "definition": 900,
-          "duality": 52,
-          "failure_boundary": 584,
-          "principle": 69,
-          "property": 435,
-          "representation": 561,
-          "theorem": 422
-        }
+          "algorithm": 340,
+          "certificate": 115,
+          "complexity_bound": 79,
+          "condition": 171,
+          "counterexample": 70,
+          "definition": 177,
+          "duality": 39,
+          "failure_boundary": 226,
+          "principle": 36,
+          "property": 148,
+          "representation": 244,
+          "theorem": 69
+        },
+        "topics": 1852,
+        "chapters": 5,
+        "leaf_topics": 1342,
+        "coverage": 1.0,
+        "max_depth": 6
       },
       "intermediate_result_report": {
         "official_statement_count": 912,
@@ -921,30 +1071,6 @@
         "duplicate_ids": 0
       },
       "chapters": [
-        {
-          "topic_id": "A07.C01",
-          "display_number": "7.1",
-          "title": "Derivative-Free Optimization",
-          "classification_axis": "chapter",
-          "subtree_topic_count": 585,
-          "subtree_statement_count": 1484
-        },
-        {
-          "topic_id": "A07.C02",
-          "display_number": "7.2",
-          "title": "Manifold Optimization",
-          "classification_axis": "chapter",
-          "subtree_topic_count": 573,
-          "subtree_statement_count": 753
-        },
-        {
-          "topic_id": "A07.C03",
-          "display_number": "7.3",
-          "title": "Distributed Optimization",
-          "classification_axis": "pedagogical dependency",
-          "subtree_topic_count": 543,
-          "subtree_statement_count": 916
-        },
         {
           "topic_id": "A07.C04.BAL01",
           "display_number": "7.4",
@@ -1003,10 +1129,10 @@
       "convergence_candidate_statement_count": 22,
       "loading": {
         "mode": "chapter_shards",
-        "shards": 8,
-        "routes": 3552,
-        "catalog_bytes": 167287,
-        "shard_bytes": 16471275,
+        "shards": 5,
+        "routes": 1851,
+        "catalog_bytes": 96809,
+        "shard_bytes": 6214121,
         "pruned_shards": 0
       }
     },
@@ -2479,29 +2605,29 @@
       "validation_status": "PASS",
       "publication_status": "source_snapshot_with_unverified_intermediate_results_exposed",
       "stats": {
-        "topics": 4614,
-        "statements": 5288,
-        "official_statements": 868,
-        "intermediate_statements": 4420,
-        "chapters": 11,
-        "leaf_topics": 3346,
-        "base_statements": 868,
-        "coverage": 1.0,
-        "max_depth": 7,
+        "statements": 4388,
+        "official_statements": 653,
+        "intermediate_statements": 3735,
+        "base_statements": 653,
         "content_kinds": {
-          "algorithm": 646,
-          "certificate": 217,
-          "complexity_bound": 231,
-          "condition": 444,
-          "counterexample": 278,
-          "definition": 1002,
-          "duality": 89,
-          "failure_boundary": 578,
-          "principle": 83,
-          "property": 523,
-          "representation": 785,
-          "theorem": 412
-        }
+          "algorithm": 499,
+          "certificate": 184,
+          "complexity_bound": 206,
+          "condition": 352,
+          "counterexample": 257,
+          "definition": 809,
+          "duality": 79,
+          "failure_boundary": 500,
+          "principle": 66,
+          "property": 473,
+          "representation": 645,
+          "theorem": 318
+        },
+        "topics": 3612,
+        "chapters": 9,
+        "leaf_topics": 2641,
+        "coverage": 1.0,
+        "max_depth": 7
       },
       "intermediate_result_report": {
         "official_statement_count": 868,
@@ -2574,22 +2700,6 @@
           "subtree_statement_count": 234
         },
         {
-          "topic_id": "A16.C05",
-          "display_number": "16.7",
-          "title": "Robust Optimization",
-          "classification_axis": "chapter",
-          "subtree_topic_count": 506,
-          "subtree_statement_count": 401
-        },
-        {
-          "topic_id": "A16.C06",
-          "display_number": "16.8",
-          "title": "Simulation Optimization",
-          "classification_axis": "chapter",
-          "subtree_topic_count": 496,
-          "subtree_statement_count": 499
-        },
-        {
           "topic_id": "A16.C07.BAL01",
           "display_number": "16.9",
           "title": "Bayesian Optimization Surrogate-Acquisition Architecture",
@@ -2618,11 +2728,110 @@
       "convergence_candidate_statement_count": 0,
       "loading": {
         "mode": "chapter_shards",
-        "shards": 11,
-        "routes": 4613,
-        "catalog_bytes": 225317,
-        "shard_bytes": 18367318,
+        "shards": 9,
+        "routes": 3611,
+        "catalog_bytes": 185417,
+        "shard_bytes": 14714724,
         "pruned_shards": 0
+      }
+    },
+    {
+      "id": "robust_optimization",
+      "short_name": "Robust Optimization",
+      "accent": "#88613d",
+      "data_url": "data/robust_optimization.json",
+      "generated_at": "2026-08-19T11:43:34.107956+00:00",
+      "validation_status": "PASS",
+      "publication_status": "v64_structural_rehome_with_v1_5_public_content_preserved",
+      "stats": {
+        "statements": 401,
+        "official_statements": 102,
+        "intermediate_statements": 299,
+        "base_statements": 102,
+        "content_kinds": {
+          "algorithm": 31,
+          "certificate": 20,
+          "complexity_bound": 10,
+          "condition": 35,
+          "counterexample": 10,
+          "definition": 105,
+          "duality": 10,
+          "failure_boundary": 37,
+          "principle": 6,
+          "property": 25,
+          "representation": 83,
+          "theorem": 29
+        },
+        "topics": 506,
+        "chapters": 9,
+        "leaf_topics": 361,
+        "coverage": 1.0,
+        "max_depth": 5
+      },
+      "chapters": [],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 1,
+        "routes": 506,
+        "catalog_bytes": 20591,
+        "shard_bytes": 1532737,
+        "pruned_shards": 0
+      },
+      "source_rehome": {
+        "source_domain_id": "optimization_under_uncertainty",
+        "source_root_id": "A16.C05",
+        "v64_part_id": "A28",
+        "statements_preserved": 401,
+        "presentation_policy": "promoted_root_without_wrapper"
+      }
+    },
+    {
+      "id": "simulation_optimization",
+      "short_name": "Simulation Optimization",
+      "accent": "#4d718e",
+      "data_url": "data/simulation_optimization.json",
+      "generated_at": "2026-08-19T11:43:34.107956+00:00",
+      "validation_status": "PASS",
+      "publication_status": "v64_structural_rehome_with_v1_5_public_content_preserved",
+      "stats": {
+        "statements": 499,
+        "official_statements": 113,
+        "intermediate_statements": 386,
+        "base_statements": 113,
+        "content_kinds": {
+          "algorithm": 116,
+          "certificate": 13,
+          "complexity_bound": 15,
+          "condition": 57,
+          "counterexample": 11,
+          "definition": 88,
+          "failure_boundary": 41,
+          "principle": 11,
+          "property": 25,
+          "representation": 57,
+          "theorem": 65
+        },
+        "topics": 496,
+        "chapters": 10,
+        "leaf_topics": 344,
+        "coverage": 1.0,
+        "max_depth": 6
+      },
+      "chapters": [],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 1,
+        "routes": 496,
+        "catalog_bytes": 20752,
+        "shard_bytes": 2118047,
+        "pruned_shards": 0
+      },
+      "source_rehome": {
+        "source_domain_id": "optimization_under_uncertainty",
+        "source_root_id": "A16.C06",
+        "v64_part_id": "A29",
+        "statements_preserved": 499,
+        "presentation_policy": "promoted_root_without_wrapper"
       }
     }
   ],
@@ -3347,59 +3556,27 @@
   },
   "legacy_domain_routes": {
     "derivative_free_optimization": {
-      "domain_id": "specialized_continuous_methods",
+      "domain_id": "derivative_free_optimization",
       "default_node_id": "A07.C01"
     },
     "manifold_optimization": {
-      "domain_id": "specialized_continuous_methods",
+      "domain_id": "manifold_optimization",
       "default_node_id": "A07.C02"
     },
     "distributed_optimization": {
-      "domain_id": "specialized_continuous_methods",
+      "domain_id": "distributed_optimization",
       "default_node_id": "A07.C03"
+    },
+    "robust_optimization": {
+      "domain_id": "robust_optimization",
+      "default_node_id": "A16.C05"
+    },
+    "simulation_optimization": {
+      "domain_id": "simulation_optimization",
+      "default_node_id": "A16.C06"
     }
   },
-  "navigation_shortcuts": [
-    {
-      "id": "derivative_free_optimization",
-      "short_name": "Derivative-Free Optimization",
-      "accent": "#b2693f",
-      "position": 6,
-      "domain_id": "specialized_continuous_methods",
-      "default_node_id": "A07.C01",
-      "stats": {
-        "topics": 585,
-        "statements": 1484,
-        "chapters": 10
-      }
-    },
-    {
-      "id": "manifold_optimization",
-      "short_name": "Manifold Optimization",
-      "accent": "#26756d",
-      "position": 7,
-      "domain_id": "specialized_continuous_methods",
-      "default_node_id": "A07.C02",
-      "stats": {
-        "topics": 573,
-        "statements": 753,
-        "chapters": 9
-      }
-    },
-    {
-      "id": "distributed_optimization",
-      "short_name": "Distributed Optimization",
-      "accent": "#6d5bd0",
-      "position": 8,
-      "domain_id": "specialized_continuous_methods",
-      "default_node_id": "A07.C03",
-      "stats": {
-        "topics": 543,
-        "statements": 916,
-        "chapters": 9
-      }
-    }
-  ],
+  "navigation_shortcuts": [],
   "subject_domains": [
     {
       "id": "continuous_optimization",
@@ -3410,20 +3587,22 @@
         "variational_analysis",
         "nonlinear_programming",
         "first_order_methods",
-        "nonsmooth_optimization",
-        "derivative_free_optimization",
         "manifold_optimization",
+        "derivative_free_optimization",
         "distributed_optimization",
+        "nonsmooth_optimization",
         "specialized_continuous_methods",
         "convex_programming",
         "linear_programming",
         "conic_optimization",
         "quadratic_optimization",
         "global_optimization",
-        "optimization_under_uncertainty"
+        "optimization_under_uncertainty",
+        "robust_optimization",
+        "simulation_optimization"
       ],
       "stats": {
-        "collections": 15,
+        "collections": 17,
         "topics": 51514,
         "statements": 67696
       }
@@ -3478,7 +3657,7 @@
     }
   ],
   "node_redirects": {
-    "specialized_continuous_methods": {
+    "distributed_optimization": {
       "A07.C03.NC77ECCB1B848.AND6C2C62B88F": "A07.C03.N398539E5271D.AND232ED22A86",
       "A22d1.C05.S01.K01": "A07.C03.N8930BA241017",
       "A22d1.C05.S01.K02": "A07.C03.N2E98A409D3E9",
@@ -3510,7 +3689,13 @@
       "A22d1.C05.S04.D02": "A07.C03.ND7D6317DFE8E"
     },
     "mapping_path": "distributed/distributed_optimization_node_mapping.json",
-    "mapping_sha256": "d544e759c29dc762d21922f221999dbe9de43bf68da6c3b4e6eb3e279bb3bfed"
+    "mapping_sha256": "d544e759c29dc762d21922f221999dbe9de43bf68da6c3b4e6eb3e279bb3bfed",
+    "legacy_domain_routes": {
+      "distributed_optimization": {
+        "domain_id": "distributed_optimization",
+        "default_node_id": "A27"
+      }
+    }
   },
   "convergence_candidate_snapshot": {
     "schema_version": "web-convergence-snapshot-report-v2",
@@ -3573,26 +3758,111 @@
     "captured_at": "2026-08-19T08:12:17.610650+00:00"
   },
   "directory_snapshot": {
-    "tree_id": "opt_stacks_v62_framework_sync_candidate",
-    "path": "/root/workspace/lcy/optistacks/outputs/releases/v62_framework_sync_candidate/opt_stacks_v62_framework_sync_candidate.json",
-    "status": "candidate",
+    "tree_id": "opt_stacks_v64_extracted_major_tracks_candidate",
+    "path": "/root/workspace/lcy/optistacks/outputs/releases/v64_extracted_major_tracks_candidate/opt_stacks_v64_extracted_major_tracks_candidate.json",
+    "release_version": "v64",
+    "status": "local_extracted_major_tracks_candidate",
     "canonical_tree_mutated": false,
-    "framework_sync": {
-      "schema_version": "framework-sync-v1",
-      "a07_source": "/root/workspace/lcy/optistacks/outputs/releases/v61_a07_distributed_unified_candidate/opt_stacks_v61_a07_distributed_unified_candidate.json",
-      "framework_source": "/root/workspace/lcy/optistacks/0809_optimize/structure_adjustment_runs/20260818_v59_fast_shadow/shadow_projection_A04_A05_A07_A11.json",
-      "replaced_parts": [
-        "A04",
-        "A05",
-        "A11"
-      ],
-      "preserved_revised_part": "A07",
-      "statement_layer_policy": "statements remain external and are joined by stable node ID"
-    }
+    "part_count": 40,
+    "node_count": 85475
   },
-  "snapshot_version": "20260819_framework_sync_v1_5",
+  "snapshot_version": "20260819_v64_major_tracks_v1",
   "loading": {
     "mode": "chapter_shards",
     "cache_strategy": "versioned_url_memory_and_http_cache"
+  },
+  "major_track_extraction": {
+    "schema_version": "web-v64-major-track-extraction-v1",
+    "source_release": "/root/workspace/lcy/optistacks/outputs/releases/v64_extracted_major_tracks_candidate",
+    "source_validation_status": "PASS",
+    "policy": "move_published_subtrees_preserve_topics_and_statements",
+    "records": [
+      {
+        "part_id": "A25",
+        "domain_id": "derivative_free_optimization",
+        "root_id": "A07.C01",
+        "source_domain_id": "specialized_continuous_methods",
+        "topics_moved": 585,
+        "wrapper_topics_added": 0,
+        "statements_preserved": 1484,
+        "old_display_prefix": "7.1",
+        "new_display_prefix": "25.1",
+        "presentation_policy": "promoted_root_without_wrapper"
+      },
+      {
+        "part_id": "A26",
+        "domain_id": "manifold_optimization",
+        "root_id": "A07.C02",
+        "source_domain_id": "specialized_continuous_methods",
+        "topics_moved": 573,
+        "wrapper_topics_added": 0,
+        "statements_preserved": 753,
+        "old_display_prefix": "7.2",
+        "new_display_prefix": "26.1",
+        "presentation_policy": "promoted_root_without_wrapper"
+      },
+      {
+        "part_id": "A27",
+        "domain_id": "distributed_optimization",
+        "root_id": "A07.C03",
+        "source_domain_id": "specialized_continuous_methods",
+        "topics_moved": 543,
+        "wrapper_topics_added": 0,
+        "statements_preserved": 916,
+        "old_display_prefix": "7.3",
+        "new_display_prefix": "27.1",
+        "presentation_policy": "promoted_root_without_wrapper"
+      },
+      {
+        "part_id": "A28",
+        "domain_id": "robust_optimization",
+        "root_id": "A16.C05",
+        "source_domain_id": "optimization_under_uncertainty",
+        "topics_moved": 506,
+        "wrapper_topics_added": 0,
+        "statements_preserved": 401,
+        "old_display_prefix": "16.7",
+        "new_display_prefix": "28.1",
+        "presentation_policy": "promoted_root_without_wrapper"
+      },
+      {
+        "part_id": "A29",
+        "domain_id": "simulation_optimization",
+        "root_id": "A16.C06",
+        "source_domain_id": "optimization_under_uncertainty",
+        "topics_moved": 496,
+        "wrapper_topics_added": 0,
+        "statements_preserved": 499,
+        "old_display_prefix": "16.8",
+        "new_display_prefix": "29.1",
+        "presentation_policy": "promoted_root_without_wrapper"
+      }
+    ]
+  },
+  "node_domain_redirects": {
+    "specialized_continuous_methods": [
+      {
+        "node_prefix": "A07.C01",
+        "domain_id": "derivative_free_optimization"
+      },
+      {
+        "node_prefix": "A07.C02",
+        "domain_id": "manifold_optimization"
+      },
+      {
+        "node_prefix": "A07.C03",
+        "domain_id": "distributed_optimization"
+      }
+    ],
+    "optimization_under_uncertainty": [
+      {
+        "node_prefix": "A16.C05",
+        "domain_id": "robust_optimization"
+      },
+      {
+        "node_prefix": "A16.C06",
+        "domain_id": "simulation_optimization"
+      }
+    ]
   }
 }

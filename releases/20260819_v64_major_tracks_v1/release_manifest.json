@@ -1,0 +1,68 @@
+{
+  "schema_version": "reasatlas-release-manifest-v1",
+  "snapshot_version": "20260819_v64_major_tracks_v1",
+  "release_status": "LOCAL_V64_MAJOR_TRACKS_SYNC",
+  "canonical_tree_mutated": false,
+  "source_release": {
+    "version": "v64",
+    "tree_id": "opt_stacks_v64_extracted_major_tracks_candidate",
+    "path": "/root/workspace/lcy/optistacks/outputs/releases/v64_extracted_major_tracks_candidate/opt_stacks_v64_extracted_major_tracks_candidate.json"
+  },
+  "site_totals": {
+    "domains": 20,
+    "topics": 75699,
+    "statements": 94171
+  },
+  "extracted_domains": [
+    {
+      "id": "manifold_optimization",
+      "part_id": "A26",
+      "root_id": "A07.C02",
+      "topics": 573,
+      "statements": 753
+    },
+    {
+      "id": "derivative_free_optimization",
+      "part_id": "A25",
+      "root_id": "A07.C01",
+      "topics": 585,
+      "statements": 1484
+    },
+    {
+      "id": "distributed_optimization",
+      "part_id": "A27",
+      "root_id": "A07.C03",
+      "topics": 543,
+      "statements": 916
+    },
+    {
+      "id": "robust_optimization",
+      "part_id": "A28",
+      "root_id": "A16.C05",
+      "topics": 506,
+      "statements": 401
+    },
+    {
+      "id": "simulation_optimization",
+      "part_id": "A29",
+      "root_id": "A16.C06",
+      "topics": 496,
+      "statements": 499
+    }
+  ],
+  "generated_artifacts": {
+    "live_manifest_path": "/root/workspace/lcy/optistacks-web/site/data/manifest.json",
+    "live_manifest_sha256": "b97cf752fe4be36881d43572d21609ed5f039be2675286f1f4f0af077be4e11f",
+    "application_path": "/root/workspace/lcy/optistacks-web/site/app.js",
+    "application_sha256": "955b728d228bba9c69c73d98bcef91d3f2d89a9247fd2a53ece28e52402f44af",
+    "validation_path": "/root/workspace/lcy/optistacks-web/releases/20260819_v64_major_tracks_v1/live_validation_report.json",
+    "validation_sha256": "84427c58bc4219dcaa179115dff2e48ef7a438aa06cb547547cbbddef4c34daf"
+  },
+  "validation": {
+    "major_track_sync": "PASS",
+    "javascript_syntax": "PASS",
+    "localhost_asset_loading": "PASS",
+    "statement_count_preserved": "PASS",
+    "topic_ids_unique": "PASS"
+  }
+}
