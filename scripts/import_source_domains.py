@@ -78,7 +78,7 @@ PART_DOMAINS = (
     {
         "id": "integer_mixed_integer_optimization",
         "part_id": "A12",
-        "short_name": "Integer and Mixed-Integer Optimization",
+        "short_name": "Mixed-Integer Programming",
         "accent": "#84623d",
     },
     {

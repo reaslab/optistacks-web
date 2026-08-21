@@ -1783,7 +1783,7 @@
     },
     {
       "id": "integer_mixed_integer_optimization",
-      "short_name": "Integer and Mixed-Integer Optimization",
+      "short_name": "Mixed-Integer Programming",
       "accent": "#84623d",
       "data_url": "data/integer_mixed_integer_optimization.json",
       "generated_at": "2026-07-21T08:46:18.920069+00:00",

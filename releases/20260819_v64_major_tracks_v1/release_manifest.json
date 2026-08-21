@@ -52,7 +52,7 @@
   ],
   "generated_artifacts": {
     "live_manifest_path": "/root/workspace/lcy/optistacks-web/site/data/manifest.json",
-    "live_manifest_sha256": "b97cf752fe4be36881d43572d21609ed5f039be2675286f1f4f0af077be4e11f",
+    "live_manifest_sha256": "10ee6c70248eda97864dbcb2e1b5aa84b9db838f80da65ed6a3eddbf86ae0f70",
     "application_path": "/root/workspace/lcy/optistacks-web/site/app.js",
     "application_sha256": "955b728d228bba9c69c73d98bcef91d3f2d89a9247fd2a53ece28e52402f44af",
     "validation_path": "/root/workspace/lcy/optistacks-web/releases/20260819_v64_major_tracks_v1/live_validation_report.json",
