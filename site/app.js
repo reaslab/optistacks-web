@@ -875,42 +875,44 @@ async function sendSubmissionEvent(issue, event) {
   if (!SUBMISSION_ENDPOINT) return false;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), SUBMISSION_TIMEOUT_MS);
+  const fields = {
+    _subject: `ReasAtlas ${event.action}: ${issue.issue_id}`,
+    source: "reasatlas-web",
+    site_snapshot: state.manifest?.snapshot_version || "unknown",
+    origin: location.origin,
+    event_id: event.event_id,
+    action: event.action,
+    event_version: event.version || 1,
+    issue_id: issue.issue_id,
+    status: issue.status,
+    severity: issue.severity,
+    issue_type: issue.issue_type,
+    issue_type_label: titleCase(issue.issue_type),
+    reason: issue.note,
+    note: issue.note,
+    domain_id: issue.domain_id,
+    topic_id: issue.topic_id,
+    target_type: issue.target_type,
+    target_id: issue.target_id,
+    target_title: issue.target_title,
+    target_path: (issue.path || []).join(" / "),
+    target_context: JSON.stringify(issue.snapshot || {}),
+    page_hash: issue.page_hash,
+    created_at: issue.created_at,
+    updated_at: issue.updated_at || "",
+    event_snapshot: JSON.stringify(event.snapshot),
+    history_events: JSON.stringify(
+      state.submissionHistory.filter(item => item.issue_id === issue.issue_id).slice(0, 50)
+    ),
+  };
+  const formData = new FormData();
+  Object.entries(fields).forEach(([key, value]) => formData.append(key, String(value ?? "")));
   try {
     const response = await fetch(SUBMISSION_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        _subject: `ReasAtlas ${event.action}: ${issue.issue_id}`,
-        source: "reasatlas-web",
-        site_snapshot: state.manifest?.snapshot_version || "unknown",
-        origin: location.origin,
-        event_id: event.event_id,
-        action: event.action,
-        event_version: event.version || 1,
-        issue_id: issue.issue_id,
-        status: issue.status,
-        severity: issue.severity,
-        issue_type: issue.issue_type,
-        issue_type_label: titleCase(issue.issue_type),
-        reason: issue.note,
-        note: issue.note,
-        domain_id: issue.domain_id,
-        topic_id: issue.topic_id,
-        target_type: issue.target_type,
-        target_id: issue.target_id,
-        target_title: issue.target_title,
-        target_path: (issue.path || []).join(" / "),
-        target_context: JSON.stringify(issue.snapshot || {}),
-        page_hash: issue.page_hash,
-        created_at: issue.created_at,
-        updated_at: issue.updated_at || "",
-        event_snapshot: JSON.stringify(event.snapshot),
-        history_events: JSON.stringify(
-          state.submissionHistory.filter(item => item.issue_id === issue.issue_id)
-        ),
-      }),
+      headers: { Accept: "application/json" },
+      body: formData,
       signal: controller.signal,
-      keepalive: true,
     });
     if (!response.ok) throw new Error(`Formspree HTTP ${response.status}`);
     return true;
