@@ -1111,14 +1111,12 @@ function openQualityPanel(view) {
   $("#quality-queue-view").hidden = showForm;
   $("#quality-history-view").hidden = state.submissionView !== "history" || showForm;
   $("#quality-form-view").hidden = !showForm;
-  document.body.classList.add("submission-page-open");
   document.body.classList.add("quality-panel-open");
   $("#quality-panel").setAttribute("aria-hidden", "false");
   $("#quality-queue-button").setAttribute("aria-pressed", "true");
 }
 
 function closeQualityPanel() {
-  document.body.classList.remove("submission-page-open");
   document.body.classList.remove("quality-panel-open");
   $("#quality-panel").setAttribute("aria-hidden", "true");
   $("#quality-queue-button").setAttribute("aria-pressed", "false");

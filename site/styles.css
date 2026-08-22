@@ -230,9 +230,6 @@ body.resizing * { cursor: col-resize !important; }
 
 .quality-panel { grid-column: 5; display: none; min-width: 0; height: calc(100vh - 76px); overflow: auto; border-left: 1px solid var(--line); background: #fff; box-shadow: -14px 0 45px rgba(24,33,47,.06); }
 body.quality-panel-open .quality-panel { display: block; }
-body.submission-page-open .quality-panel { position: fixed; inset: 0; z-index: 40; width: 100vw; height: 100vh; border: 0; box-shadow: none; background: #f7f9fc; }
-body.submission-page-open .quality-view { width: min(1040px, 100%); margin: 0 auto; padding: 42px clamp(22px, 5vw, 72px) 64px; }
-body.submission-page-open .quality-view > header { padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .submission-tabs { display: flex; gap: 4px; margin: 26px 0 18px; padding: 4px; border: 1px solid var(--line); border-radius: 7px; background: #eef2f7; }
 .submission-tabs button { flex: 0 0 auto; padding: 10px 16px; border: 0; border-radius: 4px; color: var(--muted); background: transparent; cursor: pointer; font-size: 11px; }
 .submission-tabs button.active { color: var(--ink); background: #fff; box-shadow: 0 2px 8px rgba(24,33,47,.08); }
