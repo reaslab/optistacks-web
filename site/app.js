@@ -75,6 +75,75 @@ const esc = (value = "") => String(value).replace(/[&<>'"]/g, char => ({
 const formatNumber = value => new Intl.NumberFormat("en-US").format(value || 0);
 const titleCase = value => String(value || "").replaceAll("_", " ");
 
+const FORMULA_CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+
+function normalizeFormulaSource(value) {
+  let result = String(value || "").normalize("NFC").replace(/\r\n?/g, "\n");
+
+  // A subset of inherited fields contains a control character where a closing
+  // TeX delimiter or a backslash command was intended. Preserve only the
+  // unambiguous delimiter case; other controls become readable spacing.
+  result = result.replace(/\\([\n\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F])/g, (match, control, offset, source) => {
+    const next = source[offset + 2] || "";
+    return next === ")" || next === "]" ? "\\" : "";
+  });
+  result = result.replace(FORMULA_CONTROL_CHARACTERS, (control, offset, source) => {
+    const next = source[offset + 1] || "";
+    return /[A-Za-z]/.test(next) && control !== "\n" ? "\\" : " ";
+  });
+  result = result
+    .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, " ")
+    .replace(/\t/g, " ")
+    .replace(/[ \t]*\n[ \t]*/g, " ")
+    .replace(/[ ]{2,}/g, " ")
+    .trim();
+
+  // Some legacy fields lost the backslash immediately before a closing
+  // delimiter when a line break was decoded. Repair only a closing bracket
+  // that follows whitespace while its matching opening delimiter is active.
+  let repaired = "";
+  let inlineDepth = 0;
+  let displayDepth = 0;
+  for (let index = 0; index < result.length; index += 1) {
+    const pair = result.slice(index, index + 2);
+    if (pair === "\\(") {
+      inlineDepth += 1;
+      repaired += pair;
+      index += 1;
+      continue;
+    }
+    if (pair === "\\)") {
+      inlineDepth = Math.max(0, inlineDepth - 1);
+      repaired += pair;
+      index += 1;
+      continue;
+    }
+    if (pair === "\\[") {
+      displayDepth += 1;
+      repaired += pair;
+      index += 1;
+      continue;
+    }
+    if (pair === "\\]") {
+      displayDepth = Math.max(0, displayDepth - 1);
+      repaired += pair;
+      index += 1;
+      continue;
+    }
+    const previous = result[index - 1] || "";
+    if (result[index] === ")" && inlineDepth > 0 && /\s/.test(previous)) {
+      repaired += "\\)";
+      inlineDepth -= 1;
+    } else if (result[index] === "]" && displayDepth > 0 && /\s/.test(previous)) {
+      repaired += "\\]";
+      displayDepth -= 1;
+    } else {
+      repaired += result[index];
+    }
+  }
+  return repaired;
+}
+
 function normalizeDollarDelimiters(value) {
   return value
     .replace(/\\mathbin\{\\vrule height 1\.4ex depth -0\.3ex width 0\.07ex\\vrule height 0\.07ex depth -0\.02ex width 0\.8ex\}/g, "\\mathbin{\\restriction}")
@@ -118,7 +187,7 @@ function trimOrphanTrailingDelimiter(value) {
 }
 
 function renderLatex(value, display = false, forceMath = false) {
-  const raw = trimOrphanTrailingDelimiter(String(value || "").trim());
+  const raw = trimOrphanTrailingDelimiter(normalizeFormulaSource(value));
   if (!raw) return "";
   if (!hasBalancedDelimiters(raw)) {
     return `<span class="latex-source-error" title="Unbalanced mathematical delimiters in source data">${esc(raw)}</span>`;
