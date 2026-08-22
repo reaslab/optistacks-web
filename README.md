@@ -53,10 +53,13 @@ python3 -m http.server 8000 --directory site
 Keep website changes inside `site/`. Preserve the paths and schema under
 `site/data/` unless a data update is explicitly requested. After changing CSS
 or JavaScript, update its `?v=` value in `site/index.html` so deployed browsers
-do not reuse an old asset. Submission history is stored only in the current
+do not reuse an old asset. Submission history is retained in the current
 browser's `localStorage`; active submissions and append-only edit history use
 separate keys (`optistacks-submissions-v1` and
-`optistacks-submission-history-v1`).
+`optistacks-submission-history-v1`). Submission events are also sent to the
+configured Formspree endpoint; failed remote sends retain their local copy and
+are retried on a later visit. Existing local submissions without a sync marker
+are migrated to `pending` and sent in a staggered batch on the next visit.
 
 Before handing off, run `node --check site/app.js` and preview the site locally.
 For formula changes, also run `node scripts/validate_math_rendering.mjs`; pass

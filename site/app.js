@@ -28,6 +28,8 @@ const QUALITY_STORAGE_KEY = "optistacks-quality-review-v1";
 const SUBMISSIONS_STORAGE_KEY = "optistacks-submissions-v1";
 const SUBMISSION_HISTORY_STORAGE_KEY = "optistacks-submission-history-v1";
 const LAYOUT_STORAGE_KEY = "optistacks-layout-v1";
+const SUBMISSION_ENDPOINT = "https://formspree.io/f/xaewkbzw";
+const SUBMISSION_TIMEOUT_MS = 10000;
 const PANE_LABELS = { library: "domains", directory: "outline", detail: "content" };
 const STATEMENT_PAGE_SIZE = 24;
 const LEGACY_DOMAIN_ROUTES = {
@@ -801,6 +803,10 @@ function loadQualityIssues() {
     const stored = JSON.parse(raw);
     let migrated = false;
     state.qualityIssues = Array.isArray(stored) ? stored.map(issue => {
+      if (!issue.remote_status) {
+        issue = { ...issue, remote_status: "pending" };
+        migrated = true;
+      }
       const route = resolveLegacyRoute(issue.domain_id, issue.topic_id);
       if (route.domain === issue.domain_id && route.node === issue.topic_id) return issue;
       migrated = true;
@@ -819,6 +825,7 @@ function loadQualityIssues() {
   }
   loadSubmissionHistory();
   updateQualityCount();
+  retryRemoteSubmissions();
 }
 
 function saveQualityIssues() {
@@ -851,15 +858,101 @@ function saveSubmissionHistory() {
 }
 
 function appendSubmissionHistory(issue, action, snapshot = {}) {
-  state.submissionHistory.unshift({
+  const event = {
     event_id: `EV-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`}`,
     issue_id: issue.issue_id,
     action,
     version: issue.version || 1,
     created_at: new Date().toISOString(),
     snapshot: { note: issue.note, severity: issue.severity, issue_type: issue.issue_type, status: issue.status, ...snapshot },
-  });
+  };
+  state.submissionHistory.unshift(event);
   saveSubmissionHistory();
+  return event;
+}
+
+async function sendSubmissionEvent(issue, event) {
+  if (!SUBMISSION_ENDPOINT) return false;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SUBMISSION_TIMEOUT_MS);
+  try {
+    const response = await fetch(SUBMISSION_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        _subject: `ReasAtlas ${event.action}: ${issue.issue_id}`,
+        source: "reasatlas-web",
+        site_snapshot: state.manifest?.snapshot_version || "unknown",
+        origin: location.origin,
+        event_id: event.event_id,
+        action: event.action,
+        event_version: event.version || 1,
+        issue_id: issue.issue_id,
+        status: issue.status,
+        severity: issue.severity,
+        issue_type: issue.issue_type,
+        issue_type_label: titleCase(issue.issue_type),
+        reason: issue.note,
+        note: issue.note,
+        domain_id: issue.domain_id,
+        topic_id: issue.topic_id,
+        target_type: issue.target_type,
+        target_id: issue.target_id,
+        target_title: issue.target_title,
+        target_path: (issue.path || []).join(" / "),
+        target_context: JSON.stringify(issue.snapshot || {}),
+        page_hash: issue.page_hash,
+        created_at: issue.created_at,
+        updated_at: issue.updated_at || "",
+        event_snapshot: JSON.stringify(event.snapshot),
+        history_events: JSON.stringify(
+          state.submissionHistory.filter(item => item.issue_id === issue.issue_id)
+        ),
+      }),
+      signal: controller.signal,
+      keepalive: true,
+    });
+    if (!response.ok) throw new Error(`Formspree HTTP ${response.status}`);
+    return true;
+  } catch (error) {
+    console.warn("Submission remote sync failed; local copy retained", error);
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function queueSubmissionEvent(issue, event) {
+  issue.remote_status = "sending";
+  issue.remote_last_attempt_at = new Date().toISOString();
+  saveQualityIssues();
+  void sendSubmissionEvent(issue, event).then(sent => {
+    issue.remote_status = sent ? "sent" : "failed";
+    issue.remote_last_attempt_at = new Date().toISOString();
+    saveQualityIssues();
+  });
+}
+
+function retryRemoteSubmissions() {
+  const now = Date.now();
+  state.qualityIssues
+    .filter(issue => {
+      if (issue.remote_status === "pending" || issue.remote_status === "failed") return true;
+      if (issue.remote_status !== "sending") return false;
+      const attemptedAt = Date.parse(issue.remote_last_attempt_at || "");
+      return !Number.isFinite(attemptedAt) || now - attemptedAt > 60000;
+    })
+    .forEach((issue, index) => {
+      const event = {
+        event_id: `EV-RETRY-${issue.issue_id}-${issue.version || 1}`,
+        issue_id: issue.issue_id,
+        action: "retry",
+        version: issue.version || 1,
+        created_at: new Date().toISOString(),
+        snapshot: { note: issue.note, severity: issue.severity, issue_type: issue.issue_type, status: issue.status },
+      };
+      setTimeout(() => queueSubmissionEvent(issue, event), index * 250);
+    });
 }
 
 function updateQualityCount() {
@@ -959,8 +1052,10 @@ function submitQualityIssue(event) {
     issue.issue_type = $("#quality-issue-type").value;
     issue.version = (issue.version || 1) + 1;
     issue.updated_at = new Date().toISOString();
+    issue.remote_status = "pending";
     saveQualityIssues();
-    appendSubmissionHistory(issue, "edited", { previous });
+    const submissionEvent = appendSubmissionHistory(issue, "edited", { previous });
+    queueSubmissionEvent(issue, submissionEvent);
     closeQualityDialog();
     toast("Submission updated; the previous version remains in edit history");
     return;
@@ -977,10 +1072,12 @@ function submitQualityIssue(event) {
     page_hash: location.hash,
     ...state.qualityTarget,
     version: 1,
+    remote_status: "pending",
   };
   state.qualityIssues.unshift(issue);
   saveQualityIssues();
-  appendSubmissionHistory(issue, "submitted");
+  const submissionEvent = appendSubmissionHistory(issue, "submitted");
+  queueSubmissionEvent(issue, submissionEvent);
   closeQualityDialog();
   toast("Correction submitted and added to your history");
 }
@@ -1102,8 +1199,10 @@ function toggleQualityIssue(issueId) {
   if (!issue) return;
   issue.status = issue.status === "resolved" ? "open" : "resolved";
   issue.updated_at = new Date().toISOString();
+  issue.remote_status = "pending";
   saveQualityIssues();
-  appendSubmissionHistory(issue, "status_changed");
+  const event = appendSubmissionHistory(issue, "status_changed");
+  queueSubmissionEvent(issue, event);
   renderQualityQueue();
 }
 
