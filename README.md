@@ -13,7 +13,7 @@ display review state.
 
 The v64 structural synchronization changes directory ownership and navigation;
 it does not duplicate public statements. Robust and Simulation Optimization
-retain the inherited content coverage of the v1.5 website snapshot.
+retain the inherited content coverage of the pre-v64 website snapshot.
 The middle outline begins at each collection's chapters; the collection root is
 kept for routing and breadcrumbs but is not rendered as a duplicate first row.
 
@@ -43,6 +43,7 @@ python3 -m http.server 8000 --directory site
 - `site/styles.css` contains the visual design and responsive layout.
 - `site/app.js` contains navigation, rendering, search, and submission history.
 - `site/data/` contains the catalogue, manifest, and lazily loaded JSON shards.
+- `releases/20260819_v64_major_tracks_v1/` is the sole retained release record.
 - `Dockerfile`, `compose.yaml`, and `nginx.conf` provide the container runtime.
 - `scripts/` contains the data import, shard build, and naming utilities.
 - `.github/workflows/` contains the Pages and Docker image workflows.
@@ -58,18 +59,32 @@ separate keys (`optistacks-submissions-v1` and
 `optistacks-submission-history-v1`).
 
 Before handing off, run `node --check site/app.js` and preview the site locally.
-Pushing reviewed files to `main` triggers the configured deployment workflows.
+For formula changes, also run `node scripts/validate_math_rendering.mjs`; pass
+`--output <path>` to retain statement- and topic-level diagnostics. The audit
+returns a nonzero status while malformed source formula fields remain. Pushing
+reviewed files to `main` triggers the configured deployment workflows.
+
+## Release retention policy
+
+The repository keeps exactly one release snapshot: the version named by
+`site/data/manifest.json` under `snapshot_version`. When publishing a newer
+snapshot, replace the existing directory under `releases/`; do not retain old
+release directories, copied manifests, validation reports, or versioned data
+trees in the working tree. Update this README, the live manifest, validation
+artifacts, and cache-busting asset versions in the same change. Historical
+releases remain recoverable from Git history and tags rather than duplicate
+files in the current checkout.
 
 ## Data refresh
 
-The checked-in snapshot combines the v64 directory candidate, all prior
-ReasAtlas statements, current
+The checked-in v64 snapshot combines the current directory candidate, all
+retained ReasAtlas statements, current
 topic-complete layers, mechanically validated records from both textbook
 campaign roots, the completed 74-record core convergence candidate layer, and
 41 records from the mechanically validated prefix of the broader convergence
 run.
 Public textbook placement is deliberately conservative. In addition to exact
-reviewed placements, v1.4 resolves proposed topics when the title exactly
+reviewed placements, the consolidated snapshot resolves proposed topics when the title exactly
 matches a direct child, when it has a unique same-Part title match, or when at
 least two textbook campaigns independently propose the same title under the
 same live parent. This adds 50 cross-source-supported topic containers and
@@ -81,7 +96,7 @@ directory-assessment evidence.
 The v64 major-track synchronization is materialized with:
 
 ```bash
-python scripts/sync_v64_major_tracks.py
+python3 scripts/sync_v64_major_tracks.py
 ```
 
 Legacy A07 and A16 links into the five moved subtrees are redirected to their
@@ -90,7 +105,7 @@ complexity bounds, boundary notes, variant relations, and evidence without
 displaying review status. Validate the snapshot with:
 
 ```bash
-python scripts/validate_v64_major_tracks.py
+python3 scripts/validate_v64_major_tracks.py
 ```
 
 The broader convergence refinement is incomplete. Only its 12 PASS shards are

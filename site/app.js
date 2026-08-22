@@ -73,14 +73,61 @@ const esc = (value = "") => String(value).replace(/[&<>'"]/g, char => ({
 const formatNumber = value => new Intl.NumberFormat("en-US").format(value || 0);
 const titleCase = value => String(value || "").replaceAll("_", " ");
 
-function renderLatex(value, display = false) {
-  const raw = String(value || "").trim();
+function normalizeDollarDelimiters(value) {
+  return value
+    .replace(/\\mathbin\{\\vrule height 1\.4ex depth -0\.3ex width 0\.07ex\\vrule height 0\.07ex depth -0\.02ex width 0\.8ex\}/g, "\\mathbin{\\restriction}")
+    .replace(/(?<!\\)\$\$([\s\S]*?)(?<!\\)\$\$/g, (_, formula) => `\\[${formula}\\]`)
+    .replace(/(?<!\\)\$([^$\n]+?)(?<!\\)\$/g, (_, formula) => `\\(${formula}\\)`);
+}
+
+function delimiterCounts(value) {
+  const count = pattern => (value.match(pattern) || []).length;
+  const withoutDisplayDollars = value.replace(/(?<!\\)\$\$/g, "");
+  return {
+    inlineOpen: count(/(?<!\\)\\\(/g),
+    inlineClose: count(/(?<!\\)\\\)/g),
+    displayOpen: count(/(?<!\\)\\\[/g),
+    displayClose: count(/(?<!\\)\\\]/g),
+    displayDollars: count(/(?<!\\)\$\$/g),
+    inlineDollars: (withoutDisplayDollars.match(/(?<!\\)\$/g) || []).length,
+  };
+}
+
+function hasBalancedDelimiters(value) {
+  const counts = delimiterCounts(value);
+  return counts.inlineOpen === counts.inlineClose
+    && counts.displayOpen === counts.displayClose
+    && counts.displayDollars % 2 === 0
+    && counts.inlineDollars % 2 === 0;
+}
+
+function trimOrphanTrailingDelimiter(value) {
+  let result = value;
+  let counts = delimiterCounts(result);
+  while (counts.inlineClose === counts.inlineOpen + 1 && /\\\)\s*$/.test(result)) {
+    result = result.replace(/\\\)\s*$/, "").trimEnd();
+    counts = delimiterCounts(result);
+  }
+  while (counts.displayClose === counts.displayOpen + 1 && /\\\]\s*$/.test(result)) {
+    result = result.replace(/\\\]\s*$/, "").trimEnd();
+    counts = delimiterCounts(result);
+  }
+  return result;
+}
+
+function renderLatex(value, display = false, forceMath = false) {
+  const raw = trimOrphanTrailingDelimiter(String(value || "").trim());
   if (!raw) return "";
-  const hasDelimiters = /\\\(|\\\[|\$\$|\\begin\s*\{/.test(raw);
-  if (hasDelimiters) return esc(raw);
-  const looksLikeLatex = /\\[A-Za-z]+|[_^][{A-Za-z0-9\\]|[{}]/.test(raw);
+  if (!hasBalancedDelimiters(raw)) {
+    return `<span class="latex-source-error" title="Unbalanced mathematical delimiters in source data">${esc(raw)}</span>`;
+  }
+  const normalized = normalizeDollarDelimiters(raw);
+  const hasDelimiters = /(?<!\\)\\\(|(?<!\\)\\\[|\\begin\s*\{/.test(normalized);
+  if (hasDelimiters) return esc(normalized);
+  const looksLikeLatex = forceMath
+    || /\\[A-Za-z]+|[_^][{A-Za-z0-9\\]|[{}]|[=<>≤≥∈∉⊂⊆⊃⊇±∞∑∏]/.test(normalized);
   if (!looksLikeLatex) return esc(raw);
-  return esc(display ? `\\[${raw}\\]` : `\\(${raw}\\)`);
+  return esc(display ? `\\[${normalized}\\]` : `\\(${normalized}\\)`);
 }
 
 function toast(message) {
@@ -695,7 +742,7 @@ function renderStatement(statement, index) {
         ${statement.intermediate_metadata?.reason ? `<div class="meta-block full"><label>Deferred reason</label><p>${esc(statement.intermediate_metadata.reason)}</p></div>` : ""}
         ${statement.intermediate_metadata?.review_comment ? `<div class="meta-block full"><label>Review comment</label><p>${esc(statement.intermediate_metadata.review_comment)}</p></div>` : ""}
         ${statement.prerequisite_node_ids?.length ? `<div class="meta-block full"><label>Prerequisites</label><p class="prerequisite-links">${statement.prerequisite_node_ids.map(renderPrerequisite).join("<span>·</span>")}</p></div>` : ""}
-        ${notation.length ? `<div class="meta-block full"><label>Notation</label><ul class="latex-list">${notation.map(item => `<li><span class="notation-symbol">${renderLatex(item.symbol_latex)}</span><span>— ${esc(item.meaning)}</span></li>`).join("")}</ul></div>` : ""}
+        ${notation.length ? `<div class="meta-block full"><label>Notation</label><ul class="latex-list">${notation.map(item => `<li><span class="notation-symbol">${renderLatex(item.symbol_latex, false, true)}</span><span>— ${esc(item.meaning)}</span></li>`).join("")}</ul></div>` : ""}
         ${sources.length ? `<div class="meta-block full"><label>Statement evidence</label><div class="statement-source-list">${sources.map(renderStatementSource).join("")}</div></div>` : ""}
         <div class="meta-block full"><label>Statement ID</label><p><code>${esc(statement.id)}</code></p></div>
       </div>
@@ -735,9 +782,17 @@ function renderWitness(witness) {
   return `<div class="source-item"><b>${esc(title)}</b><span>${esc(locator)}${status ? ` · ${esc(status)}` : ""}</span></div>`;
 }
 
+let mathTypesetQueue = Promise.resolve();
+
 function typesetMath(container) {
-  if (!window.MathJax?.typesetPromise) return;
-  window.MathJax.typesetPromise([container]).catch(() => {});
+  if (!container || !window.MathJax?.startup?.promise) return;
+  mathTypesetQueue = mathTypesetQueue
+    .then(() => window.MathJax.startup.promise)
+    .then(() => {
+      if (!container.isConnected || !window.MathJax?.typesetPromise) return;
+      return window.MathJax.typesetPromise([container]);
+    })
+    .catch(error => console.warn("Math rendering failed", error));
 }
 
 function loadQualityIssues() {

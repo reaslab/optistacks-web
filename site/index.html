@@ -17,16 +17,35 @@
   <meta name="twitter:description" content="Structured optimization knowledge, from domain to statement.">
   <meta name="twitter:image" content="https://stacks.reaslab.io/og.png">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="styles.css?v=18">
+  <link rel="stylesheet" href="styles.css?v=19">
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
-      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        macros: {
+          textsc: ['\\text{#1}', 1],
+          emph: ['\\text{#1}', 1],
+          llbracket: '\\mathopen{[\\![}',
+          rrbracket: '\\mathclose{]\\!]}',
+          Alpha: '\\mathrm{A}',
+          Beta: '\\mathrm{B}',
+          Iota: '\\mathrm{I}',
+          bigbowtie: '\\mathop{\\bowtie}',
+          bigdotcup: '\\mathop{\\dot{\\bigcup}}',
+          dotminus: '\\mathbin{\\dot{-}}',
+          fint: '\\mathop{\\rlap{-}\\int}'
+        }
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'latex-source-error'
+      },
       chtml: { scale: 0.96 }
     };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <script defer src="app.js?v=31"></script>
+  <script defer src="app.js?v=32"></script>
 </head>
 <body>
   <div class="paper-grain" aria-hidden="true"></div>

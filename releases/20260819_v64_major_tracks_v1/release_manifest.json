@@ -53,16 +53,26 @@
   "generated_artifacts": {
     "live_manifest_path": "/root/workspace/lcy/optistacks-web/site/data/manifest.json",
     "live_manifest_sha256": "10ee6c70248eda97864dbcb2e1b5aa84b9db838f80da65ed6a3eddbf86ae0f70",
+    "index_path": "/root/workspace/lcy/optistacks-web/site/index.html",
+    "index_sha256": "e48f0b37f85722a2c93127a6d348b575dd9e8bd27392bebdc624032345ed8d8b",
     "application_path": "/root/workspace/lcy/optistacks-web/site/app.js",
-    "application_sha256": "955b728d228bba9c69c73d98bcef91d3f2d89a9247fd2a53ece28e52402f44af",
+    "application_sha256": "256155b93d41de0e1b257c2c57614066b5d38e6de234197fe50811de1f9ba368",
+    "stylesheet_path": "/root/workspace/lcy/optistacks-web/site/styles.css",
+    "stylesheet_sha256": "6698f41a2aa94acc1f07b0935b2d50628b0c71d1f98229036bd2c54f30257d90",
     "validation_path": "/root/workspace/lcy/optistacks-web/releases/20260819_v64_major_tracks_v1/live_validation_report.json",
-    "validation_sha256": "84427c58bc4219dcaa179115dff2e48ef7a438aa06cb547547cbbddef4c34daf"
+    "validation_sha256": "d98f1ceb44a442c0e470094f629a60b4cfc9746876cd829165478159d0ec3c0e",
+    "validation_script_path": "/root/workspace/lcy/optistacks-web/scripts/validate_v64_major_tracks.py",
+    "validation_script_sha256": "bbeba98e3dd6e1ed1ee55a445df46639d675539b56fd30be958a3b04b709fc13",
+    "math_rendering_audit_path": "/root/workspace/lcy/optistacks-web/releases/20260819_v64_major_tracks_v1/math_rendering_audit.json",
+    "math_rendering_audit_sha256": "42436d3425e4037fa7714ea31c731d58a5ae7df3dd80cd404a3962412c4a39bd"
   },
   "validation": {
     "major_track_sync": "PASS",
     "javascript_syntax": "PASS",
     "localhost_asset_loading": "PASS",
     "statement_count_preserved": "PASS",
-    "topic_ids_unique": "PASS"
+    "topic_ids_unique": "PASS",
+    "formula_rendering_compatibility": "PASS",
+    "formula_source_audit": "FAIL_841_MALFORMED_FIELDS"
   }
 }

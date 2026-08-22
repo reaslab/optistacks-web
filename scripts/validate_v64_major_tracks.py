@@ -70,6 +70,8 @@ def main() -> int:
             failures.append(code)
 
     require(manifest.get("snapshot_version") == EXPECTED_SNAPSHOT, "snapshot_version")
+    release_directories = sorted(path.name for path in (ROOT / "releases").iterdir() if path.is_dir())
+    require(release_directories == [EXPECTED_SNAPSHOT], "release_retention")
     require((manifest.get("directory_snapshot") or {}).get("tree_id") == EXPECTED_TREE, "tree_id")
     require(len(manifest.get("domains") or []) == 20, "domain_count")
     require(manifest.get("totals") == EXPECTED_TOTALS, "totals")
@@ -124,6 +126,7 @@ def main() -> int:
         "schema_version": "web-v64-major-tracks-validation-v1",
         "captured_at": datetime.now(timezone.utc).isoformat(),
         "snapshot_version": manifest.get("snapshot_version"),
+        "release_directories": release_directories,
         "directory_tree_id": (manifest.get("directory_snapshot") or {}).get("tree_id"),
         "domain_count": len(domain_lookup),
         "totals": manifest.get("totals"),

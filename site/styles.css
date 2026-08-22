@@ -193,7 +193,9 @@ body.resizing * { cursor: col-resize !important; }
 .meta-block p, .meta-block ul { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
 .meta-block ul { padding-left: 16px; }
 .latex-value { max-width: 100%; overflow-x: auto; color: var(--muted); font-size: 11px; line-height: 1.65; }
-.latex-list li { margin: 3px 0; }
+.latex-list li { max-width: 100%; overflow-x: auto; margin: 3px 0; }
+.formal-block mjx-container[display="true"], .latex-value mjx-container[display="true"], .latex-list mjx-container[display="true"] { min-width: max-content; }
+.latex-source-error { display: inline-block; max-width: 100%; overflow-x: auto; padding: 2px 4px; color: #8d493a; background: #fff0ec; font-family: var(--mono); font-size: .86em; white-space: pre-wrap; }
 .variant-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 8px; }
 .variant-grid section { min-width: 0; padding: 10px 11px; border: 1px solid #e3e8ef; border-radius: 4px; background: #f8fafc; }
 .variant-grid section > b { display: block; margin-bottom: 6px; color: #39465a; font: 8px var(--mono); letter-spacing: .5px; text-transform: uppercase; }

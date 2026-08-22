@@ -18,3 +18,8 @@ content is preserved in place: the snapshot contains 75,699 topics and 94,171
 statements, with no statement duplication introduced by the structural move.
 
 Validation is recorded in `live_validation_report.json` and is `PASS`.
+
+Formula rendering compatibility is validated across all 20 domains. The
+field-level source audit is recorded in `math_rendering_audit.json`; it reports
+841 malformed source formula fields that are isolated by the frontend and
+still require authoritative content correction.
