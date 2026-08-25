@@ -1,0 +1,103 @@
+{
+  "schema_version": "reasatlas-release-manifest-v1",
+  "snapshot_version": "20260825_v65_pic_domain_v1",
+  "release_status": "LOCAL_V65_PIC_DOMAIN_IMPORT",
+  "canonical_optimization_tree_mutated": false,
+  "base_release": {
+    "version": "20260819_v64_major_tracks_v1",
+    "tree_id": "opt_stacks_v64_extracted_major_tracks_candidate",
+    "domains": 20,
+    "topics": 75699,
+    "statements": 94171
+  },
+  "site_totals": {
+    "domains": 21,
+    "topics": 76230,
+    "statements": 94586
+  },
+  "pic_domain": {
+    "id": "positive_isotropic_curvature",
+    "subject_domain": "geometric_analysis",
+    "navigation_tree_id": "pic_detailed_tree_v2",
+    "navigation_tree_version": "v2.1",
+    "topics": 531,
+    "statement_placements": 415,
+    "unique_source_statements": 166,
+    "concepts": 498,
+    "graph_nodes": 4895,
+    "graph_edges": 9805,
+    "source_graph_statements": 2980,
+    "source_graph_proofs": 1348,
+    "resolved_dependency_edges": 1088,
+    "unresolved_dependency_edges": 57,
+    "shards": 7,
+    "publication_boundary": "The v2.1 navigation is a keyword-attached scaffold requiring mathematical placement review; the extracted graph does not certify mathematical correctness."
+  },
+  "source_artifact_sha256": {
+    "navigation_view": "7675bc231428507704578b92e1abd6529edb1853178619bd36964cb2ea95169c",
+    "concept_registry": "bdef4ce3eb34ea3357d986e51085aabea95fbef6d9dfc214d1b2de5d09abb502",
+    "statement_graph": "d4014677ac1282e2c7ac9fc93317cee0af65a6d9b3b0364e17cecd78369a815f",
+    "navigation_audit": "9743b363dbc9e4af0fbdafde27c4765b3a3cb657be1c56098ce31a22617fe4a4"
+  },
+  "generated_artifacts": {
+    "live_manifest": {
+      "path": "site/data/manifest.json",
+      "sha256": "367639404120f9042273fba0f3ac4d0879f23822815fa08e40a5d6b415569311"
+    },
+    "index": {
+      "path": "site/index.html",
+      "sha256": "bc53f6fda67fc7de881efb11392cb65e08ab9232cadd6b195346d0b2e582057b"
+    },
+    "application": {
+      "path": "site/app.js",
+      "sha256": "151d684abdc9546d5b8457d4889358f8c449e1f9c4f673d44f768b94203581df"
+    },
+    "stylesheet": {
+      "path": "site/styles.css",
+      "sha256": "18785bb22a3bd09e9f89a88acb709bc337f10a799bc68b65e665e68dc72ff666"
+    },
+    "import_script": {
+      "path": "scripts/import_pic_domain.py",
+      "sha256": "44317d2a80a74ee57bde175d106ae373a1d5d38d95739641fe55870faf1ba11c"
+    },
+    "semantic_titles": {
+      "path": "scripts/pic_semantic_titles.json",
+      "sha256": "4ce40dc4efcd37b90e89b0c4ece656b0b64824077e7196286b666ef32b34fa02"
+    },
+    "validation_script": {
+      "path": "scripts/validate_pic_domain.py",
+      "sha256": "31b4203fb55d4b3a2c28139749fb963a757fffe5ffb1c24e7312679708c92e4d"
+    },
+    "validation_report": {
+      "path": "releases/20260825_v65_pic_domain_v1/live_validation_report.json",
+      "sha256": "be2f6631997d6d62400941aa48b689eb2c8f36ca69991ea5677ce175c83146d2"
+    },
+    "math_rendering_audit": {
+      "path": "releases/20260825_v65_pic_domain_v1/math_rendering_audit.json",
+      "sha256": "f3dfd31b2262b159fdde07122643c1918788171d83c21f64bc74cfad940f1d7f"
+    },
+    "public_pic_sidecars": {
+      "navigation_view_v2.json": "4dacaeaea9183e795afbfaa287e13ed0d799d5a4807bbd90537bab5b55ba41a3",
+      "concept_registry_v2.json": "f3a71bed4f1584c4f60c7e56c6b877b9433e1b3585591af33777aba1f519c2d6",
+      "statement_graph.json": "9c560ac0b7315486573f979888a2b006f97b3d113660f8c50046c5a3e71f21b3",
+      "navigation_audit_v2.json": "cf7bbfc3b1d93e607cee1b2950efc54129053b7c877cdfd17f55c7a5f0f17183"
+    }
+  },
+  "validation": {
+    "pic_import": "PASS",
+    "all_domain_counts": "PASS",
+    "topic_ids_unique": "PASS",
+    "statement_ids_unique": "PASS",
+    "graph_endpoint_integrity": "PASS",
+    "source_artifact_hashes": "PASS",
+    "semantic_title_coverage": "PASS_166_OF_166",
+    "template_leaf_descriptions_omitted": "PASS_415_OF_415",
+    "leading_source_headings_omitted": "PASS_0_REMAINING",
+    "pic_formula_environments": "PASS_0_ISSUES",
+    "pic_proofs_relations_and_sources_unchanged": "PASS_SHA256_9a654b56fe8a78e0bb73f3c94aec08fef167e1eaf0244d7a400327a6cfe3aaaa",
+    "private_absolute_path_scan": "PASS",
+    "javascript_syntax": "PASS",
+    "formula_source_audit": "FAIL_841_INHERITED_MALFORMED_FIELDS",
+    "pic_new_invalid_formula_fields": 0
+  }
+}

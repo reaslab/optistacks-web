@@ -1,0 +1,31 @@
+{
+  "schema_version": "reasatlas-pic-domain-validation-v1",
+  "captured_at": "2026-08-25T15:46:00.034415+00:00",
+  "snapshot_version": "20260825_v65_pic_domain_v1",
+  "release_directories": [
+    "20260825_v65_pic_domain_v1"
+  ],
+  "domain_count": 21,
+  "totals": {
+    "topics": 76230,
+    "statements": 94586
+  },
+  "pic": {
+    "topics": 531,
+    "statement_placements": 415,
+    "unique_source_statements": 166,
+    "concepts": 498,
+    "graph_nodes": 4895,
+    "graph_edges": 9805,
+    "shards": 7,
+    "semantic_titles": 166,
+    "template_leaf_descriptions": 0,
+    "leading_source_headings": 0,
+    "formula_environment_issues": 0
+  },
+  "duplicate_topic_ids": 0,
+  "duplicate_statement_ids": 0,
+  "private_absolute_path_files": [],
+  "failure_codes": [],
+  "status": "PASS"
+}

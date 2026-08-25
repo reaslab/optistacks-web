@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rewrites"],
+  "properties": {
+    "rewrites": {
+      "type": "array",
+      "minItems": 200,
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sample_id", "short_query", "medium_query", "long_query"],
+        "properties": {
+          "sample_id": {"type": "string", "pattern": "^Q[0-9]{4}$"},
+          "short_query": {"type": "string"},
+          "medium_query": {"type": "string"},
+          "long_query": {"type": "string"}
+        }
+      }
+    }
+  }
+}

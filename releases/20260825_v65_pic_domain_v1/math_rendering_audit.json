@@ -1,17 +1,18 @@
 {
   "schema_version": "optistacks-math-rendering-audit-v1",
-  "generated_at": "2026-08-22T03:37:19.607Z",
+  "generated_at": "2026-08-25T15:46:01.856Z",
   "scanned_directory": "site/data/shards",
   "summary": {
-    "files": 199,
-    "formula_fields": 592802,
+    "files": 206,
+    "formula_fields": 593604,
     "formula_fields_by_key": {
-      "statement_latex": 94169,
+      "statement_latex": 94584,
       "conclusion_latex": 94267,
       "symbol_latex": 185716,
       "assumptions_latex": 212671,
       "equivalent_formulations_latex": 5945,
-      "nonasymptotic_bound_latex": 34
+      "nonasymptotic_bound_latex": 34,
+      "proof_latex": 387
     },
     "dollar_delimited_fields": 2540,
     "invalid_formula_fields": 841,

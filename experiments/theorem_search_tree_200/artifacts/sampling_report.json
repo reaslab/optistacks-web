@@ -1,0 +1,358 @@
+{
+  "capacities": {
+    "combinatorial_optimization": {
+      "algorithm": 276,
+      "definition": 709,
+      "theorem": 1587
+    },
+    "conic_optimization": {
+      "algorithm": 15,
+      "definition": 74,
+      "theorem": 106
+    },
+    "constraint_logic_optimization": {
+      "algorithm": 1,
+      "definition": 2,
+      "theorem": 5
+    },
+    "convex_analysis": {
+      "algorithm": 3,
+      "definition": 1113,
+      "theorem": 712
+    },
+    "convex_programming": {
+      "algorithm": 0,
+      "definition": 79,
+      "theorem": 81
+    },
+    "derivative_free_optimization": {
+      "algorithm": 32,
+      "definition": 37,
+      "theorem": 76
+    },
+    "distributed_optimization": {
+      "algorithm": 14,
+      "definition": 1,
+      "theorem": 9
+    },
+    "first_order_methods": {
+      "algorithm": 228,
+      "definition": 139,
+      "theorem": 246
+    },
+    "global_optimization": {
+      "algorithm": 137,
+      "definition": 226,
+      "theorem": 268
+    },
+    "integer_mixed_integer_optimization": {
+      "algorithm": 59,
+      "definition": 205,
+      "theorem": 360
+    },
+    "linear_programming": {
+      "algorithm": 96,
+      "definition": 134,
+      "theorem": 213
+    },
+    "manifold_optimization": {
+      "algorithm": 7,
+      "definition": 89,
+      "theorem": 104
+    },
+    "nonlinear_programming": {
+      "algorithm": 152,
+      "definition": 1058,
+      "theorem": 429
+    },
+    "nonsmooth_optimization": {
+      "algorithm": 33,
+      "definition": 167,
+      "theorem": 370
+    },
+    "optimization_under_uncertainty": {
+      "algorithm": 31,
+      "definition": 114,
+      "theorem": 119
+    },
+    "quadratic_optimization": {
+      "algorithm": 20,
+      "definition": 11,
+      "theorem": 29
+    },
+    "robust_optimization": {
+      "algorithm": 0,
+      "definition": 6,
+      "theorem": 13
+    },
+    "simulation_optimization": {
+      "algorithm": 23,
+      "definition": 16,
+      "theorem": 38
+    },
+    "specialized_continuous_methods": {
+      "algorithm": 12,
+      "definition": 8,
+      "theorem": 10
+    },
+    "variational_analysis": {
+      "algorithm": 16,
+      "definition": 300,
+      "theorem": 928
+    }
+  },
+  "corpus_statement_count_optimization_only": 94169,
+  "default_sample_per_domain": 10,
+  "dev_allocations": {
+    "combinatorial_optimization": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "conic_optimization": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "constraint_logic_optimization": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "convex_analysis": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "convex_programming": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "derivative_free_optimization": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "distributed_optimization": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "first_order_methods": {
+      "algorithm": 1,
+      "definition": 1,
+      "theorem": 0
+    },
+    "global_optimization": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "integer_mixed_integer_optimization": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "linear_programming": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "manifold_optimization": {
+      "algorithm": 1,
+      "definition": 1,
+      "theorem": 0
+    },
+    "nonlinear_programming": {
+      "algorithm": 1,
+      "definition": 1,
+      "theorem": 0
+    },
+    "nonsmooth_optimization": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "optimization_under_uncertainty": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "quadratic_optimization": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "robust_optimization": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "simulation_optimization": {
+      "algorithm": 0,
+      "definition": 1,
+      "theorem": 1
+    },
+    "specialized_continuous_methods": {
+      "algorithm": 1,
+      "definition": 0,
+      "theorem": 1
+    },
+    "variational_analysis": {
+      "algorithm": 1,
+      "definition": 1,
+      "theorem": 0
+    }
+  },
+  "domain_sample_overrides": {
+    "constraint_logic_optimization": 8,
+    "distributed_optimization": 12
+  },
+  "eligibility": {
+    "confidence_min": 0.9,
+    "content_kinds": [
+      "theorem",
+      "definition",
+      "algorithm"
+    ],
+    "plain_word_range": [
+      8,
+      80
+    ],
+    "requires_exact_current_topic_mapping": true,
+    "requires_source_reference": true,
+    "requires_unique_normalized_title": true,
+    "requires_unique_statement_id": true,
+    "topic_depth_min": 3
+  },
+  "eligible_count": 11346,
+  "excluded_domains": [
+    "positive_isotropic_curvature"
+  ],
+  "kind_counts": {
+    "algorithm": 60,
+    "definition": 60,
+    "theorem": 80
+  },
+  "sample_allocations": {
+    "combinatorial_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "conic_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "constraint_logic_optimization": {
+      "algorithm": 1,
+      "definition": 2,
+      "theorem": 5
+    },
+    "convex_analysis": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "convex_programming": {
+      "algorithm": 0,
+      "definition": 5,
+      "theorem": 5
+    },
+    "derivative_free_optimization": {
+      "algorithm": 4,
+      "definition": 3,
+      "theorem": 3
+    },
+    "distributed_optimization": {
+      "algorithm": 6,
+      "definition": 1,
+      "theorem": 5
+    },
+    "first_order_methods": {
+      "algorithm": 4,
+      "definition": 3,
+      "theorem": 3
+    },
+    "global_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "integer_mixed_integer_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "linear_programming": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "manifold_optimization": {
+      "algorithm": 4,
+      "definition": 3,
+      "theorem": 3
+    },
+    "nonlinear_programming": {
+      "algorithm": 4,
+      "definition": 3,
+      "theorem": 3
+    },
+    "nonsmooth_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "optimization_under_uncertainty": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "quadratic_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "robust_optimization": {
+      "algorithm": 0,
+      "definition": 4,
+      "theorem": 6
+    },
+    "simulation_optimization": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "specialized_continuous_methods": {
+      "algorithm": 3,
+      "definition": 3,
+      "theorem": 4
+    },
+    "variational_analysis": {
+      "algorithm": 4,
+      "definition": 3,
+      "theorem": 3
+    }
+  },
+  "sample_size": 200,
+  "seed": 20260825,
+  "source_manifest_totals": {
+    "statements": 94586,
+    "topics": 76230
+  },
+  "split_counts": {
+    "dev": 40,
+    "test": 160
+  },
+  "split_kind_counts": {
+    "dev/algorithm": 12,
+    "dev/definition": 12,
+    "dev/theorem": 16,
+    "test/algorithm": 48,
+    "test/definition": 48,
+    "test/theorem": 64
+  }
+}

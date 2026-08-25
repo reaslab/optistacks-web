@@ -3,13 +3,28 @@
 ReasAtlas is a public, static browser for structured knowledge in optimization
 and analysis. The live site is <https://atlas.reaslab.io/>.
 
-The current `20260819_v64_major_tracks_v1` snapshot contains 20 website domains
-backed by the v64 extracted-major-track candidate. After First-Order Methods,
-Manifold, Derivative-Free, and Distributed Optimization are published as independent
-domains while preserving their original stable topic IDs. It contains 75,699
-topic entries and 94,171 public statements, delivered through lazy chapter
-shards. The data retains 115 convergence candidates. The interface does not
-display review state.
+The current `20260825_v65_pic_domain_v1` snapshot contains 21 website domains.
+Its 20 optimization domains remain backed by the v64 extracted-major-track
+candidate. After First-Order Methods, Manifold, Derivative-Free, and Distributed
+Optimization are published as independent domains while preserving their
+original stable topic IDs. A new Geometric Analysis subject branch publishes
+Positive Isotropic Curvature (PIC) as an independent domain. The site now
+contains 76,230 topic entries and 94,586 public statement placements, delivered
+through lazy chapter shards. The data retains 115 convergence candidates. The
+interface does not display review state.
+
+The PIC domain adds a 531-topic website catalogue and 415 source-anchored
+placements from 166 unique extracted statements. Its source workspace keeps
+the reader navigation, concept registry, and statement graph distinct, so the
+site also publishes sanitized sidecars with 498 concepts and the complete
+4,895-node, 9,805-edge extracted graph (including 2,980 statements and 1,348
+proofs). All statement-backed leaves use stable, source-statement-ID-driven
+mathematical titles instead of source labels such as `Theorem 11.64`; the
+original labels remain in provenance locators and are also omitted from the
+start of rendered statement bodies. Leaves without a meaningful description
+omit that field. The v2.1 navigation is a scaffold whose
+keyword-based placements still require mathematical review; the extracted
+source graph does not certify mathematical correctness.
 
 The v64 structural synchronization changes directory ownership and navigation;
 it does not duplicate public statements. Robust and Simulation Optimization
@@ -19,9 +34,10 @@ kept for routing and breadcrumbs but is not rendered as a duplicate first row.
 
 The left rail has a major-domain selector above the existing subject-domain
 list. Published optimization collections are separated into Continuous
-Optimization and Discrete Optimization; Numerical Analysis, Numerical Linear
-Algebra, and Algebraic Geometry are reserved for future collections. The
-middle outline and right content panel keep their existing behavior.
+Optimization and Discrete Optimization. Geometric Analysis now contains PIC;
+Numerical Analysis, Numerical Linear Algebra, and Algebraic Geometry remain
+reserved for future collections. The middle outline and right content panel
+keep their existing behavior.
 
 ## Run locally
 
@@ -43,7 +59,7 @@ python3 -m http.server 8000 --directory site
 - `site/styles.css` contains the visual design and responsive layout.
 - `site/app.js` contains navigation, rendering, search, and submission history.
 - `site/data/` contains the catalogue, manifest, and lazily loaded JSON shards.
-- `releases/20260819_v64_major_tracks_v1/` is the sole retained release record.
+- `releases/20260825_v65_pic_domain_v1/` is the sole retained release record.
 - `Dockerfile`, `compose.yaml`, and `nginx.conf` provide the container runtime.
 - `scripts/` contains the data import, shard build, and naming utilities.
 - `.github/workflows/` contains the Pages and Docker image workflows.
@@ -105,11 +121,23 @@ python3 scripts/sync_v64_major_tracks.py
 Legacy A07 and A16 links into the five moved subtrees are redirected to their
 independent domains. Statement cards render convergence regimes, rates,
 complexity bounds, boundary notes, variant relations, and evidence without
-displaying review status. Validate the snapshot with:
+displaying review status.
+
+Import and validate the independent PIC domain from its source workspace with:
 
 ```bash
-python3 scripts/validate_v64_major_tracks.py
+python3 scripts/import_pic_domain.py --source-root /path/to/ebooks-content
+python3 scripts/validate_pic_domain.py --source-root /path/to/ebooks-content
 ```
+
+The importer preserves the separate PIC navigation, concept, and statement
+graph layers; removes private absolute paths from public sidecars; and shards
+the seven top-level PIC parts. It also requires complete semantic-title coverage
+for all 166 attached source statements and synchronizes those titles across the
+catalogue, navigation sidecar, and concept registry. The validator checks all
+21 domains, global ID uniqueness, PIC source hashes, graph endpoints, semantic
+titles, omitted leaf templates, sidecar counts, route coverage, and release
+retention.
 
 The broader convergence refinement is incomplete. Only its 12 PASS shards are
 included; the failed shard and 115 unstarted shards remain excluded.

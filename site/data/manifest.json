@@ -1,6 +1,6 @@
 {
   "schema_version": "optistacks-knowledge-site-v1",
-  "built_at": "2026-08-20T01:16:55.299067+00:00",
+  "built_at": "2026-08-25T15:45:48.830931+00:00",
   "domains": [
     {
       "id": "convex_analysis",
@@ -2833,11 +2833,166 @@
         "statements_preserved": 499,
         "presentation_policy": "promoted_root_without_wrapper"
       }
+    },
+    {
+      "id": "positive_isotropic_curvature",
+      "short_name": "Positive Isotropic Curvature",
+      "accent": "#8b5e3c",
+      "data_url": "data/positive_isotropic_curvature.json",
+      "generated_at": "2026-07-04T03:58:13.680864+00:00",
+      "validation_status": "PASS",
+      "publication_status": "source_grounded_v2_scaffold_requires_mathematical_placement_review",
+      "stats": {
+        "topics": 531,
+        "statements": 415,
+        "unique_source_statements": 166,
+        "source_graph_statements": 2980,
+        "source_graph_proofs": 1348,
+        "source_graph_nodes": 4895,
+        "source_graph_edges": 9805,
+        "resolved_dependency_edges": 1088,
+        "unresolved_dependency_edges": 57,
+        "chapters": 7,
+        "leaf_topics": 415,
+        "base_statements": 415,
+        "official_statements": 415,
+        "intermediate_statements": 0,
+        "coverage": 1.0,
+        "max_depth": 4,
+        "content_kinds": {
+          "assumption": 1,
+          "claim": 12,
+          "corollary": 29,
+          "definition": 8,
+          "example": 4,
+          "exercise": 1,
+          "lemma": 97,
+          "notation": 3,
+          "problem": 2,
+          "proposition": 100,
+          "remark": 8,
+          "theorem": 150
+        }
+      },
+      "chapters": [
+        {
+          "topic_id": "PIC.A01",
+          "display_number": "1",
+          "title": "Geometric and Analytic Foundations",
+          "classification_axis": "part",
+          "subtree_topic_count": 101,
+          "subtree_statement_count": 80
+        },
+        {
+          "topic_id": "PIC.A02",
+          "display_number": "2",
+          "title": "Curvature Cones and Pinching Mechanisms",
+          "classification_axis": "part",
+          "subtree_topic_count": 89,
+          "subtree_statement_count": 70
+        },
+        {
+          "topic_id": "PIC.A03",
+          "display_number": "3",
+          "title": "Singularities, Ancient Solutions, and Canonical Neighborhoods",
+          "classification_axis": "part",
+          "subtree_topic_count": 89,
+          "subtree_statement_count": 70
+        },
+        {
+          "topic_id": "PIC.A04",
+          "display_number": "4",
+          "title": "Ricci Flow Surgery in the PIC Setting",
+          "classification_axis": "part",
+          "subtree_topic_count": 83,
+          "subtree_statement_count": 65
+        },
+        {
+          "topic_id": "PIC.A05",
+          "display_number": "5",
+          "title": "Perelman-Hamilton Comparator Layer",
+          "classification_axis": "part",
+          "subtree_topic_count": 64,
+          "subtree_statement_count": 50
+        },
+        {
+          "topic_id": "PIC.A06",
+          "display_number": "6",
+          "title": "Topological Consequences and Frontiers",
+          "classification_axis": "part",
+          "subtree_topic_count": 52,
+          "subtree_statement_count": 40
+        },
+        {
+          "topic_id": "PIC.A07",
+          "display_number": "7",
+          "title": "Graph Operations and Reader Views",
+          "classification_axis": "part",
+          "subtree_topic_count": 52,
+          "subtree_statement_count": 40
+        }
+      ],
+      "source_artifacts": [
+        {
+          "kind": "navigation_view",
+          "title": "PIC navigation view v2.1",
+          "url": "data/pic/navigation_view_v2.json",
+          "description": "Reader-facing variable-depth tree with semantic leaf titles and source-anchored statement placements.",
+          "source_sha256": "7675bc231428507704578b92e1abd6529edb1853178619bd36964cb2ea95169c",
+          "stats": {
+            "nodes": 530,
+            "leaves": 415,
+            "semantic_titles": 166
+          }
+        },
+        {
+          "kind": "concept_registry",
+          "title": "PIC concept registry v2",
+          "url": "data/pic/concept_registry_v2.json",
+          "description": "Canonical concepts and primary navigation homes, with semantic titles for statement-backed leaves.",
+          "source_sha256": "bdef4ce3eb34ea3357d986e51085aabea95fbef6d9dfc214d1b2de5d09abb502",
+          "stats": {
+            "concepts": 498
+          }
+        },
+        {
+          "kind": "statement_graph",
+          "title": "PIC extracted statement graph",
+          "url": "data/pic/statement_graph.json",
+          "description": "Source-grounded statements, proofs, explicit dependencies, unresolved references, and literal term mentions.",
+          "source_sha256": "d4014677ac1282e2c7ac9fc93317cee0af65a6d9b3b0364e17cecd78369a815f",
+          "stats": {
+            "nodes": 4895,
+            "edges": 9805,
+            "statements": 2980,
+            "proofs": 1348
+          }
+        },
+        {
+          "kind": "navigation_audit",
+          "title": "PIC navigation audit v2.1",
+          "url": "data/pic/navigation_audit_v2.json",
+          "description": "Structural audit of the scaffold, including overload and attachment diagnostics.",
+          "source_sha256": "9743b363dbc9e4af0fbdafde27c4765b3a3cb657be1c56098ce31a22617fe4a4",
+          "stats": {
+            "nodes_without_statement_attachments": 0,
+            "overloaded_nodes": 8
+          }
+        }
+      ],
+      "loading": {
+        "mode": "chapter_shards",
+        "shards": 7,
+        "routes": 530,
+        "catalog_bytes": 25746,
+        "shard_bytes": 11065873,
+        "pruned_shards": 0
+      }
     }
   ],
   "totals": {
-    "topics": 75699,
-    "statements": 94171
+    "topics": 76230,
+    "statements": 94586
   },
   "source_campaign_snapshot": {
     "campaign_roots": [
@@ -3645,6 +3800,19 @@
       }
     },
     {
+      "id": "geometric_analysis",
+      "short_name": "Geometric Analysis",
+      "accent": "#8b5e3c",
+      "items": [
+        "positive_isotropic_curvature"
+      ],
+      "stats": {
+        "collections": 1,
+        "topics": 531,
+        "statements": 415
+      }
+    },
+    {
       "id": "algebraic_geometry",
       "short_name": "Algebraic Geometry",
       "accent": "#855a73",
@@ -3766,7 +3934,7 @@
     "part_count": 40,
     "node_count": 85475
   },
-  "snapshot_version": "20260819_v64_major_tracks_v1",
+  "snapshot_version": "20260825_v65_pic_domain_v1",
   "loading": {
     "mode": "chapter_shards",
     "cache_strategy": "versioned_url_memory_and_http_cache"
@@ -3864,5 +4032,13 @@
         "domain_id": "simulation_optimization"
       }
     ]
+  },
+  "pic_domain_import": {
+    "domain_id": "positive_isotropic_curvature",
+    "subject_domain_id": "geometric_analysis",
+    "source_tree_id": "pic_detailed_tree_v2",
+    "source_tree_version": "v2.1",
+    "source_graph_schema_version": "0.1.0",
+    "publication_boundary": "navigation scaffold placements require mathematical review; the extracted graph is source-grounded but does not certify correctness"
   }
 }

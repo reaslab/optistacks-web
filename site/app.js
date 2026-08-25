@@ -666,15 +666,18 @@ function renderDetail(nodeId) {
   const path = entry.path.map(item => `<span>${esc(item.title)}</span>`).join("<i>/</i>");
   const witnesses = node.top_down_textbook_witnesses || [];
   const relationships = renderTopicRelationships(entry);
+  const artifacts = entry.parent ? [] : (state.data.artifacts || []);
+  const topicRole = node.top_down_role || (allStatements.length ? "" : "This node organizes the knowledge topics below it.");
   $("#detail-panel").innerHTML = `
     <header class="topic-hero">
       <div class="breadcrumbs">${path}</div>
       <h2>${esc(node.title)}</h2>
-      <p class="topic-role">${esc(node.top_down_role || "This node organizes the knowledge topics below it.")}</p>
+      ${topicRole ? `<p class="topic-role">${esc(topicRole)}</p>` : ""}
       <div class="topic-actions"><button class="review-button" type="button" data-quality-target-type="topic" data-quality-target-id="${esc(node.topic_id)}">Report topic issue</button></div>
     </header>
     <div class="detail-body">
       ${relationships}
+      ${renderDomainArtifacts(artifacts)}
       <div class="section-heading"><h3>Knowledge statements</h3><span>${statements.length} / ${allStatements.length} records</span></div>
       ${statements.length ? `<div class="statement-list">${statements.map((statement, index) => renderStatement(statement, index)).join("")}</div>` : `
         <div class="empty-statements"><b>${allStatements.length ? "No statements match this filter" : "Structural topic"}</b><span>${allStatements.length ? "Choose another statement type above." : `Concrete knowledge is stored in ${formatNumber(node.descendant_statement_count)} descendant statements.`}</span></div>`}
@@ -709,6 +712,24 @@ function renderDetail(nodeId) {
     renderDetail(nodeId);
   });
   typesetMath($("#detail-panel"));
+}
+
+function renderDomainArtifacts(artifacts) {
+  if (!artifacts.length) return "";
+  return `<section class="artifact-section">
+    <div class="section-heading"><h3>Domain graph artifacts</h3><span>${artifacts.length} files</span></div>
+    <div class="artifact-grid">${artifacts.map(artifact => {
+      const stats = Object.entries(artifact.stats || {}).map(([key, value]) => (
+        `<span>${esc(titleCase(key))}: <b>${formatNumber(value)}</b></span>`
+      )).join("");
+      return `<a class="artifact-card" href="${esc(artifact.url)}" target="_blank" rel="noopener">
+        <small>${esc(titleCase(artifact.kind))}</small>
+        <b>${esc(artifact.title)}</b>
+        <p>${esc(artifact.description)}</p>
+        ${stats ? `<div>${stats}</div>` : ""}
+      </a>`;
+    }).join("")}</div>
+  </section>`;
 }
 
 function renderTopicRelationships(entry) {
@@ -770,6 +791,25 @@ function renderVariantDimensions(dimensions) {
     <section><b>${esc(titleCase(key))}</b><ul>${arrayValues(values).map(value => `<li>${esc(value)}</li>`).join("")}</ul></section>`).join("")}</div></div>`;
 }
 
+function renderGraphRelations(relations) {
+  if (!relations || typeof relations !== "object" || Array.isArray(relations)) return "";
+  const dependencies = relations.depends_on || [];
+  const unresolved = relations.depends_on_unresolved || [];
+  const mentions = relations.mentions || [];
+  if (!dependencies.length && !unresolved.length && !mentions.length) return "";
+  return `<div class="meta-block full graph-relations"><label>Extracted graph relations</label>
+    ${dependencies.length ? `<section><b>Depends on</b><ul>${dependencies.map(item => (
+      `<li>${esc(item.label || item.target_id)} <code>${esc(item.target_id)}</code>${item.document_title ? `<span>${esc(item.document_title)}</span>` : ""}</li>`
+    )).join("")}</ul></section>` : ""}
+    ${unresolved.length ? `<section class="unresolved"><b>Unresolved dependency labels</b><ul>${unresolved.map(item => (
+      `<li>${esc(item.label || item.target_id)} <code>${esc(item.resolution_status || "unresolved")}</code></li>`
+    )).join("")}</ul></section>` : ""}
+    ${mentions.length ? `<section><b>Mentioned PIC/Ricci-flow terms</b><div class="term-chips">${mentions.map(item => (
+      `<span>${esc(item.name || item.target_id)}${item.count ? ` · ${formatNumber(item.count)}` : ""}</span>`
+    )).join("")}</div></section>` : ""}
+  </div>`;
+}
+
 function renderStatement(statement, index) {
   const assumptions = statement.assumptions_latex || [];
   const notation = statement.notation || [];
@@ -798,6 +838,10 @@ function renderStatement(statement, index) {
       <div class="statement-tools"><button class="review-button" type="button" data-quality-target-type="statement" data-quality-target-id="${esc(statement.id)}">Report statement issue</button></div>
       ${statement.statement_plain ? `<p class="plain-statement">${esc(statement.statement_plain)}</p>` : ""}
       ${statement.statement_latex ? `<div class="formal-block">${renderLatex(statement.statement_latex, true)}</div>` : ""}
+      ${statement.proof_latex ? `<details class="source-proof">
+        <summary><b>Source proof</b><span>${statement.proof_length ? `${formatNumber(statement.proof_length)} characters` : "extracted proof text"}</span></summary>
+        <div class="formal-block">${renderLatex(statement.proof_latex, true)}</div>
+      </details>` : ""}
       <div class="statement-meta">
         ${assumptions.length ? `<div class="meta-block full"><label>Assumptions</label><ul class="latex-list">${assumptions.map(value => `<li>${renderLatex(value)}</li>`).join("")}</ul></div>` : ""}
         ${conclusionLatex ? `<div class="meta-block full"><label>Conclusion</label><div class="latex-value">${renderLatex(conclusionLatex)}</div></div>` : ""}
@@ -815,6 +859,7 @@ function renderStatement(statement, index) {
         ${statement.prerequisite_node_ids?.length ? `<div class="meta-block full"><label>Prerequisites</label><p class="prerequisite-links">${statement.prerequisite_node_ids.map(renderPrerequisite).join("<span>·</span>")}</p></div>` : ""}
         ${notation.length ? `<div class="meta-block full"><label>Notation</label><ul class="latex-list">${notation.map(item => `<li><span class="notation-symbol">${renderLatex(item.symbol_latex, false, true)}</span><span>— ${esc(item.meaning)}</span></li>`).join("")}</ul></div>` : ""}
         ${sources.length ? `<div class="meta-block full"><label>Statement evidence</label><div class="statement-source-list">${sources.map(renderStatementSource).join("")}</div></div>` : ""}
+        ${renderGraphRelations(statement.graph_relations)}
         <div class="meta-block full"><label>Statement ID</label><p><code>${esc(statement.id)}</code></p></div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import path from "node:path";
 const ROOT = path.resolve(import.meta.dirname, "../site/data/shards");
 const FORMULA_KEYS = new Set([
   "statement_latex",
+  "proof_latex",
   "assumptions_latex",
   "conclusion_latex",
   "equivalent_formulations_latex",

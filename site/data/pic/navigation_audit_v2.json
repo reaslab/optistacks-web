@@ -1,0 +1,99 @@
+{
+  "generated_at": "2026-07-04T03:58:13.680864+00:00",
+  "tree_version": "v2.1",
+  "node_count": 530,
+  "leaf_count": 415,
+  "node_type_counts": {
+    "assumption": 1,
+    "chapter": 25,
+    "claim": 12,
+    "corollary": 29,
+    "definition": 8,
+    "example": 4,
+    "exercise": 1,
+    "lemma": 97,
+    "notation": 3,
+    "part": 7,
+    "problem": 2,
+    "proposition": 100,
+    "remark": 8,
+    "section": 83,
+    "theorem_or_named_result": 150
+  },
+  "max_depth": 3,
+  "source_statement_count": 2980,
+  "source_proof_count": 1348,
+  "resolved_dependency_edges": 1088,
+  "unresolved_dependency_edges": 57,
+  "nodes_without_statement_attachments": [],
+  "no_attachment_count": 0,
+  "generic_leaf_count": 0,
+  "generic_leaves": [],
+  "overloaded_nodes": [
+    {
+      "node_id": "PIC.A01",
+      "title": "Geometric and Analytic Foundations",
+      "leaf_count": 80,
+      "node_count": 101,
+      "max_depth_below": 3,
+      "direct_child_count": 4
+    },
+    {
+      "node_id": "PIC.A02",
+      "title": "Curvature Cones and Pinching Mechanisms",
+      "leaf_count": 70,
+      "node_count": 89,
+      "max_depth_below": 3,
+      "direct_child_count": 4
+    },
+    {
+      "node_id": "PIC.A02.C04",
+      "title": "Brendle PIC Surgery Pinching Families",
+      "leaf_count": 25,
+      "node_count": 31,
+      "max_depth_below": 2,
+      "direct_child_count": 5
+    },
+    {
+      "node_id": "PIC.A03",
+      "title": "Singularities, Ancient Solutions, and Canonical Neighborhoods",
+      "leaf_count": 70,
+      "node_count": 89,
+      "max_depth_below": 3,
+      "direct_child_count": 4
+    },
+    {
+      "node_id": "PIC.A04",
+      "title": "Ricci Flow Surgery in the PIC Setting",
+      "leaf_count": 65,
+      "node_count": 83,
+      "max_depth_below": 3,
+      "direct_child_count": 4
+    },
+    {
+      "node_id": "PIC.A05",
+      "title": "Perelman-Hamilton Comparator Layer",
+      "leaf_count": 50,
+      "node_count": 64,
+      "max_depth_below": 3,
+      "direct_child_count": 3
+    },
+    {
+      "node_id": "PIC.A06",
+      "title": "Topological Consequences and Frontiers",
+      "leaf_count": 40,
+      "node_count": 52,
+      "max_depth_below": 3,
+      "direct_child_count": 3
+    },
+    {
+      "node_id": "PIC.A07",
+      "title": "Graph Operations and Reader Views",
+      "leaf_count": 40,
+      "node_count": 52,
+      "max_depth_below": 3,
+      "direct_child_count": 3
+    }
+  ],
+  "overloaded_node_count": 8
+}
