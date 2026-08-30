@@ -75,22 +75,166 @@ const esc = (value = "") => String(value).replace(/[&<>'"]/g, char => ({
 const formatNumber = value => new Intl.NumberFormat("en-US").format(value || 0);
 const titleCase = value => String(value || "").replaceAll("_", " ");
 
-const FORMULA_CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+const FORMULA_CONTROL_CHARACTERS = /[\u0000-\u0009\u000B\u000C\u000E-\u001F\u007F]/g;
+
+// A malformed JSON export can turn TeX's `\t...` escape into a tab. Only
+// restore a tab when the following characters form a known `t` command;
+// otherwise it is formatting whitespace and should remain a space.
+const TAB_TEX_COMMAND = /^(?:o(?:peratorname|imes?|(?=\b|\s|\{|$))|ext(?:style|bf|rm|it|sf|tt|sl|sc|subscript|superscript|less|greater)?(?=\b|\s|\{|$)|frac(?=\b|\s|\{|[0-9])|ilde(?=\b|\s|\{|$)|au(?=\b|[_^{}\s),.;:!?]|$)|heta(?=\b|[_^{}\s),.;:!?]|$)|op(?=\b|\s|\{|$)|hickspace(?=\b|\s|\{|$)|iny(?=\b|[_^{}\s),.;:!?]|$))/;
+const TEX_ENVIRONMENTS = "aligned|alignedat|array|bmatrix|Bmatrix|cases|CD|gathered|gather|matrix|pmatrix|psmallmatrix|smallmatrix|split|Vmatrix|vmatrix";
+
+function restoreFormulaControls(value) {
+  return value.replace(FORMULA_CONTROL_CHARACTERS, (control, offset, source) => {
+    const next = source.slice(offset + 1);
+    if (control === "\t" && TAB_TEX_COMMAND.test(next)) return "\\t";
+    // NUL and the other non-printing controls commonly replaced a missing
+    // command backslash. Do not add one when the command already has it.
+    if (control !== "\t" && control !== "\n" && /^[A-Za-z]/.test(next)) return "\\";
+    return " ";
+  });
+}
+
+function normalizeEnvironmentEscapes(value) {
+  const opener = new RegExp(`(^|[^\\\\A-Za-z])begin\\s*\\{(${TEX_ENVIRONMENTS})\\}`, "g");
+  const closer = new RegExp(`(^|[^\\\\A-Za-z])end\\s*\\{(${TEX_ENVIRONMENTS})\\}`, "g");
+  return value
+    .replace(opener, (_, prefix, environment) => `${prefix}\\begin{${environment}}`)
+    .replace(closer, (_, prefix, environment) => `${prefix}\\end{${environment}}`);
+}
+
+function isOptionalRowBreak(value, delimiterIndex, delimiter) {
+  if (delimiter !== "[") return false;
+  return /^\s*[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:pt|pc|in|bp|cm|mm|dd|cc|sp|ex|em|mu)\s*\]/i.test(value.slice(delimiterIndex + 1));
+}
+
+function countDoubledDelimiters(value, delimiter) {
+  let count = 0;
+  for (let index = 0; index < value.length;) {
+    if (value[index] !== "\\") { index += 1; continue; }
+    let end = index;
+    while (end < value.length && value[end] === "\\") end += 1;
+    if (end - index === 2 && value[end] === delimiter && !isOptionalRowBreak(value, end, delimiter)) count += 1;
+    index = end + (value[end] ? 1 : 0);
+  }
+  return count;
+}
+
+function normalizeDelimiterEscapes(value) {
+  let result = "";
+  let displayDepth = 0;
+  let environmentDepth = 0;
+  const doubledDisplayOpens = countDoubledDelimiters(value, "[");
+  const doubledDisplayCloses = countDoubledDelimiters(value, "]");
+  const collapseDoubledDisplay = doubledDisplayOpens > 0 && doubledDisplayOpens === doubledDisplayCloses;
+  for (let index = 0; index < value.length;) {
+    if (value[index] !== "\\") {
+      result += value[index++];
+      continue;
+    }
+    let end = index;
+    while (end < value.length && value[end] === "\\") end += 1;
+    const runLength = end - index;
+    const delimiter = value[end] || "";
+    const isDelimiter = "()[]".includes(delimiter);
+    if (runLength === 1 && value.startsWith("\\begin{", index)) environmentDepth += 1;
+    if (runLength === 1 && value.startsWith("\\end{", index)) environmentDepth = Math.max(0, environmentDepth - 1);
+    // Two slashes before a delimiter are usually an over-escaped delimiter.
+    // A display pair is collapsed only when the field contains matching
+    // doubled open/close markers; this preserves TeX row breaks such as
+    // `\\[2pt]` inside an aligned environment.
+    const collapse = isDelimiter && runLength === 2 && (
+      (delimiter === "[" || delimiter === "]")
+        ? collapseDoubledDisplay && !isOptionalRowBreak(value, end, delimiter)
+        : !displayDepth && !environmentDepth
+    );
+    const outputLength = collapse ? 1 : runLength;
+    result += "\\".repeat(outputLength);
+    if (collapse) {
+      if (delimiter === "[") displayDepth += 1;
+      if (delimiter === "]") displayDepth = Math.max(0, displayDepth - 1);
+    } else if (runLength === 1 && delimiter === "[") {
+      displayDepth += 1;
+    } else if (runLength === 1 && delimiter === "]") {
+      displayDepth = Math.max(0, displayDepth - 1);
+    }
+    index = end;
+  }
+  return result;
+}
+
+function removeOrphanDelimiterClosings(value) {
+  let result = "";
+  let inlineDepth = 0;
+  let displayDepth = 0;
+  for (let index = 0; index < value.length;) {
+    if (value[index] !== "\\") {
+      result += value[index++];
+      continue;
+    }
+    let end = index;
+    while (end < value.length && value[end] === "\\") end += 1;
+    const runLength = end - index;
+    const delimiter = value[end] || "";
+    const pair = runLength % 2 === 1 ? `\\${delimiter}` : "";
+    if (pair === "\\(") {
+      inlineDepth += 1;
+      result += "\\".repeat(runLength) + delimiter;
+      index = end + 1;
+    } else if (pair === "\\)") {
+      if (inlineDepth > 0) {
+        inlineDepth -= 1;
+        result += "\\".repeat(runLength) + delimiter;
+      }
+      else result += "\\".repeat(runLength - 1);
+      index = end + 1;
+    } else if (pair === "\\[") {
+      displayDepth += 1;
+      result += "\\".repeat(runLength) + delimiter;
+      index = end + 1;
+    } else if (pair === "\\]") {
+      if (displayDepth > 0) {
+        displayDepth -= 1;
+        result += "\\".repeat(runLength) + delimiter;
+      }
+      else result += "\\".repeat(runLength - 1);
+      index = end + 1;
+    } else {
+      result += "\\".repeat(runLength);
+      index = end;
+    }
+  }
+  return result;
+}
+
+function closeUnterminatedDelimiters(value) {
+  // Only a trailing backslash is an unambiguous lost closing delimiter. If
+  // prose follows an unmatched opener, leave it isolated as a source error.
+  if (!value.trimEnd().endsWith("\\")) return value;
+  const stack = [];
+  for (let index = 0; index < value.length;) {
+    if (value[index] !== "\\") { index += 1; continue; }
+    let end = index;
+    while (end < value.length && value[end] === "\\") end += 1;
+    const runLength = end - index;
+    const delimiter = value[end] || "";
+    if (runLength % 2 === 1 && "()[]".includes(delimiter)) {
+      const pair = `\\${delimiter}`;
+      if (pair === "\\(") stack.push("\\)");
+      else if (pair === "\\[") stack.push("\\]");
+      else if (stack[stack.length - 1] === pair) stack.pop();
+      index = end + 1;
+    } else index = end;
+  }
+  if (!stack.length) return value;
+  const trimmed = value.trimEnd();
+  const base = trimmed.slice(0, -1);
+  return `${base}${stack.reverse().join("")}`;
+}
 
 function normalizeFormulaSource(value) {
   let result = String(value || "").normalize("NFC").replace(/\r\n?/g, "\n");
 
-  // A subset of inherited fields contains a control character where a closing
-  // TeX delimiter or a backslash command was intended. Preserve only the
-  // unambiguous delimiter case; other controls become readable spacing.
-  result = result.replace(/\\([\n\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F])/g, (match, control, offset, source) => {
-    const next = source[offset + 2] || "";
-    return next === ")" || next === "]" ? "\\" : "";
-  });
-  result = result.replace(FORMULA_CONTROL_CHARACTERS, (control, offset, source) => {
-    const next = source[offset + 1] || "";
-    return /[A-Za-z]/.test(next) && control !== "\n" ? "\\" : " ";
-  });
+  result = normalizeEnvironmentEscapes(restoreFormulaControls(result));
   result = result
     .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, " ")
     .replace(/\t/g, " ")
@@ -105,6 +249,22 @@ function normalizeFormulaSource(value) {
   let inlineDepth = 0;
   let displayDepth = 0;
   for (let index = 0; index < result.length; index += 1) {
+    if (result[index] === "\\" && inlineDepth > 0) {
+      const missingClose = result.slice(index).match(/^(?:\\[,;:!> ]\s+|\\(?:quad|qquad)\s+|\\\s+)/);
+      if (missingClose && /^[A-Za-z]/.test(result[index + missingClose[0].length])) {
+        repaired += "\\) ";
+        inlineDepth -= 1;
+        index += missingClose[0].length - 1;
+        continue;
+      }
+      const punctuatedClose = result.slice(index).match(/^\\([.,;:!?])(?=\s|$)/);
+      if (punctuatedClose) {
+        repaired += `\\)${punctuatedClose[1]}`;
+        inlineDepth -= 1;
+        index += punctuatedClose[0].length - 1;
+        continue;
+      }
+    }
     const pair = result.slice(index, index + 2);
     if (pair === "\\(") {
       inlineDepth += 1;
@@ -125,30 +285,42 @@ function normalizeFormulaSource(value) {
       continue;
     }
     if (pair === "\\]") {
-      displayDepth = Math.max(0, displayDepth - 1);
-      repaired += pair;
+      if (displayDepth > 0) {
+        displayDepth -= 1;
+        repaired += pair;
+      } else if (inlineDepth > 0) {
+        inlineDepth -= 1;
+        repaired += "\\)";
+      } else repaired += pair;
       index += 1;
       continue;
     }
     const previous = result[index - 1] || "";
-    if (result[index] === ")" && inlineDepth > 0 && /\s/.test(previous)) {
+    const hasNearbyExplicitInlineClose = /^\s*\\\)/.test(result.slice(index + 1));
+    const hasNearbyExplicitDisplayClose = /^\s*\\\]/.test(result.slice(index + 1));
+    const next = result[index + 1] || "";
+    const closesDoubledParenthesis = previous === ")" && (/\s/.test(next) || !next);
+    if (result[index] === ")" && inlineDepth > 0 && !hasNearbyExplicitInlineClose && (/\s/.test(previous) || closesDoubledParenthesis)) {
       repaired += "\\)";
       inlineDepth -= 1;
-    } else if (result[index] === "]" && displayDepth > 0 && /\s/.test(previous)) {
+    } else if (result[index] === "]" && displayDepth > 0 && !hasNearbyExplicitDisplayClose && /\s/.test(previous)) {
       repaired += "\\]";
       displayDepth -= 1;
     } else {
       repaired += result[index];
     }
   }
-  return repaired;
+  return closeUnterminatedDelimiters(removeOrphanDelimiterClosings(normalizeDelimiterEscapes(repaired)));
 }
 
 function normalizeDollarDelimiters(value) {
   return value
     .replace(/\\mathbin\{\\vrule height 1\.4ex depth -0\.3ex width 0\.07ex\\vrule height 0\.07ex depth -0\.02ex width 0\.8ex\}/g, "\\mathbin{\\restriction}")
     .replace(/(?<!\\)\$\$([\s\S]*?)(?<!\\)\$\$/g, (_, formula) => `\\[${formula}\\]`)
-    .replace(/(?<!\\)\$([^$\n]+?)(?<!\\)\$/g, (_, formula) => `\\(${formula}\\)`);
+    .replace(/(?<!\\)\$([^$\n]+?)(?<!\\)\$/g, (_, formula) => `\\(${formula}\\)`)
+    // Keep an unmatched currency marker literal instead of letting MathJax
+    // treat it as the start of a math span that consumes following prose.
+    .replace(/(?<!\\)\$/g, "\\$");
 }
 
 function delimiterCounts(value) {
@@ -166,7 +338,13 @@ function delimiterCounts(value) {
 
 function hasBalancedDelimiters(value) {
   const counts = delimiterCounts(value);
-  return counts.inlineOpen === counts.inlineClose
+  const environmentStack = [];
+  for (const match of value.matchAll(/\\(begin|end)\s*\{([^}]+)\}/g)) {
+    if (match[1] === "begin") environmentStack.push(match[2]);
+    else if (environmentStack.pop() !== match[2]) return false;
+  }
+  return !environmentStack.length
+    && counts.inlineOpen === counts.inlineClose
     && counts.displayOpen === counts.displayClose
     && counts.displayDollars % 2 === 0
     && counts.inlineDollars % 2 === 0;
@@ -189,12 +367,17 @@ function trimOrphanTrailingDelimiter(value) {
 function renderLatex(value, display = false, forceMath = false) {
   const raw = trimOrphanTrailingDelimiter(normalizeFormulaSource(value));
   if (!raw) return "";
-  if (!hasBalancedDelimiters(raw)) {
-    return `<span class="latex-source-error" title="Unbalanced mathematical delimiters in source data">${esc(raw)}</span>`;
+  if (/Need (?:final|regenerate)|END ANALYSIS|channel (?:final|switch)/i.test(raw)) {
+    return `<span class="latex-source-error" title="Generated text found in formula source">${esc(raw)}</span>`;
   }
   const normalized = normalizeDollarDelimiters(raw);
-  const hasDelimiters = /(?<!\\)\\\(|(?<!\\)\\\[|\\begin\s*\{/.test(normalized);
-  if (hasDelimiters) return esc(normalized);
+  if (!hasBalancedDelimiters(normalized)) {
+    return `<span class="latex-source-error" title="Unbalanced mathematical delimiters in source data">${esc(raw)}</span>`;
+  }
+  const hasExplicitDelimiters = /(?<!\\)\\\(|(?<!\\)\\\[/.test(normalized);
+  const hasEnvironment = /\\begin\s*\{[^}]+\}/.test(normalized);
+  if (hasExplicitDelimiters) return esc(normalized);
+  if (hasEnvironment) return esc(`\\[${normalized}\\]`);
   const looksLikeLatex = forceMath
     || /\\[A-Za-z]+|[_^][{A-Za-z0-9\\]|[{}]|[=<>≤≥∈∉⊂⊆⊃⊇±∞∑∏]/.test(normalized);
   if (!looksLikeLatex) return esc(raw);
@@ -810,6 +993,37 @@ function renderGraphRelations(relations) {
   </div>`;
 }
 
+function renderAlgorithmContract(contract) {
+  if (!contract || typeof contract !== "object" || Array.isArray(contract)) return "";
+  const list = (values, renderer = value => esc(value)) => arrayValues(values).length
+    ? `<ul>${arrayValues(values).map(value => `<li>${renderer(value)}</li>`).join("")}</ul>`
+    : "";
+  const steps = Array.isArray(contract.steps) ? contract.steps.filter(step => step && typeof step === "object") : [];
+  const branches = Array.isArray(contract.branches) ? contract.branches.filter(branch => branch && typeof branch === "object") : [];
+  const initialization = Array.isArray(contract.initialization) ? contract.initialization.filter(item => item && typeof item === "object") : [];
+  const quantities = Array.isArray(contract.quantities) ? contract.quantities.filter(item => item && typeof item === "object") : [];
+  const terminations = Array.isArray(contract.termination) ? contract.termination.filter(item => item && typeof item === "object") : [];
+  const outputs = Array.isArray(contract.outputs) ? contract.outputs.filter(item => item && typeof item === "object") : [];
+  const objectList = (items, valueKey, labelKey = "label") => items.length
+    ? `<ul class="algorithm-contract-list">${items.map(item => `<li>${item[labelKey] ? `<b>${esc(item[labelKey])}</b>` : ""}${item[valueKey] ? `<span class="latex-value">${renderLatex(item[valueKey])}</span>` : ""}${item.note ? `<small>${esc(item.note)}</small>` : ""}</li>`).join("")}</ul>`
+    : "";
+  return `<details class="algorithm-contract">
+    <summary><b>Algorithm contract</b><span>${esc(contract.schema_version || "structured procedure")}</span></summary>
+    <div class="algorithm-contract-body">
+      ${arrayValues(contract.inputs).length ? `<div class="meta-block full"><label>Inputs</label>${list(contract.inputs)}</div>` : ""}
+      ${arrayValues(contract.assumptions).length ? `<div class="meta-block full"><label>Assumptions</label>${list(contract.assumptions, value => renderLatex(value))}</div>` : ""}
+      ${initialization.length ? `<div class="meta-block full"><label>Initialization</label>${objectList(initialization, "value_latex")}</div>` : ""}
+      ${quantities.length ? `<div class="meta-block full"><label>Quantities</label>${objectList(quantities, "formula_latex")}</div>` : ""}
+      ${steps.length ? `<div class="meta-block full"><label>Steps</label><ol class="algorithm-steps">${steps.map(step => `<li data-step-id="${esc(step.step_id || "")}"><div><code>${esc(step.step_id || "unlabelled")}</code><b>${esc(step.title || "Step")}</b><span class="step-target">→ ${esc(step.next_step || "")}</span></div>${step.action_latex ? `<div class="latex-value">${renderLatex(step.action_latex)}</div>` : ""}</li>`).join("")}</ol></div>` : ""}
+      ${branches.length ? `<div class="meta-block full"><label>Branches</label><ul class="algorithm-branches">${branches.map(branch => `<li>${branch.condition_latex ? `<div class="latex-value"><b>If</b> ${renderLatex(branch.condition_latex)}</div>` : ""}${branch.action_latex ? `<div class="latex-value"><b>Then</b> ${renderLatex(branch.action_latex)}</div>` : ""}<span class="step-target">→ ${esc(branch.next_step || "")}</span></li>`).join("")}</ul></div>` : ""}
+      ${terminations.length ? `<div class="meta-block full"><label>Termination</label><ul class="algorithm-branches">${terminations.map(item => `<li>${item.condition_latex ? `<div class="latex-value"><b>When</b> ${renderLatex(item.condition_latex)}</div>` : ""}<span>${esc(item.action || "Return")}</span></li>`).join("")}</ul></div>` : ""}
+      ${outputs.length ? `<div class="meta-block full"><label>Outputs</label>${objectList(outputs, "value_latex")}</div>` : ""}
+      ${arrayValues(contract.dependencies).length ? `<div class="meta-block full"><label>Dependencies</label>${list(contract.dependencies)}</div>` : ""}
+      ${arrayValues(contract.source_boundaries).length ? `<div class="meta-block full boundary-block"><label>Source boundaries</label>${list(contract.source_boundaries)}</div>` : ""}
+    </div>
+  </details>`;
+}
+
 function renderStatement(statement, index) {
   const assumptions = statement.assumptions_latex || [];
   const notation = statement.notation || [];
@@ -838,6 +1052,7 @@ function renderStatement(statement, index) {
       <div class="statement-tools"><button class="review-button" type="button" data-quality-target-type="statement" data-quality-target-id="${esc(statement.id)}">Report statement issue</button></div>
       ${statement.statement_plain ? `<p class="plain-statement">${esc(statement.statement_plain)}</p>` : ""}
       ${statement.statement_latex ? `<div class="formal-block">${renderLatex(statement.statement_latex, true)}</div>` : ""}
+      ${renderAlgorithmContract(statement.algorithm_contract)}
       ${statement.proof_latex ? `<details class="source-proof">
         <summary><b>Source proof</b><span>${statement.proof_length ? `${formatNumber(statement.proof_length)} characters` : "extracted proof text"}</span></summary>
         <div class="formal-block">${renderLatex(statement.proof_latex, true)}</div>
@@ -899,14 +1114,41 @@ function renderWitness(witness) {
 }
 
 let mathTypesetQueue = Promise.resolve();
+let mathJaxReadyPromise = null;
+
+function waitForMathJax(timeoutMs = 12000) {
+  if (window.MathJax?.startup?.promise) {
+    return window.MathJax.startup.promise.then(() => window.MathJax).catch(() => null);
+  }
+  if (mathJaxReadyPromise) return mathJaxReadyPromise;
+  const pending = new Promise(resolve => {
+    const deadline = Date.now() + timeoutMs;
+    const probe = () => {
+      if (window.MathJax?.startup?.promise) {
+        return window.MathJax.startup.promise.then(() => resolve(window.MathJax), () => resolve(null));
+      }
+      if (Date.now() >= deadline) return resolve(null);
+      setTimeout(probe, 50);
+    };
+    probe();
+  });
+  const wrapped = pending.then(mathJax => {
+    if (!mathJax && mathJaxReadyPromise === wrapped) mathJaxReadyPromise = null;
+    return mathJax;
+  });
+  mathJaxReadyPromise = wrapped;
+  return wrapped;
+}
 
 function typesetMath(container) {
-  if (!container || !window.MathJax?.startup?.promise) return;
+  if (!container) return;
   mathTypesetQueue = mathTypesetQueue
-    .then(() => window.MathJax.startup.promise)
-    .then(() => {
-      if (!container.isConnected || !window.MathJax?.typesetPromise) return;
-      return window.MathJax.typesetPromise([container]);
+    .then(() => waitForMathJax())
+    .then(mathJax => {
+      if (!container.isConnected || !mathJax?.typesetPromise) return;
+      // Clear stale MathJax nodes when a caller reuses a mounted container.
+      mathJax.typesetClear?.([container]);
+      return mathJax.typesetPromise([container]);
     })
     .catch(error => console.warn("Math rendering failed", error));
 }

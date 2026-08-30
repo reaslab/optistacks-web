@@ -200,6 +200,32 @@ body.resizing * { cursor: col-resize !important; }
 .source-proof summary b { color: #39465a; font: 500 11px var(--serif); }
 .source-proof summary span { color: #8a94a3; font: 8px var(--mono); }
 .source-proof .formal-block { margin: 0; border-top: 1px solid #dfe6ef; }
+.algorithm-contract { margin: 15px 0 0; border: 1px solid #dfe6ef; border-radius: 4px; background: #f8fafc; }
+.algorithm-contract > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 12px; cursor: pointer; list-style: none; }
+.algorithm-contract > summary::-webkit-details-marker { display: none; }
+.algorithm-contract > summary b { color: #39465a; font: 500 11px var(--serif); }
+.algorithm-contract > summary span { color: #8a94a3; font: 8px var(--mono); overflow-wrap: anywhere; text-align: right; }
+.algorithm-contract-body { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 16px; padding: 12px; border-top: 1px solid #dfe6ef; }
+.algorithm-contract-body .meta-block { min-width: 0; }
+.algorithm-contract-body .meta-block.full { grid-column: 1 / -1; }
+.algorithm-contract-list, .algorithm-steps, .algorithm-branches { margin: 0; padding-left: 20px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.algorithm-contract-list li, .algorithm-steps li, .algorithm-branches li { margin: 4px 0; }
+.algorithm-contract-list li > b { display: block; color: #39465a; font-size: 10px; }
+.algorithm-contract-list li > span, .algorithm-contract-list li > small { display: block; }
+.algorithm-contract-list li > small { color: #8a94a3; font-size: 10px; }
+.algorithm-steps li > div:first-child { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px; }
+.algorithm-steps li code, .step-target { color: #68778c; font: 8px var(--mono); }
+.algorithm-steps li b { color: #39465a; font-size: 10px; }
+.step-target { margin-left: auto; }
+.algorithm-branches li { padding-left: 2px; }
+.algorithm-branches .latex-value { margin: 2px 0; }
+.algorithm-contract .boundary-block { border-top: 1px dashed #dfe6ef; padding-top: 9px; }
+@media (max-width: 560px) {
+  .algorithm-contract-body { grid-template-columns: 1fr; }
+  .algorithm-contract-body .meta-block.full { grid-column: auto; }
+  .algorithm-steps li > div:first-child { align-items: flex-start; }
+  .algorithm-steps .step-target { width: 100%; margin-left: 0; }
+}
 .statement-meta { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 16px; margin-top: 16px; }
 .meta-block { min-width: 0; }
 .meta-block.full { grid-column: 1 / -1; }
