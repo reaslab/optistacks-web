@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f6f8fb">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <title>Bruhat–Tits Theory · ReasAtlas</title>
+  <meta name="description" content="A reviewed Bruhat–Tits theory atlas built from source-aligned textbook evidence.">
+  <link rel="stylesheet" href="styles.css?v=1">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+      chtml: { scale: 0.94 }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script defer src="app.js?v=1"></script>
+</head>
+<body>
+  <header class="masthead">
+    <a class="brand" href="../"><b>ReasAtlas</b><span>/</span><strong>Bruhat–Tits Theory</strong></a>
+    <form id="search-form" class="search-form" role="search">
+      <label class="sr-only" for="search-input">Search the Bruhat–Tits atlas</label>
+      <input id="search-input" type="search" placeholder="Search topics, statements, notation, or source locators" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+    </form>
+    <div class="release-status"><span></span><b>Reviewed overlay</b><small id="build-date">Loading…</small></div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="library-pane" aria-label="Atlas overview">
+      <div class="rail-heading">
+        <span><small>KNOWLEDGE RELEASE</small><b>Bruhat–Tits Theory</b></span>
+        <em>BT</em>
+      </div>
+
+      <nav class="mode-nav" aria-label="Views">
+        <button class="mode-button active" type="button" data-mode="atlas">
+          <span class="mode-icon">⌘</span><span><b>Atlas outline</b><small>Canonical tree + proposals</small></span><em id="node-count">—</em>
+        </button>
+        <button class="mode-button" type="button" data-mode="deferred">
+          <span class="mode-icon">◇</span><span><b>Evidence review</b><small>Deferred OCR items</small></span><em id="deferred-count">—</em>
+        </button>
+      </nav>
+
+      <section class="rail-section">
+        <div class="rail-label"><span>SOURCE CORPUS</span><small id="source-total">—</small></div>
+        <div id="source-list" class="source-list"></div>
+      </section>
+
+      <section class="rail-section quality-note">
+        <div class="rail-label"><span>PUBLICATION STATUS</span></div>
+        <p><i></i> Builder and independent review passed for every source item.</p>
+        <p><i class="amber"></i> Proposed nodes remain visually distinct from the immutable core tree.</p>
+      </section>
+
+      <footer class="rail-footer">
+        <a href="../">← Main ReasAtlas</a>
+        <span id="release-id">dual_evidence_full_v2</span>
+      </footer>
+    </aside>
+
+    <section class="outline-pane" aria-label="Topic outline">
+      <header class="panel-head">
+        <div><span class="eyebrow" id="outline-eyebrow">ATLAS OUTLINE</span><h1 id="outline-title">Knowledge tree</h1></div>
+        <button id="collapse-button" class="icon-button" type="button" title="Collapse outline" aria-label="Collapse outline">⌃</button>
+      </header>
+      <div id="search-summary" class="search-summary" hidden></div>
+      <div id="outline-view" class="outline-view" aria-live="polite">
+        <div class="loading-state"><span></span><p>Preparing the reviewed atlas…</p></div>
+      </div>
+    </section>
+
+    <main id="detail-pane" class="detail-pane" aria-live="polite">
+      <div class="detail-placeholder"><span>𝔅</span><p>Select a topic from the outline</p></div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
